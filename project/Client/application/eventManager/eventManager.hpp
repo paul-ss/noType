@@ -70,7 +70,7 @@ struct Binding {
     Events _events;
     std::string _name;
     EventDetails _details;
-    int _count;
+    size_t _count;
 };
 
 using Bindings = std::unordered_map<std::string, Binding*>;

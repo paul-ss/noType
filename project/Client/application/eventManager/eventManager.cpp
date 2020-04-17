@@ -120,7 +120,7 @@ void EventManager::update() {
             }
         }
 
-        if (bind->_events.size() == (unsigned long)bind->_count) {
+        if (bind->_events.size() == bind->_count) {
             auto callItr = _callbacks.find(bind->_name);
             if(callItr != _callbacks.end()) {
                 callItr->second(&bind->_details);
@@ -149,9 +149,9 @@ void EventManager::loadBindings() {
         while (!keystream.eof()) {
             std::string keyval;
             keystream >> keyval;
-            int start = 0;
-            int end = keyval.find(delimiter);
-            if (end == (int)std::string::npos) {
+            size_t start = 0;
+            size_t end = keyval.find(delimiter);
+            if (end == std::string::npos) {
                 delete bind;
                 bind = nullptr;
                 break;
