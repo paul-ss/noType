@@ -82,12 +82,13 @@ class EventManager {
 
         bool addBinding(Binding *binding);
         bool removeBinding(std::string name);
-        void setFocus(const bool& focus);
+        //void setFocus(const bool& focus);
         void handleEvent(sf::Event& event);
         void update();
-        template <class T>
+
+        // NOTE(vendroid): Теперь нет смысла делать этот метод шаблонным: просто передаем функциональный объект
         bool addCallback(const std::string& name,
-                        const T& func);
+                        const std::function<void(EventDetails*)>& func);
         void removeCallback(const std::string& name);
         sf::Vector2i getMousePos(sf::RenderWindow* wind = nullptr);
 
