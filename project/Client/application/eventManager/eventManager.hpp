@@ -3,7 +3,7 @@
 #include <functional>
 #include <unordered_map>
 
-#include<SFML/Graphics.hpp>
+#include <SFML/Graphics.hpp>
 
 enum class EventType {
 KeyDown = sf::Event::KeyPressed,

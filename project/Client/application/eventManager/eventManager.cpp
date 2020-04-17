@@ -21,7 +21,7 @@ bool EventManager::addCallback(const std::string& name,
     return _callbacks.emplace(name, func).second;
 }
 
-sf::Vector2i EventManager::getMousePos(sf::RenderWindow* wind = nullptr) {
+sf::Vector2i EventManager::getMousePos(sf::RenderWindow* wind) {
     return (wind ? sf::Mouse::getPosition(*wind) : sf::Mouse::getPosition());
 }
 
@@ -95,7 +95,7 @@ void EventManager::update() {
         Binding* bind = b_itr.second;
         for (auto &e_itr : bind->_events) {
             switch (e_itr.first) {
-                case(EventType::Keyboard) :
+                case(EventType::Keyboard) : {
                     if (sf::Keyboard::isKeyPressed( sf::Keyboard::Key(e_itr.second._code))) {
                         if (bind->_details._keyCode != -1) {
                             bind->_details._keyCode = e_itr.second._code;
@@ -103,8 +103,9 @@ void EventManager::update() {
                             ++(bind->_count);
                     }
                     break;
+                }
 
-                case(EventType::Mouse) :
+                case(EventType::Mouse) : {
                     if (sf::Mouse::isButtonPressed( sf::Mouse::Button(e_itr.second._code))) {
                         if (bind->_details._keyCode != -1) {
                             bind->_details._keyCode = e_itr.second._code;
@@ -112,10 +113,14 @@ void EventManager::update() {
                         ++(bind->_count);
                     }
                     break;
+                }
+
+                default: {
+                }
             }
         }
 
-        if (bind->_events.size() == bind->_count) {
+        if (bind->_events.size() == (unsigned long)bind->_count) {
             auto callItr = _callbacks.find(bind->_name);
             if(callItr != _callbacks.end()) {
                 callItr->second(&bind->_details);
@@ -128,7 +133,7 @@ void EventManager::update() {
 void EventManager::loadBindings() {
     std::string delimiter = ":";
     std::ifstream bindings;
-    bindings.open("keys.cfg");
+    bindings.open("resources/keys.cfg");
         if (!bindings.is_open()) {
             std::cout << "! Failed loading keys.cfg." << std::endl;
             return;
@@ -146,7 +151,7 @@ void EventManager::loadBindings() {
             keystream >> keyval;
             int start = 0;
             int end = keyval.find(delimiter);
-            if (end == std::string::npos) {
+            if (end == (int)std::string::npos) {
                 delete bind;
                 bind = nullptr;
                 break;

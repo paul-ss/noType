@@ -4,7 +4,7 @@
 
 class Game {
     public:
-        bool run();
+        void run();
         static Game& getInstance();
 
     private:
@@ -15,4 +15,3 @@ class Game {
     private:
         Window _window;
 };
-

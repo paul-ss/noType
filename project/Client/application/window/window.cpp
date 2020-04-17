@@ -24,8 +24,8 @@ void Window::setup(const std::string& title, const sf::Vector2u& size) {
     _isDone = false;
     _window.setFramerateLimit(FPS);
 
-    _eventManager.addCallback("Window_close", &Window::close, this);
-    _eventManager.addCallback("Fullscreen_toggle", &Window::toggleFullscreen, this);
+    _eventManager.addCallback("Window_close", &Window::close);
+    _eventManager.addCallback("Fullscreen_toggle", &Window::toggleFullscreen);
     create();
 }
 

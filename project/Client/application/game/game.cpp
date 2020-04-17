@@ -19,23 +19,9 @@ void Game::render() {
     _window.endDraw();
 }
 
-sf::Time Game::getElapsed() {
-    return _elapsed;
-}
-
-void Game::restartClock() {
-    _elapsed += _clock.restart();
-}
-
-bool Game::run() {
-    float frametime = 1.0f / 60.0f;
+void Game::run() {
     while (!_window.isDone()) {
-        if(_elapsed.asSeconds() >= frametime) {
-            handleInput();
-            update();
-            render();
-            _elapsed -= sf::seconds(frametime);
-        }
-        restartClock();
+        update();
+        render();
     }
 }
