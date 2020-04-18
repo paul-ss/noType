@@ -24,8 +24,12 @@ void Window::setup(const std::string& title, const sf::Vector2u& size) {
     _isDone = false;
     _window.setFramerateLimit(FPS);
 
-    _eventManager.addCallback("Window_close", &Window::close);
-    _eventManager.addCallback("Fullscreen_toggle", &Window::toggleFullscreen);
+    // NOTE(vendroid): Нобходимо чтобы сигнатура функций совпадала, поэтому объявляем тут переменную пустышку
+    auto lambdaClose = [this](EventDetails* details) { this->close(); details = nullptr; };
+    _eventManager.addCallback("Window_close", lambdaClose);
+
+     auto lambdaToggleFullscreen = [this](EventDetails* details) { this->toggleFullscreen(details); };
+     _eventManager.addCallback("Fullscreen_toggle", lambdaToggleFullscreen);
     create();
 }
 
@@ -43,14 +47,18 @@ void Window::update() {
     while (_window.pollEvent(event)) {
         if (event.type == sf::Event::LostFocus) {
             _isFocused = false;
-            _eventManager.setFocus(false);
+            //_eventManager.setFocus(false);
         } else if (event.type == sf::Event::GainedFocus){
             _isFocused = true;
-            _eventManager.setFocus(true);
+            //_eventManager.setFocus(true);
         }
         _eventManager.handleEvent(event);
     }
     _eventManager.update();
+}
+
+void Window::toggleFullscreen(EventDetails* details = nullptr) {
+    details = nullptr;
 }
 
 void Window::beginDraw() {

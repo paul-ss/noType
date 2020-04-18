@@ -15,9 +15,8 @@ EventManager::~EventManager() {
     }
 }
 
-template <class T>
 bool EventManager::addCallback(const std::string& name,
-                        const T& func) {
+                        const std::function<void(EventDetails*)>& func) {
     return _callbacks.emplace(name, func).second;
 }
 
