@@ -3,5 +3,17 @@
 //
 
 #pragma once
+#include <iostream>
 
+class Command {
+public:
+  Command(const std::string &data, const std::string &connectionUUID):
+      connectionUUID(connectionUUID),
+      data(data) {}
 
+  const std::string &parseToJSON () {
+    return data;
+  }
+  std::string connectionUUID;
+  std::string data;
+};

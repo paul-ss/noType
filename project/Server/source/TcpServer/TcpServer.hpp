@@ -5,20 +5,33 @@
 #pragma once
 
 #include "Client.hpp"
+#include "QueueManager.hpp"
 
 #include <boost/asio.hpp>
+#include <boost/bind.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <unordered_map>
 #include <memory>
 #include <thread>
 #include <string>
+#include <iostream>
+
+
+enum ServerState {SERVER_RUN, SERVER_STOP};
 
 
 class TcpServer {
 public:
 
-  TcpServer(const std::string &ipAddress, unsigned int port, unsigned int timeout /* queueManager */);
+  TcpServer(std::shared_ptr<QueueManager> queueManager, const std::string &ipAddress, unsigned int port,
+            unsigned int timeout);
   ~TcpServer(); // join
   void startServer();
   void stopServer();
+  void pushToQueue(const std::string &data, const std::string &connectionUUID);
+  void removeConnection(const std::string &connectionUUID);
 
 private:
   void startAccept();
@@ -27,16 +40,17 @@ private:
   void runService();
   void runQueueWorker();
 
+  std::string randomUUID();
+
 
   boost::asio::io_service _service;
   boost::asio::ip::tcp::acceptor _acceptor;
-  std::vector<std::shared_ptr<Client>> _clients;
+  std::unordered_map<std::string, std::shared_ptr<Client>> _clients;
   std::vector<std::thread> _threads;
-  enum {SERVER_RUN, SERVER_STOP} _state;
-
-// std::mutex _serverMutex;
-//  - _queueManager : std::shared_ptr<QueueManager>
-
+  std::shared_ptr<QueueManager> _queueManager;
+  boost::asio::ip::tcp::endpoint _ep;
+  ServerState _state;
+  std::mutex _serverMutex;
 };
 
 
