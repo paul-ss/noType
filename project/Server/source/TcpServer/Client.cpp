@@ -23,29 +23,31 @@ void Client::read() {
 
 
 void Client::handleRead(const boost::system::error_code& ec, size_t n_bytes) {
-  std::unique_lock<std::mutex> lock(_clientMutex);
-  if (ec) {
-    if (ec == boost::asio::error::eof) {
-      std::cout << "disconnected" << std::endl; //todo log
+  {
+    std::unique_lock<std::mutex> lock(_clientMutex);
+    if (ec) {
+      if (ec == boost::asio::error::eof) {
+        std::cout << "disconnected" << std::endl; //todo log
+      }
+      _tcpServer.removeConnection(_connectionUUID);
+      std::cout << ec.message() << std::endl; // todo log
+      return;
     }
-    _tcpServer.removeConnection(_connectionUUID);
-    std::cout << ec.message() << std::endl; // todo log
-    return;
+
+
+    std::istream is(&_recvBuf);
+    std::string data(n_bytes, '0');
+
+    if (is.readsome(&data[0], n_bytes) == (long) n_bytes) {
+      data.erase(data.begin() + data.rfind(DELIM), data.end());
+      //std::cout << data << std::endl;
+      _tcpServer.pushToQueue(data, _connectionUUID);
+    } else {
+      //todo log
+    }
+
   }
 
-
-  std::istream is(&_recvBuf);
-  std::string data(n_bytes, '0');
-
-  if (is.readsome(&data[0], n_bytes) == (long) n_bytes) {
-    data.erase(data.begin() + data.rfind(DELIM), data.end());
-    std::cout << data << std::endl;
-    _tcpServer.pushToQueue(data, _connectionUUID);
-  } else {
-    //todo log
-  }
-
-  lock.unlock();
   read();
 }
 
@@ -73,19 +75,21 @@ void Client::write() {
 
 
 void Client::handleWrite(const boost::system::error_code& ec, size_t n_bytes) {
-  std::unique_lock<std::mutex> lock(_clientMutex);
-  if (ec) {
-    _tcpServer.removeConnection(_connectionUUID);
-    std::cout << ec.message() << std::endl; // todo log
-    return;
+  {
+    std::unique_lock<std::mutex> lock(_clientMutex);
+    if (ec) {
+      _tcpServer.removeConnection(_connectionUUID);
+      std::cout << ec.message() << std::endl; // todo log
+      return;
+    }
+
+    if (n_bytes != _sendBuf.size()) {
+      std::cout << "handleWrite error" << std::endl; // todo log
+    }
+
+    _isWriting = false;
   }
 
-  if (n_bytes != _sendBuf.size()) {
-    std::cout << "handleWrite error" << std::endl; // todo log
-  }
-
-  _isWriting = false;
-  lock.unlock();
   write();
 }
 
@@ -100,10 +104,12 @@ void Client::putDataToSend(const std::string &data) {
 }
 
 boost::asio::ip::tcp::socket &Client::sock() {
+  std::unique_lock<std::mutex> lock(_clientMutex);
   return _sock;
 }
 
 std::string Client::getConnectionUUID() {
+  std::unique_lock<std::mutex> lock(_clientMutex);
   return _connectionUUID;
 }
 
