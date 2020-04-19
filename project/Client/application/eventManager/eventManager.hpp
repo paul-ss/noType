@@ -78,11 +78,11 @@ struct Binding {
 };
 
 using Bindings = std::unordered_map<std::string, std::shared_ptr<Binding> >;
-using Callbacks = std::unordered_map<std::string, std::function<void(std::shared_ptr<EventDetails>)> >;
+using Callbacks = std::unordered_map<std::string, std::function<void(EventDetails&)> >;
 class EventManager {
     public:
         EventManager();
-        ~EventManager();
+        ~EventManager() = default;
 
         bool addBinding(std::shared_ptr<Binding> binding);
         bool removeBinding(std::string name);
@@ -92,9 +92,9 @@ class EventManager {
 
         // NOTE(vendroid): Теперь нет смысла делать этот метод шаблонным: просто передаем функциональный объект
         bool addCallback(const std::string& name,
-                        const std::function<void(std::shared_ptr<EventDetails>)>& func);
+                        const std::function<void(EventDetails&)>& func);
         void removeCallback(const std::string& name);
-        sf::Vector2i getMousePos(std::shared_ptr<sf::RenderWindow> wind = nullptr);
+        sf::Vector2i getMousePos(const sf::RenderWindow* wind = nullptr);
 
     private:
         void loadBindings();

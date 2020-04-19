@@ -18,3 +18,8 @@ class InvalidFile : public ClientException {
     public:
         InvalidFile() : ClientException("Error occured while reading from file") {}
 };
+
+class InvalidCmd : public ClientException {
+    public:
+        InvalidCmd() : ClientException("Invalid command in keys.cfg") {}
+};

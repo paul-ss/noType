@@ -14,12 +14,12 @@ class Window {
         void endDraw();
         void update();
         void close();
+        void toggleFullscreen();
         bool isDone();
-        bool isFullScreen();
         bool isFocused();
+        bool isFullScreen();
         sf::Vector2u getWindowSize();
-        EventManager* getEventManager();
-        void toggleFullscreen(EventDetails* details);
+        std::unique_ptr<EventManager> getEventManager();
 
     private:
         void setup(const std::string& title, const sf::Vector2u& size);

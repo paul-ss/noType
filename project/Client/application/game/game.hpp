@@ -2,13 +2,10 @@
 
 #include <window.hpp>
 
-class Game {
+class Game : public sf::NonCopyable {
     public:
         Game();
         ~Game() = default;
-
-        Game(Game& other) = delete;
-        void operator=(const Game&) = delete;
 
     public:
         void run();
