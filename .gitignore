@@ -33,7 +33,7 @@
 
 #IDE
 .idea
-cmake-build-debug/*
+project/Server/cmake-build-debug/*
 .vscode
 
 #Local
