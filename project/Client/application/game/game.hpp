@@ -4,11 +4,16 @@
 
 class Game {
     public:
+        Game();
+        ~Game() = default;
+
+        Game(Game& other) = delete;
+        void operator=(const Game&) = delete;
+
+    public:
         void run();
-        static Game& getInstance();
 
     private:
-        Game();
         void update();
         void render();
 

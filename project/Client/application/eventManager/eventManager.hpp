@@ -2,6 +2,10 @@
 
 #include <functional>
 #include <unordered_map>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <memory>
 
 #include <SFML/Graphics.hpp>
 
@@ -73,24 +77,24 @@ struct Binding {
     size_t _count;
 };
 
-using Bindings = std::unordered_map<std::string, Binding*>;
-using Callbacks = std::unordered_map<std::string, std::function<void(EventDetails*)> >;
+using Bindings = std::unordered_map<std::string, std::shared_ptr<Binding> >;
+using Callbacks = std::unordered_map<std::string, std::function<void(std::shared_ptr<EventDetails>)> >;
 class EventManager {
     public:
         EventManager();
         ~EventManager();
 
-        bool addBinding(Binding *binding);
+        bool addBinding(std::shared_ptr<Binding> binding);
         bool removeBinding(std::string name);
-        //void setFocus(const bool& focus);
+        void setFocus(const bool& focus);
         void handleEvent(sf::Event& event);
         void update();
 
         // NOTE(vendroid): Теперь нет смысла делать этот метод шаблонным: просто передаем функциональный объект
         bool addCallback(const std::string& name,
-                        const std::function<void(EventDetails*)>& func);
+                        const std::function<void(std::shared_ptr<EventDetails>)>& func);
         void removeCallback(const std::string& name);
-        sf::Vector2i getMousePos(sf::RenderWindow* wind = nullptr);
+        sf::Vector2i getMousePos(std::shared_ptr<sf::RenderWindow> wind = nullptr);
 
     private:
         void loadBindings();
