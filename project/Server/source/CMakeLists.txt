@@ -2,7 +2,8 @@ INCLUDE_DIRECTORIES(
         Controller
         QueueManager
         Room
-        TcpServer)
+        TcpServer
+        Command)
 
 
 FIND_PACKAGE(GTest REQUIRED)
@@ -36,13 +37,18 @@ ADD_EXECUTABLE(server
         Room/Room.cpp
         Room/Room.hpp
         QueueManager/QueueManager.cpp
-        QueueManager/QueueManager.hpp Command/Command.cpp Command/Command.hpp)
+        QueueManager/QueueManager.hpp
+        Command/Command.cpp
+        Command/Command.hpp Command/CommandFactory.cpp Command/CommandFactory.hpp)
 
 
-TARGET_LINK_LIBRARIES(server ${Boost_SYSTEM_LIBRARY})
+TARGET_LINK_LIBRARIES(server ${Boost_SYSTEM_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 #SET(USED_LIBS ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARY})
-#ADD_EXECUTABLE(test main.cpp)
-#TARGET_LINK_LIBRARIES(test ${USED_LIBS})
+
+ADD_EXECUTABLE(serverTests
+        mainTest.cpp)
+
+TARGET_LINK_LIBRARIES(serverTests ${GTEST_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 
 
