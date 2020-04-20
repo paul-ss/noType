@@ -1,5 +1,7 @@
 #pragma once
 
+#include "stateManager.hpp"
+
 #include <functional>
 #include <unordered_map>
 #include <iostream>
@@ -30,7 +32,7 @@ struct EventInfo {
         _code = 0;
     }
 
-    EventInfo(int event) {
+    explicit EventInfo(int event) {
         _code = event;
     }
 
@@ -40,7 +42,7 @@ struct EventInfo {
 };
 
 struct EventDetails {
-    EventDetails(const std::string& bindName) : _name(bindName) {
+    explicit EventDetails(const std::string& bindName) : _name(bindName) {
         Clear();
     }
 
@@ -62,7 +64,7 @@ struct EventDetails {
 
 using Events = std::vector<std::pair<EventType, EventInfo> >;
 struct Binding {
-    Binding(const std::string& name) : _name(name),
+    explicit Binding(const std::string& name) : _name(name),
                                         _details(name),
                                         _count(0) {
     }
@@ -78,7 +80,12 @@ struct Binding {
 };
 
 using Bindings = std::unordered_map<std::string, std::shared_ptr<Binding> >;
-using Callbacks = std::unordered_map<std::string, std::function<void(EventDetails&)> >;
+
+
+using CallbackContainer = std::unordered_map< std::string, std::function<void(EventDetails*)> >;
+enum class StateType;
+using Callbacks = std::unordered_map<StateType, CallbackContainer>;
+
 class EventManager {
     public:
         EventManager();
@@ -86,14 +93,17 @@ class EventManager {
 
         bool addBinding(std::shared_ptr<Binding> binding);
         bool removeBinding(std::string name);
+
         void setFocus(const bool& focus);
+
         void handleEvent(sf::Event& event);
         void update();
 
-        // NOTE(vendroid): Теперь нет смысла делать этот метод шаблонным: просто передаем функциональный объект
-        bool addCallback(const std::string& name,
+        bool addCallback(StateType state,
+                        const std::string& name,
                         const std::function<void(EventDetails&)>& func);
-        void removeCallback(const std::string& name);
+        bool removeCallback(StateType state, const std::string& name);
+
         sf::Vector2i getMousePos(const sf::RenderWindow* wind = nullptr);
 
     private:
@@ -102,5 +112,6 @@ class EventManager {
     private:
         Bindings _bindings;
         Callbacks _callbacks;
+        StateType _currentState;
         bool _hasFocus;
 };

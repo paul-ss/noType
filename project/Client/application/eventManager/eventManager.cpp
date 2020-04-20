@@ -9,17 +9,29 @@ void EventManager::setFocus(const bool& focus) {
     _hasFocus = focus;
 }
 
-bool EventManager::addCallback(const std::string& name,
-                        const std::function<void(EventDetails&)>& func) {
-    return _callbacks.emplace(name, func).second;
+bool addCallback(StateType state,
+        const std::string& name,
+        const std::function<void(EventDetails&)>& func) {
+
+    auto itr = _callbacks.emplace(state, CallbackContainer()).first;
+    return itr->second.emplace(name, func).second;
+}
+
+bool removeCallback(StateType state, const std::string& name) {
+    auto itr = _callbacks.find(state);
+    if (itr == _callbacks.end()) {
+        return false;
+    }
+    auto itr2 = itr->second.find(name);
+    if (itr2 == itr->second.end()) {
+        return false;
+    }
+    itr->second.erase(name);
+    return true;
 }
 
 sf::Vector2i EventManager::getMousePos(const sf::RenderWindow* wind) {
     return (wind ? sf::Mouse::getPosition(*wind) : sf::Mouse::getPosition());
-}
-
-void EventManager::removeCallback(const std::string& name) {
-    _callbacks.erase(name);
 }
 
 bool EventManager::addBinding(std::shared_ptr<Binding> binding) {
