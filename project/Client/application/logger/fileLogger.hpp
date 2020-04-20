@@ -4,17 +4,23 @@
 
 #include <SFML/System.hpp>
 
-class FileLogger : public sf::NonCopyable {
-    friend FileLogger& operator<<(FileLogger &logger, const logType l_type);
-    friend FileLogger& operator<<(FileLogger& logger, const char* text);
+enum class logType {ERROR, WARNING, INFO};
 
+class FileLogger : public sf::NonCopyable {
     public:
-        enum class logType {LOG_ERROR, LOG_WARNING, LOG_INFO};
-        explicit FileLogger (const char *fname = "noType_Log.txt");
-        ~FileLogger ();
+        static FileLogger* getInstance();
+        void writeToLog(const logType type, const char* msg);
+
+    protected:
+        explicit FileLogger(const char* fName = "noType_Log.txt");
+        ~FileLogger();
 
     private:
-        std::ofstream myFile;
-        unsigned int numWarnings;
-        unsigned int numErrors;
+        static FileLogger* _pInstance;
+        static std::mutex _mutex;
+
+    private:
+        std::ofstream _myFile;
+        unsigned int _numWarnings;
+        unsigned int _numErrors;
 };

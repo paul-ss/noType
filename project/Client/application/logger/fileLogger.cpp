@@ -1,47 +1,53 @@
 #include "fileLogger.hpp"
 #include "exceptions.hpp"
 
-FileLogger::FileLogger (const char *fname = "noType_Log.txt") : 
-        numWarnings (0U),
-        numErrors (0U) {
+FileLogger::FileLogger(const char *fname = "noType_Log.txt") :
+        _numWarnings(0U),
+        _numErrors(0U) {
 
-    myFile.open(fname);
-    if (!myFile.is_open()) {
+    _myFile.open(fname);
+    if (!_myFile.is_open()) {
         throw InvalidFile();
     }
 }
 
 FileLogger::~FileLogger () {
-    if (myFile.is_open()) {
-        myFile << std::endl << std::endl;
-        myFile << numWarnings << " warnings" << std::endl;
-        myFile << numErrors << " errors" << std::endl;
-        myFile.close();
-    } else {
-        throw InvalidFile();
+    if (_myFile.is_open()) {
+        _myFile << std::endl << std::endl;
+        _myFile << _numWarnings << " warnings" << std::endl;
+        _myFile << _numErrors << " errors" << std::endl;
+        _myFile.close();
     }
 }
 
-FileLogger& operator<<(FileLogger &logger, const logType type) {
+void FileLogger::writeToLog(const logType type, const char* msg) {
     switch (type) {
-        case FileLogger::logType::LOG_ERROR:
-            logger.myFile << "[ERROR]: ";
-            ++logger.numErrors;
+        case logType::ERROR: {
+            _myFile << "[ERROR]: " << msg << std::endl;
+            ++_numErrors;
             break;
+        }
 
-        case FileLogger::logType::LOG_WARNING:
-            logger.myFile << "[WARNING]: ";
-            ++logger.numWarnings;
+        case logType::WARNING: {
+            _myFile << "[WARNING]: " << msg << std::endl;
+            ++_numWarnings;
             break;
+        }
 
-        default:
-            logger.myFile << "[INFO]: ";
+        default: {
+            _myFile << "[INFO]: " << msg << std::endl;
             break;
+        }
     }
-    return logger;
 }
 
-FileLogger& operator<<(FileLogger& logger, const char* text) {
-    logger.myFile << text << std::endl;
-    return logger;
+FileLogger* FileLogger::getInstance() {
+    if (_pInstance == nullptr) {
+        std::lock_guard<std::mutex> lock(_mutex);
+
+        if (_pInstance == nullptr) {
+            _pInstance = new FileLogger();
+        }
+    }
+    return _pInstance;
 }
