@@ -8,12 +8,15 @@
 #define DELIM "jopa"
 
 
-Client::Client(boost::asio::io_service &io, TcpServer &tcpServer, const std::string &connectionUUID) :
+Client::Client(boost::asio::io_service &io,
+                const std::weak_ptr<ConnectedClients> &clients,
+                const std::shared_ptr<QueueManager> &queueManager,
+                const std::string &connectionUUID) :
     _sock(io),
     _isWriting(false),
     _connectionUUID(connectionUUID),
-    _tcpServer(tcpServer) {
-}
+    _clients(clients),
+    _queueManager(queueManager) {}
 
 
 void Client::read() {
@@ -25,11 +28,14 @@ void Client::read() {
 void Client::handleRead(const boost::system::error_code& ec, size_t n_bytes) {
   {
     std::unique_lock<std::mutex> lock(_clientMutex);
+    // deadlock??
     if (ec) {
       if (ec == boost::asio::error::eof) {
         std::cout << "disconnected" << std::endl; //todo log
       }
-      _tcpServer.removeConnection(_connectionUUID);
+
+      removeThisConnection();
+
       std::cout << ec.message() << std::endl; // todo log
       return;
     }
@@ -41,7 +47,7 @@ void Client::handleRead(const boost::system::error_code& ec, size_t n_bytes) {
     if (is.readsome(&data[0], n_bytes) == (long) n_bytes) {
       data.erase(data.begin() + data.rfind(DELIM), data.end());
       //std::cout << data << std::endl;
-      _tcpServer.pushToQueue(data, _connectionUUID);
+      _queueManager->serverPush(data, _connectionUUID);
     } else {
       //todo log
     }
@@ -78,7 +84,7 @@ void Client::handleWrite(const boost::system::error_code& ec, size_t n_bytes) {
   {
     std::unique_lock<std::mutex> lock(_clientMutex);
     if (ec) {
-      _tcpServer.removeConnection(_connectionUUID);
+      removeThisConnection();
       std::cout << ec.message() << std::endl; // todo log
       return;
     }
@@ -103,16 +109,31 @@ void Client::putDataToSend(const std::string &data) {
   write();
 }
 
+
 boost::asio::ip::tcp::socket &Client::sock() {
   std::unique_lock<std::mutex> lock(_clientMutex);
   return _sock;
 }
+
 
 std::string Client::getConnectionUUID() {
   std::unique_lock<std::mutex> lock(_clientMutex);
   return _connectionUUID;
 }
 
+
 void Client::putRecvDataToQueue(const std::string &data) {
   data.size();
+}
+
+
+void Client::removeThisConnection() {
+  if (auto clientsShared = _clients.lock()) {
+    if (!clientsShared->erase(_connectionUUID)) {
+      std::cout << "RemoveThisConnection error: can't erase client" << std::endl;
+    }
+
+  } else {
+    std::cout << "RemoveThisConnection error: can't make shared" << std::endl; //todo log
+  }
 }

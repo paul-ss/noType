@@ -6,47 +6,34 @@
 
 
 void QueueManager::serverPush(const std::string &data, const std::string &connectionUUID) {
-  //std::unique_lock<std::mutex> lock(_queueToBasicControllerMutex);
-  //std::unique_lock<std::mutex> lock1(_queneToGameControllerMutex);
+  // command.factory ...
+  // choose queue to push
 
   // todo remove
   auto command = std::make_shared<Command>(data, connectionUUID);
-  std::unique_lock<std::mutex> lock(_queueToServerMutex);
   _queueToServer.push(command);
-  _queueToServerCheck.notify_one();
 }
 
 
 void QueueManager::controllerPush(const std::shared_ptr<Command> &command) {
-  std::unique_lock<std::mutex> lock(_queueToServerMutex);
   _queueToServer.push(command);
-  _queueToServerCheck.notify_one();
 }
 
 
 bool QueueManager::serverPop(std::shared_ptr<Command> &command) {
-  std::unique_lock<std::mutex> lock(_queueToServerMutex);
-  if (_queueToServer.empty()) {
-    _queueToServerCheck.wait(lock, [&]() { return !_queueToServer.empty(); });
-  }
-
-  if (!_queueToServer.empty()) {
-    command = _queueToServer.front();
-    _queueToServer.pop();
-    return true;
-  } else {
-    return false;
-  }
+  return _queueToServer.pop(command);
 }
 
 
 bool QueueManager::basicControllerPop(std::shared_ptr<Command> &command) {
-  std::unique_lock<std::mutex> lock(_queueToBasicControllerMutex);
-  return command->data.empty();
+  return _queueToBasicController.pop(command);
 }
 
 
 bool QueueManager::gameControllerPop(std::shared_ptr<Command> &command) {
-  std::unique_lock<std::mutex> lock(_queueToGameControllerMutex);
-  return command->data.empty();
+  return _queueToGameController.pop(command);
+}
+
+void QueueManager::serverNotify() {
+  _queueToServer.notify();
 }

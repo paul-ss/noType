@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Client.hpp"
+#include "ConnectedClients.hpp"
 #include "QueueManager.hpp"
 
 #include <boost/asio.hpp>
@@ -31,7 +32,7 @@ public:
   void startServer();
   void stopServer();
   void pushToQueue(const std::string &data, const std::string &connectionUUID);
-  void removeConnection(const std::string &connectionUUID);
+
 
 private:
   void startAccept();
@@ -45,7 +46,7 @@ private:
 
   boost::asio::io_service _service;
   boost::asio::ip::tcp::acceptor _acceptor;
-  std::unordered_map<std::string, std::shared_ptr<Client>> _clients;
+  std::shared_ptr<ConnectedClients> _clients;
   std::vector<std::thread> _threads;
   std::shared_ptr<QueueManager> _queueManager;
   boost::asio::ip::tcp::endpoint _ep;

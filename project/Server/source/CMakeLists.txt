@@ -1,7 +1,9 @@
 INCLUDE_DIRECTORIES(
         Controller
         QueueManager
+        Queue
         Room
+        RoomStatus
         TcpServer
         Command)
 
@@ -39,7 +41,15 @@ ADD_EXECUTABLE(server
         QueueManager/QueueManager.cpp
         QueueManager/QueueManager.hpp
         Command/Command.cpp
-        Command/Command.hpp Command/CommandFactory.cpp Command/CommandFactory.hpp)
+        Command/Command.hpp
+        Command/CommandFactory.cpp
+        Command/CommandFactory.hpp
+        QueueManager/Queue.cpp
+        QueueManager/Queue.hpp
+        Room/RoomManager.cpp
+        Room/RoomManager.hpp
+        Room/Player.cpp
+        Room/Player.hpp RoomStatus/IRoomStatus.cpp RoomStatus/IRoomStatus.hpp TcpServer/ConnectedClients.cpp TcpServer/ConnectedClients.hpp)
 
 
 TARGET_LINK_LIBRARIES(server ${Boost_SYSTEM_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})

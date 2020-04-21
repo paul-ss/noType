@@ -3,18 +3,25 @@
 //
 
 #pragma once
+
+#include "ConnectedClients.hpp"
+#include "QueueManager.hpp"
+
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <queue>
 #include <mutex>
 #include <iostream>
 
-class TcpServer;
+
 
 class Client : public std::enable_shared_from_this<Client> {
 public:
   // all of them must catch mutex?
-  Client(boost::asio::io_service &io, TcpServer &tcpServer, const std::string &connectionUUID);
+  Client(boost::asio::io_service &io,
+         const std::weak_ptr<ConnectedClients> &clients,
+         const std::shared_ptr<QueueManager> &queueManager,
+         const std::string &connectionUUID);
   void read();
   void handleRead(const boost::system::error_code& ec, size_t n_bytes);
   void write();
@@ -26,6 +33,7 @@ public:
 
 private:
   void putRecvDataToQueue(const std::string &data); // except this?
+  void removeThisConnection();
 
   boost::asio::ip::tcp::socket _sock;
   bool _isWriting;
@@ -33,7 +41,8 @@ private:
   boost::asio::streambuf _recvBuf;
   std::string _sendBuf;
   std::queue<std::string> _dataToSendQueue;
-  TcpServer &_tcpServer;
+  std::weak_ptr<ConnectedClients> _clients;
+  std::shared_ptr<QueueManager> _queueManager;
   std::mutex _clientMutex;
 
 };

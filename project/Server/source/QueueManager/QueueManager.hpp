@@ -4,14 +4,12 @@
 
 #pragma once
 
-#include "Command.hpp"
+
 #include "CommandFactory.hpp"
+#include "Queue.hpp"
 
 #include <string>
-#include <queue>
-#include <mutex>
-#include <memory>
-#include <condition_variable>
+
 
 
 class QueueManager {
@@ -21,16 +19,12 @@ public:
   bool serverPop(std::shared_ptr<Command> &command);
   bool basicControllerPop(std::shared_ptr<Command> &command);
   bool gameControllerPop(std::shared_ptr<Command> &command);
+  void serverNotify();
 private:
-  std::queue <std::shared_ptr<Command>> _queueToServer;
-  std::queue <std::shared_ptr<Command>> _queueToBasicController;
-  std::queue <std::shared_ptr<Command>> _queueToGameController;
+  Queue _queueToServer;
+  Queue _queueToBasicController;
+  Queue _queueToGameController;
 
-  std::mutex _queueToServerMutex;
-  std::mutex _queueToBasicControllerMutex;
-  std::mutex _queueToGameControllerMutex;
-
-  std::condition_variable _queueToServerCheck;
   std::shared_ptr<CommandFactory> _commandFactory;
 };
 
