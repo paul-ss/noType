@@ -1,4 +1,4 @@
-#include <stateManager.hpp>
+#include "stateManager.hpp"
 
 template<class T>
 void registerState(const StateType& type) {
@@ -7,17 +7,17 @@ void registerState(const StateType& type) {
     };
 }
 
-StateManager::StateManager(SharedContext* shared) : _shared(shared) {
-    registerState<State_Intro>(StateType::Intro);
-    registerState<State_MainMenu>(StateType::MainMenu);
-    registerState<State_Game>(StateType::Game);
-    registerState<State_Paused>(StateType::Paused);
+StateManager::StateManager(SharedContext& shared) : _shared(shared) {
+    registerState<IntroState>(StateType::Intro);
+    //registerState<State_MainMenu>(StateType::MainMenu);
+    //registerState<State_Game>(StateType::Game);
+    //registerState<State_Paused>(StateType::Paused);
 }
 
 StateManager::~StateManager() {
     for (auto &itr : _states){
         itr.second->onDestroy();
-        delete itr.second;
+        itr.second.reset();
     }
 }
 
@@ -66,8 +66,7 @@ void StateManager::update(const sf::Time& time) {
     }
 }
 
-
-SharedContext* StateManager::getContext() {
+SharedContext& StateManager::getContext() {
     return _shared;
 }
 
@@ -96,12 +95,12 @@ void StateManager::processRequests() {
 }
 
 void StateManager::switchTo(const StateType& type) {
-    _shared->_eventManager->setCurrentState(type);
+    _shared._eventManager->setCurrentState(type);
     for (auto itr = _states.begin(); itr != _states.end(); ++itr) {
         if (itr->first == type) {
             _states.back().second->deactivate();
             StateType tmp_type = itr->first;
-            BaseState* tmp_state = itr->second;
+            auto tmp_state = itr->second;
             _states.erase(itr);
             _states.emplace_back(tmp_type, tmp_state);
             tmp_state->activate();
@@ -121,7 +120,7 @@ void StateManager::createState(const StateType& type) {
         return;
     }
 
-    BaseState* state = newState->second();
+    auto state = newState->second();
     _states.emplace_back(type, state);
     state->onCreate();
 }
@@ -130,7 +129,7 @@ void StateManager::removeState(const StateType& l_type) {
     for (auto itr = _states.begin(); itr != _states.end(); ++itr) {
         if (itr->first == l_type) {
             itr->second->onDestroy();
-            delete itr->second;
+            itr->second.reset();
             _states.erase(itr);
             return;
         }

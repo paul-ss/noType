@@ -39,4 +39,4 @@ project/Server/cmake-build-debug/*
 #Local
 .DS_Store
 build
-
+notype

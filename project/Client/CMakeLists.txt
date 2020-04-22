@@ -2,14 +2,18 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.13.4)
 PROJECT(Client)
 
 SET(CMAKE_CXX_STANDARD 17)
-#SET(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -Wpedantic")
+SET(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic")
 
 SET(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/application")
 
 SET(ALL_HEADERS
     ${SOURCE_DIR}/eventManager
     ${SOURCE_DIR}/window
+    ${SOURCE_DIR}/sharedContext
     ${SOURCE_DIR}/game
+    ${SOURCE_DIR}/states
+    ${SOURCE_DIR}/stateManager
+    ${SOURCE_DIR}/logger
     ${SOURCE_DIR}/exceptions
 )
 
@@ -17,6 +21,8 @@ SET(ALL_SOURCES
     ${SOURCE_DIR}/eventManager/eventManager.cpp
     ${SOURCE_DIR}/window/window.cpp
     ${SOURCE_DIR}/game/game.cpp
+    ${SOURCE_DIR}/states/introState.cpp
+    ${SOURCE_DIR}/stateManager/stateManager.cpp
 )
 
 SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})

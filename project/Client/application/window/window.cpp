@@ -27,10 +27,10 @@ void Window::setup(const std::string& title, const sf::Vector2u& size) {
     _eventManager.setFocus(true);
     // NOTE(vendroid): Нобходимо чтобы сигнатура функций совпадала, поэтому объявляем тут переменную пустышку
     auto lambdaClose = [this](EventDetails& details) { this->close(); };
-    _eventManager.addCallback("Window_close", lambdaClose);
+    _eventManager.addCallback(StateType(0), "Window_close", lambdaClose);
 
     auto lambdaToggleFullscreen = [this](EventDetails& details) { this->toggleFullscreen(); };
-    _eventManager.addCallback("Fullscreen_toggle", lambdaToggleFullscreen);
+    _eventManager.addCallback(StateType(0), "Fullscreen_toggle", lambdaToggleFullscreen);
     create();
 }
 
@@ -60,7 +60,7 @@ void Window::update() {
 
 void Window::toggleFullscreen() {
     _isFullScreen = !_isFullScreen;
-    destroy();
+    close();
     create();
 }
 
@@ -80,8 +80,16 @@ bool Window::isFullScreen() {
     return _isFullScreen;
 }
 
+auto Window::getRenderWindow() {
+    return std::make_shared<sf::Window>(_window);
+}
+
 sf::Vector2u Window::getWindowSize() {
     return _windowSize;
+}
+
+auto Window::getEventManager() {
+    return std::make_shared<EventManager>(_eventManager);
 }
 
 void Window::draw(sf::Drawable& drawable) {

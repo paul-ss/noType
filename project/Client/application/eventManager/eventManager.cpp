@@ -9,19 +9,24 @@ void EventManager::setFocus(const bool& focus) {
     _hasFocus = focus;
 }
 
-bool addCallback(StateType state,
+void EventManager::setCurrentState(StateType state) {
+    _currentState = state;
+}
+
+bool EventManager::addCallback(StateType state,
         const std::string& name,
         const std::function<void(EventDetails&)>& func) {
 
     auto itr = _callbacks.emplace(state, CallbackContainer()).first;
-    return itr->second.emplace(name, func).second;
+    return _callbacks.emplace(state, func).second;
 }
 
-bool removeCallback(StateType state, const std::string& name) {
+bool EventManager::removeCallback(StateType state, const std::string& name) {
     auto itr = _callbacks.find(state);
     if (itr == _callbacks.end()) {
         return false;
     }
+
     auto itr2 = itr->second.find(name);
     if (itr2 == itr->second.end()) {
         return false;
@@ -128,11 +133,22 @@ void EventManager::update() {
         }
 
         if (bind->_events.size() == bind->_count) {
-            auto callItr = _callbacks.find(bind->_name);
-            if(callItr != _callbacks.end()) {
-                callItr->second(bind->_details);
+            auto stateCallbacks = _callbacks.find(_currentState);
+            auto otherCallbacks = _callbacks.find(StateType(0));
+            if (stateCallbacks != _callbacks.end()) {
+                auto callItr = stateCallbacks->second.find(bind->_name);
+                if (callItr != stateCallbacks->second.end()) {
+                    callItr->second(bind->_details);
+                }
+            }
+            if (otherCallbacks != _callbacks.end()) {
+                auto callItr = otherCallbacks->second.find(bind->_name);
+                if (callItr != otherCallbacks->second.end()) {
+                    callItr->second(bind->_details);
+                }
             }
         }
+
         bind->_count = 0;
         bind->_details.Clear();
     }

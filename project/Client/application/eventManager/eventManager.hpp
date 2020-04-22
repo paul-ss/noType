@@ -1,6 +1,7 @@
 #pragma once
 
-#include "stateManager.hpp"
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
 
 #include <functional>
 #include <unordered_map>
@@ -8,8 +9,6 @@
 #include <fstream>
 #include <sstream>
 #include <memory>
-
-#include <SFML/Graphics.hpp>
 
 enum class EventType {
 KeyDown = sf::Event::KeyPressed,
@@ -82,7 +81,8 @@ struct Binding {
 using Bindings = std::unordered_map<std::string, std::shared_ptr<Binding> >;
 
 
-using CallbackContainer = std::unordered_map< std::string, std::function<void(EventDetails*)> >;
+using CallbackContainer = std::unordered_map<std::string,
+        std::function<void(EventDetails&)> >;
 enum class StateType;
 using Callbacks = std::unordered_map<StateType, CallbackContainer>;
 
@@ -94,6 +94,7 @@ class EventManager {
         bool addBinding(std::shared_ptr<Binding> binding);
         bool removeBinding(std::string name);
 
+        void setCurrentState(StateType state);
         void setFocus(const bool& focus);
 
         void handleEvent(sf::Event& event);

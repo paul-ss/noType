@@ -1,8 +1,10 @@
+#pragma once
+
 #include "window.hpp"
 #include "eventManager.hpp"
 
 struct SharedContext {
-    SharedContext(): _wind(nullptr), _eventManager(nullptr) {}
-    Window* _wind;
-    EventManager* _eventManager;
+    SharedContext(): _window(nullptr), _eventManager(nullptr) {}
+    std::shared_ptr<Window> _window;
+    std::shared_ptr<EventManager> _eventManager;
 };
