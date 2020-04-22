@@ -42,11 +42,11 @@ void FileLogger::writeToLog(const logType type, const char* msg) {
 }
 
 FileLogger* FileLogger::getInstance() {
-    if (!_pInstance) {
+    if (_pInstance == nullptr) {
         std::lock_guard<std::mutex> lock(_mutex);
 
-        if (!_pInstance) {
-            FileLogger _pInstance;
+        if (_pInstance == nullptr) {
+            FileLogger* _pInstance = new FileLogger();
         }
     }
     return _pInstance;

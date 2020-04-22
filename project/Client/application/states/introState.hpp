@@ -9,14 +9,14 @@ class IntroState : public BaseState {
         IntroState(std::shared_ptr<StateManager> stateManager);
         ~IntroState();
 
-        void onCreate();
-        void onDestroy();
+        void onCreate() override;
+        void onDestroy() override;
 
-        void activate();
-        void deactivate();
+        void activate() override;
+        void deactivate() override;
 
-        void update(const sf::Time& time);
-        void draw();
+        void update(const sf::Time& time) override;
+        void draw() override;
 
         void proceed(std::shared_ptr<EventDetails> details);
 

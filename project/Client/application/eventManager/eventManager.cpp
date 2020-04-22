@@ -18,7 +18,7 @@ bool EventManager::addCallback(StateType state,
         const std::function<void(EventDetails&)>& func) {
 
     auto itr = _callbacks.emplace(state, CallbackContainer()).first;
-    return _callbacks.emplace(state, func).second;
+    return itr->second.emplace(name, func).second;
 }
 
 bool EventManager::removeCallback(StateType state, const std::string& name) {

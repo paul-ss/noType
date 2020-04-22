@@ -3,7 +3,7 @@
 template<typename Derived, typename T>
 class ResourceManager {
     public:
-        ResourceManager(const std::string& pathsFile) {
+        expclicit ResourceManager(const std::string& pathsFile) {
             LoadPaths(pathsFile);
         }
         virtual ~ResourceManager() {
