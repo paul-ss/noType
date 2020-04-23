@@ -18,9 +18,9 @@ class Window {
         bool isDone();
         bool isFocused();
         bool isFullScreen();
-        auto getRenderWindow();
         sf::Vector2u getWindowSize();
-        auto getEventManager();
+        EventManager* getEventManager();
+        sf::RenderWindow* getRenderWindow();
 
     private:
         void setup(const std::string& title, const sf::Vector2u& size);

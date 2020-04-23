@@ -80,7 +80,6 @@ struct Binding {
 
 using Bindings = std::unordered_map<std::string, std::shared_ptr<Binding> >;
 
-
 using CallbackContainer = std::unordered_map<std::string,
         std::function<void(EventDetails&)> >;
 enum class StateType;

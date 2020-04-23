@@ -5,6 +5,6 @@
 
 struct SharedContext {
     SharedContext(): _window(nullptr), _eventManager(nullptr) {}
-    std::shared_ptr<Window> _window;
-    std::shared_ptr<EventManager> _eventManager;
+    Window* _window;
+    EventManager* _eventManager;
 };

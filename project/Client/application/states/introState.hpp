@@ -6,7 +6,7 @@
 
 class IntroState : public BaseState {
     public:
-        IntroState(std::shared_ptr<StateManager> stateManager);
+        IntroState(StateManager* stateManager);
         ~IntroState();
 
         void onCreate() override;
@@ -18,7 +18,7 @@ class IntroState : public BaseState {
         void update(const sf::Time& time) override;
         void draw() override;
 
-        void proceed(std::shared_ptr<EventDetails> details);
+        void proceed(EventDetails* details);
 
     private:
         sf::Texture _introTexture;

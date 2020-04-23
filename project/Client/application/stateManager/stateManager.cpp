@@ -1,23 +1,16 @@
 #include "stateManager.hpp"
 
-template<class T>
-void registerState(const StateType& type) {
-    m_stateFactory[type] = [this]()->BaseState* {
-        return new T(this);
-    };
-}
-
-StateManager::StateManager(SharedContext& shared) : _shared(shared) {
+StateManager::StateManager(SharedContext* shared) : _shared(shared) {
     registerState<IntroState>(StateType::Intro);
     //registerState<State_MainMenu>(StateType::MainMenu);
     //registerState<State_Game>(StateType::Game);
     //registerState<State_Paused>(StateType::Paused);
 }
 
-StateManager::~StateManager() {
+StateManager::~StateManager(){
     for (auto &itr : _states){
         itr.second->onDestroy();
-        itr.second.reset();
+        delete itr.second;
     }
 }
 
@@ -66,7 +59,7 @@ void StateManager::update(const sf::Time& time) {
     }
 }
 
-SharedContext& StateManager::getContext() {
+SharedContext* StateManager::getContext() {
     return _shared;
 }
 
@@ -95,7 +88,7 @@ void StateManager::processRequests() {
 }
 
 void StateManager::switchTo(const StateType& type) {
-    _shared._eventManager->setCurrentState(type);
+    _shared->_eventManager->setCurrentState(type);
     for (auto itr = _states.begin(); itr != _states.end(); ++itr) {
         if (itr->first == type) {
             _states.back().second->deactivate();
@@ -125,11 +118,13 @@ void StateManager::createState(const StateType& type) {
     state->onCreate();
 }
 
-void StateManager::removeState(const StateType& l_type) {
-    for (auto itr = _states.begin(); itr != _states.end(); ++itr) {
-        if (itr->first == l_type) {
+void StateManager::removeState(const StateType& l_type){
+    for (auto itr = _states.begin();
+        itr != _states.end(); ++itr)
+    {
+        if (itr->first == l_type){
             itr->second->onDestroy();
-            itr->second.reset();
+            delete itr->second;
             _states.erase(itr);
             return;
         }

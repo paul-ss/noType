@@ -1,6 +1,5 @@
 #pragma once
 
-#include "baseState.hpp"
 #include "sharedContext.hpp"
 #include "introState.hpp"
 
@@ -12,16 +11,16 @@ Intro = 1, MainMenu, Game, Paused, GameOver, Credits
 };
 
 using StateContainer = 
-        std::vector< std::pair<StateType, std::shared_ptr<BaseState> > >;
+        std::vector< std::pair<StateType, BaseState*>>;
 
 using TypeContainer = std::vector<StateType>;
 
 using StateFactory = std::unordered_map< StateType,
-        std::function<std::shared_ptr<BaseState>(void)> >;
+        std::function<BaseState*(void)>>;
 
 class StateManager{
     public:
-        StateManager(SharedContext& shared);
+        StateManager(SharedContext* shared);
         ~StateManager();
 
         void update(const sf::Time& time);
@@ -29,7 +28,7 @@ class StateManager{
 
         void processRequests();
 
-        SharedContext& getContext();
+        SharedContext* getContext();
         bool hasState(const StateType& type);
 
         void switchTo(const StateType& type);
@@ -38,11 +37,16 @@ class StateManager{
     private:
         void createState(const StateType& type);
         void removeState(const StateType& l_type);
+
         template<class T>
-        void registerState(const StateType& type);
+        void registerState(const StateType& type) {
+            _stateFactory[type] = [this]()->BaseState* {
+                return new T(this);
+            };
+        }
 
     private:
-        SharedContext& _shared;
+        SharedContext* _shared;
         StateContainer _states;
         TypeContainer _toRemove;
         StateFactory _stateFactory;

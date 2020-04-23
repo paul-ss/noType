@@ -64,13 +64,11 @@ void EventManager::handleEvent(sf::Event& event) {
                 continue;
             }
             if (sfmlEvent == EventType::KeyDown || sfmlEvent == EventType::KeyUp) {
-                std::cout << bind->_details._keyCode <<"any\n";
                 if (e_itr.second._code == event.key.code) {
                     if (bind->_details._keyCode != -1) {
                         bind->_details._keyCode = e_itr.second._code;
                     }
                     ++(bind->_count);
-                        std::cout << bind->_details._keyCode <<"f5\n";
                     break;
                 }
             } else if (sfmlEvent == EventType::MButtonDown || sfmlEvent == EventType::MButtonUp) {
@@ -112,7 +110,6 @@ void EventManager::update() {
                             bind->_details._keyCode = e_itr.second._code;
                         }
                         ++(bind->_count);
-                        std::cout << bind->_details._keyCode <<"\n";
                     }
                     break;
                 }

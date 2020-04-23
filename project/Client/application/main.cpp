@@ -2,7 +2,7 @@
 #include "game.hpp"
 
 int main() {
-    FileLogger::getInstance();
+    //FileLogger::getInstance();
     Game game;
     game.run();
     return 0;

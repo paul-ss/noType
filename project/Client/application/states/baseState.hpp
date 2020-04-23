@@ -10,7 +10,7 @@ class BaseState {
     friend class StateManager;
 
     public:
-        BaseState(std::shared_ptr<StateManager> stateManager) :
+        BaseState(StateManager* stateManager) :
                 _stateMgr(stateManager),
                 _transparent(false),
                 _transcendent(false) {}
@@ -35,15 +35,17 @@ class BaseState {
         void setTranscendent(const bool& transcendence) {
         _transcendent = transcendence;
         }
+
         bool isTranscendent() const {
             return _transcendent;
         }
-        std::shared_ptr<StateManager> getStateManager() {
+
+        StateManager* getStateManager() {
             return _stateMgr;
         }
 
     protected:
-        std::shared_ptr<StateManager> _stateMgr;
+        StateManager* _stateMgr;
         bool _transparent;
         bool _transcendent;
 };

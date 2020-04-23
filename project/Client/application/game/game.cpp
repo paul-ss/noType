@@ -1,12 +1,12 @@
 #include "game.hpp"
 
 Game::Game() : _window("noType", sf::Vector2u(800,600)),
-        _stateManager(_context) {
+        _stateManager(&_context) {
 
     _clock.restart();
     srand(time(nullptr));
 
-    _context._window = std::make_shared<Window>(_window);
+    _context._window = &_window;
     _context._eventManager = _window.getEventManager();
 
     _stateManager.switchTo(StateType::Intro);
@@ -41,6 +41,6 @@ void Game::run() {
         update();
         render();
         lateUpdate();
-        sf::sleep(sf::seconds(0.2));
+        //sf::sleep(sf::seconds(0.2));
     }
 }

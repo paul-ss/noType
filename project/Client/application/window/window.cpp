@@ -80,16 +80,16 @@ bool Window::isFullScreen() {
     return _isFullScreen;
 }
 
-auto Window::getRenderWindow() {
-    return std::make_shared<sf::Window>(_window);
+sf::RenderWindow* Window::getRenderWindow() {
+    return &_window;
 }
 
 sf::Vector2u Window::getWindowSize() {
     return _windowSize;
 }
 
-auto Window::getEventManager() {
-    return std::make_shared<EventManager>(_eventManager);
+EventManager* Window::getEventManager() {
+    return &_eventManager;
 }
 
 void Window::draw(sf::Drawable& drawable) {
