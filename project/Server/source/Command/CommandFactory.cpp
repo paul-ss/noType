@@ -3,3 +3,6 @@
 //
 
 #include "CommandFactory.hpp"
+
+std::shared_ptr<ClientCommand> CommandFactory::createCommand(const std::string &data) {
+}
