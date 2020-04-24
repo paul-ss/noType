@@ -5,7 +5,9 @@ INCLUDE_DIRECTORIES(
         Room
         RoomStatus
         TcpServer
-        Command)
+        Command
+        Utils
+        Exceptions)
 
 
 FIND_PACKAGE(GTest REQUIRED)
@@ -21,8 +23,6 @@ SET(Boost_USE_MULTITHREAD ON)
 FIND_PACKAGE(Boost 1.42.0 REQUIRED COMPONENTS system thread regex)
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
-
-
 
 
 
@@ -49,7 +49,11 @@ ADD_EXECUTABLE(server
         Room/RoomManager.cpp
         Room/RoomManager.hpp
         Room/Player.cpp
-        Room/Player.hpp RoomStatus/IRoomStatus.cpp RoomStatus/IRoomStatus.hpp TcpServer/ConnectedClients.cpp TcpServer/ConnectedClients.hpp)
+        Room/Player.hpp
+        RoomStatus/IRoomStatus.hpp
+        TcpServer/ConnectedClients.cpp
+        TcpServer/ConnectedClients.hpp
+        Utils/Expected.hpp Utils/Error.hpp Exceptions/Exceptions.hpp RoomStatus/RoomWait.cpp RoomStatus/RoomWait.hpp)
 
 
 TARGET_LINK_LIBRARIES(server ${Boost_SYSTEM_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
