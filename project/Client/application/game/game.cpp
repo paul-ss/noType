@@ -1,13 +1,15 @@
 #include "game.hpp"
 
 Game::Game() : _window("noType", sf::Vector2u(800,600)),
-        _stateManager(&_context) {
+        _stateManager(&_context), _soundManager(&_audioManager) {
 
     _clock.restart();
     srand(time(nullptr));
 
     _context._window = &_window;
     _context._eventManager = _window.getEventManager();
+    _context._audioManager = &_audioManager;
+    _context._soundManager = &_soundManager;
 
     _stateManager.switchTo(StateType::Intro);
 }

@@ -8,25 +8,25 @@ class MainMenuState : public BaseState{
         MainMenuState(StateManager* stateManager);
         ~MainMenuState();
 
-        void onCreate();
-        void onDestroy();
+        void onCreate() override;
+        void onDestroy() override;
 
-        void activate();
-        void deactivate();
+        void activate() override;
+        void deactivate() override;
 
-        void update(const sf::Time& time);
-        void draw();
+        void update(const sf::Time& time) override;
+        void draw() override;
 
         void mouseClick(EventDetails* details);
 
     private:
-        sf::Font font;
-        sf::Text text;
+        sf::Font _font;
+        sf::Text _text;
 
-        sf::Vector2f buttonSize;
-        sf::Vector2f buttonPos;
-        unsigned int buttonPadding;
+        sf::Vector2f _buttonSize;
+        sf::Vector2f _buttonPos;
+        unsigned int _buttonPadding;
 
-        sf::RectangleShape rects[3];
-        sf::Text labels[3];
+        sf::RectangleShape _rects[3];
+        sf::Text _labels[3];
 };

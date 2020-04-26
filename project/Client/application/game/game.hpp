@@ -25,6 +25,8 @@ class Game : public sf::NonCopyable {
         Window _window;
         StateManager _stateManager;
         SharedContext _context;
+        AudioManager _audioManager;
+        SoundManager _soundManager;
         sf::Clock _clock;
         sf::Time _elapsed;
 };

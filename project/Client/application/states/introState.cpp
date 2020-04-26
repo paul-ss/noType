@@ -9,14 +9,14 @@ void IntroState::onCreate() {
     sf::Vector2u windowSize =
             _stateMgr->getContext()->_window->getRenderWindow()->getSize();
 
-    _introTexture.loadFromFile("resources/rose.png");
+    _introTexture.loadFromFile("resources/media/textures/rose.png");
     _introSprite.setTexture(_introTexture);
     _introSprite.setOrigin(_introTexture.getSize().x / 2.0f,
         _introTexture.getSize().y / 2.0f);
 
     _introSprite.setPosition(windowSize.x / 2.0f, 0);
 
-    _font.loadFromFile("resources/arcade.ttf");
+    _font.loadFromFile("resources/media/fonts/arcade.ttf");
     _text.setFont(_font);
     _text.setString({ "Press SPACE to continue" });
     _text.setCharacterSize(15);
@@ -32,6 +32,7 @@ void IntroState::onCreate() {
                 this->proceed(&details);
             };
     evMgr->addCallback(StateType::Intro, "Intro_Continue", lambdaContinue);
+    _stateMgr->getContext()->_soundManager->PlayMusic("noType");
 }
 
 void IntroState::onDestroy() {

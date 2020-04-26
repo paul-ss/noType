@@ -2,6 +2,9 @@
 
 #include "sharedContext.hpp"
 #include "introState.hpp"
+#include "mainMenuState.hpp"
+#include "pauseState.hpp"
+#include "gameState.hpp"
 
 #include <functional>
 #include <unordered_map>
