@@ -38,12 +38,16 @@ int main() {
   std::cout << rm.addPlayer(p4) << std::endl;
   Player p5("uuid5", "name1");
   std::cout << rm.addPlayer(p5) << std::endl;
-  Player p6("uuid6", "name1");
-  std::cout << rm.addPlayer(p6) << std::endl;
-  Player p7("uuid7", "name1");
-  std::cout << rm.addPlayer(p7) << std::endl;
+//  Player p6("uuid6", "name1");
+//  std::cout << rm.addPlayer(p6) << std::endl;
+//  Player p7("uuid7", "name1");
+//  std::cout << rm.addPlayer(p7) << std::endl;
 
   std::thread interfaceThr([&]() {service.run();});
+
+  std::cout << rm.deleteRoom(rm.getRoom("uuid2")->getUUID()) << std::endl;
+
+  std::cout << rm.addPlayer(p5) << std::endl;
 
   interfaceThr.join();
   return 0;

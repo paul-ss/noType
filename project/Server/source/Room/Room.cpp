@@ -11,7 +11,8 @@ Room::Room(boost::asio::io_service &service, const std::string &text) :
     _text(text),
     _finishLine(200),
     _numberOfFinishers(0),
-    _maxPlayersCount(5) {}
+    _maxPlayersCount(5),
+    _roomUUID(randomUUID()){}
 
 
 
@@ -50,4 +51,10 @@ std::vector<std::string> Room::getPlayersUUID() {
   }
 
   return result;
+}
+
+std::string Room::randomUUID() {
+  boost::uuids::random_generator gen;
+  boost::uuids::uuid uuid = gen();
+  return to_string(uuid);
 }

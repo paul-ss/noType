@@ -13,6 +13,9 @@
 #include <unordered_map>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/random_generator.hpp>
 
 
 template<class T> using ExpectedRoom = Expected<T, RoomError>;
@@ -39,6 +42,7 @@ public:
 private:
   //ExpectedRoom<RoomState> getStatus();
 //  void transitionTo(std::shared_ptr<IRoomStatus> roomStatus);
+  std::string randomUUID();
 
 
   boost::asio::deadline_timer _timer;

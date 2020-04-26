@@ -33,7 +33,7 @@ ExpectedRoom<bool> RoomWait::addPlayer(std::shared_ptr<Room> room, const Player 
 
   if (room->_players.size() == _roomConfig._maxPlayersCount) {
     if (room->_timer.cancel() > 0) {
-      room->_roomStatus = std::shared_ptr<IRoomStatus>(new RoomPlay(_roomConfig)); // todo RoomPlay
+      room->_roomStatus = std::shared_ptr<IRoomStatus>(new RoomPlay(_roomConfig));
       room->startAsyncEvent();
     } else {
       // throw
