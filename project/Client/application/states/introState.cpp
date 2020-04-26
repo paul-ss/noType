@@ -3,11 +3,11 @@
 IntroState::IntroState(StateManager* state) : BaseState(state) {}
 IntroState::~IntroState() {}
 
-void IntroState::onCreate() {
+void IntroState::OnCreate() {
     _timePassed = 0.0f;
 
     sf::Vector2u windowSize =
-            _stateMgr->getContext()->_window->getRenderWindow()->getSize();
+            _stateMgr->GetContext()->_window->GetRenderWindow()->getSize();
 
     _introTexture.loadFromFile("resources/media/textures/rose.png");
     _introSprite.setTexture(_introTexture);
@@ -26,21 +26,21 @@ void IntroState::onCreate() {
         textRect.top + textRect.height / 2.0f);
     _text.setPosition(windowSize.x / 2.0f, windowSize.y / 2.0f);
 
-    auto evMgr = _stateMgr->getContext()->_eventManager;
+    auto evMgr = _stateMgr->GetContext()->_eventManager;
     auto lambdaContinue = 
             [this](EventDetails& details) {
-                this->proceed(&details);
+                this->Continue(&details);
             };
-    evMgr->addCallback(StateType::Intro, "Intro_Continue", lambdaContinue);
-    _stateMgr->getContext()->_soundManager->PlayMusic("noType");
+    evMgr->AddCallback(StateType::Intro, "Intro_Continue", lambdaContinue);
+    _stateMgr->GetContext()->_soundManager->PlayMusic("noType");
 }
 
-void IntroState::onDestroy() {
-    auto evMgr = _stateMgr->getContext()->_eventManager;
-    evMgr->removeCallback(StateType::Intro, "Intro_Continue");
+void IntroState::OnDestroy() {
+    auto evMgr = _stateMgr->GetContext()->_eventManager;
+    evMgr->RemoveCallback(StateType::Intro, "Intro_Continue");
 }
 
-void IntroState::update(const sf::Time& time) {
+void IntroState::Update(const sf::Time& time) {
     if (_timePassed < 5.0f) {  // Less than five seconds.
         _timePassed += time.asSeconds();
         _introSprite.setPosition(
@@ -49,9 +49,9 @@ void IntroState::update(const sf::Time& time) {
     }
 }
 
-void IntroState::draw() {
+void IntroState::Draw() {
     sf::RenderWindow* window =
-            _stateMgr->getContext()->_window->getRenderWindow();
+            _stateMgr->GetContext()->_window->GetRenderWindow();
 
     window->draw(_introSprite);
     if(_timePassed >= 5.0f){
@@ -59,12 +59,12 @@ void IntroState::draw() {
     }
 }
 
-void IntroState::proceed(EventDetails* details) {
+void IntroState::Continue(EventDetails* details) {
     if (_timePassed >= 5.0f) {
-        _stateMgr->switchTo(StateType::MainMenu);
-        _stateMgr->remove(StateType::Intro);
+        _stateMgr->SwitchTo(StateType::MainMenu);
+        _stateMgr->Remove(StateType::Intro);
     }
 }
 
-void IntroState::activate() {}
-void IntroState::deactivate() {}
+void IntroState::Activate() {}
+void IntroState::Deactivate() {}

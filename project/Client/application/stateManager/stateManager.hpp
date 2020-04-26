@@ -3,7 +3,6 @@
 #include "sharedContext.hpp"
 #include "introState.hpp"
 #include "mainMenuState.hpp"
-#include "pauseState.hpp"
 #include "gameState.hpp"
 
 #include <functional>
@@ -26,16 +25,16 @@ class StateManager{
         StateManager(SharedContext* shared);
         ~StateManager();
 
-        void update(const sf::Time& time);
-        void draw();
+        void Update(const sf::Time& time);
+        void Draw();
 
-        void processRequests();
+        void ProcessRequests();
 
-        SharedContext* getContext();
-        bool hasState(const StateType& type);
+        SharedContext* GetContext();
+        bool HasState(const StateType& type);
 
-        void switchTo(const StateType& type);
-        void remove(const StateType& type);
+        void SwitchTo(const StateType& type);
+        void Remove(const StateType& type);
 
     private:
         void createState(const StateType& type);

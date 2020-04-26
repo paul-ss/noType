@@ -7,17 +7,17 @@ public:
     GameState(StateManager* stateManager);
     ~GameState();
 
-    void onCreate() override;
-    void onDestroy() override;
+    void OnCreate() override;
+    void OnDestroy() override;
 
-    void activate() override;
-    void deactivate() override;
+    void Activate() override;
+    void Deactivate() override;
 
-    void update(const sf::Time& time) override;
-    void draw() override;
+    void Update(const sf::Time& time) override;
+    void Draw() override;
 
-    void mainMenu(EventDetails* details);
-    void pause(EventDetails* details);
+    void MainMenu(EventDetails* details);
+    void Pause(EventDetails* details);
 private:
     sf::Texture _texture;
     sf::Sprite _sprite;

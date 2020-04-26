@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 namespace utils {
-    inline std::string getWorkingDirectory() {
+    inline std::string GetWorkingDirectory() {
         char cwd[1024];
         if(getcwd(cwd, sizeof(cwd)) != nullptr) {
             return std::string(cwd) + std::string("/");
@@ -14,7 +14,7 @@ namespace utils {
         return "";
     }
 
-    inline void readQuotedString(std::stringstream& stream,
+    inline void ReadQuotedString(std::stringstream& stream,
         std::string& string) {
         stream >> string;
         if (string.at(0) == '"') {

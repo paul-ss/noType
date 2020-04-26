@@ -26,6 +26,9 @@ class SoundManager {
         SoundManager(AudioManager* audioMgr) : _audioManager{audioMgr} {};
         ~SoundManager() = default;
 
+        void ChangeState(const StateType& state);
+        void RemoveState(const StateType& state);
+        void Update(float l_dT);
         bool PlayMusic(const std::string& musicId, float volume = 100.f, bool loop = false);
         bool PlayMusic(const StateType& state);
         bool StopMusic(const StateType& state);
@@ -33,6 +36,10 @@ class SoundManager {
 
         static const int Max_Sounds = 150;
         static const int Sound_Cache = 75;
+
+    private:
+        void pauseAll(const StateType& state);
+        void unPauseAll(const StateType& state);
 
     private:
         MusicContainer _music;

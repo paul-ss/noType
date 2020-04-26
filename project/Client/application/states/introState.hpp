@@ -9,16 +9,16 @@ class IntroState : public BaseState {
         IntroState(StateManager* stateManager);
         ~IntroState();
 
-        void onCreate() override;
-        void onDestroy() override;
+        void OnCreate() override;
+        void OnDestroy() override;
 
-        void activate() override;
-        void deactivate() override;
+        void Activate() override;
+        void Deactivate() override;
 
-        void update(const sf::Time& time) override;
-        void draw() override;
+        void Update(const sf::Time& time) override;
+        void Draw() override;
 
-        void proceed(EventDetails* details);
+        void Continue(EventDetails* details);
 
     private:
         sf::Texture _introTexture;

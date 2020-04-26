@@ -90,24 +90,24 @@ class EventManager {
         EventManager();
         ~EventManager() = default;
 
-        bool addBinding(std::shared_ptr<Binding> binding);
-        bool removeBinding(std::string name);
+        bool AddBinding(std::shared_ptr<Binding> binding);
+        bool RemoveBinding(std::string name);
 
-        void setCurrentState(StateType state);
-        void setFocus(const bool& focus);
+        void SetCurrentState(StateType state);
+        void SetFocus(const bool& focus);
 
-        void handleEvent(sf::Event& event);
-        void update();
+        void HandleEvent(sf::Event& event);
+        void Update();
 
-        bool addCallback(StateType state,
+        bool AddCallback(StateType state,
                         const std::string& name,
                         const std::function<void(EventDetails&)>& func);
-        bool removeCallback(StateType state, const std::string& name);
+        bool RemoveCallback(StateType state, const std::string& name);
 
-        sf::Vector2i getMousePos(const sf::RenderWindow* wind = nullptr);
+        sf::Vector2i GetMousePos(const sf::RenderWindow* wind = nullptr);
 
     private:
-        void loadBindings();
+        void LoadBindings();
 
     private:
         Bindings _bindings;

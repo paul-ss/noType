@@ -8,16 +8,16 @@ class MainMenuState : public BaseState{
         MainMenuState(StateManager* stateManager);
         ~MainMenuState();
 
-        void onCreate() override;
-        void onDestroy() override;
+        void OnCreate() override;
+        void OnDestroy() override;
 
-        void activate() override;
-        void deactivate() override;
+        void Activate() override;
+        void Deactivate() override;
 
-        void update(const sf::Time& time) override;
-        void draw() override;
+        void Update(const sf::Time& time) override;
+        void Draw() override;
 
-        void mouseClick(EventDetails* details);
+        void MouseClick(EventDetails* details);
 
     private:
         sf::Font _font;

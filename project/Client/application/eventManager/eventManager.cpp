@@ -2,18 +2,18 @@
 #include "exceptions.hpp"
 
 EventManager::EventManager(): _hasFocus(true) {
-    loadBindings();
+    LoadBindings();
 }
 
-void EventManager::setFocus(const bool& focus) {
+void EventManager::SetFocus(const bool& focus) {
     _hasFocus = focus;
 }
 
-void EventManager::setCurrentState(StateType state) {
+void EventManager::SetCurrentState(StateType state) {
     _currentState = state;
 }
 
-bool EventManager::addCallback(StateType state,
+bool EventManager::AddCallback(StateType state,
         const std::string& name,
         const std::function<void(EventDetails&)>& func) {
 
@@ -21,7 +21,7 @@ bool EventManager::addCallback(StateType state,
     return itr->second.emplace(name, func).second;
 }
 
-bool EventManager::removeCallback(StateType state, const std::string& name) {
+bool EventManager::RemoveCallback(StateType state, const std::string& name) {
     auto itr = _callbacks.find(state);
     if (itr == _callbacks.end()) {
         return false;
@@ -35,18 +35,18 @@ bool EventManager::removeCallback(StateType state, const std::string& name) {
     return true;
 }
 
-sf::Vector2i EventManager::getMousePos(const sf::RenderWindow* wind) {
+sf::Vector2i EventManager::GetMousePos(const sf::RenderWindow* wind) {
     return (wind ? sf::Mouse::getPosition(*wind) : sf::Mouse::getPosition());
 }
 
-bool EventManager::addBinding(std::shared_ptr<Binding> binding) {
+bool EventManager::AddBinding(std::shared_ptr<Binding> binding) {
     if (_bindings.find(binding->_name) != _bindings.end()) {
         return false;
     }
     return _bindings.emplace(binding->_name, binding).second;
 }
 
-bool EventManager::removeBinding(std::string name) {
+bool EventManager::RemoveBinding(std::string name) {
     auto itr = _bindings.find(name);
     if (itr == _bindings.end()) {
         return false;
@@ -55,7 +55,7 @@ bool EventManager::removeBinding(std::string name) {
     return true;
 }
 
-void EventManager::handleEvent(sf::Event& event) {
+void EventManager::HandleEvent(sf::Event& event) {
     for (auto &b_itr : _bindings) {
         auto bind = b_itr.second;
         for (auto &e_itr : bind->_events) {
@@ -96,7 +96,7 @@ void EventManager::handleEvent(sf::Event& event) {
     }
 }
 
-void EventManager::update() {
+void EventManager::Update() {
     if (!_hasFocus) {
         return;
     }
@@ -151,7 +151,7 @@ void EventManager::update() {
     }
 }
 
-void EventManager::loadBindings() {
+void EventManager::LoadBindings() {
     std::string delimiter = ":";
     std::ifstream bindings;
     bindings.open("resources/keys.cfg");
@@ -189,7 +189,7 @@ void EventManager::loadBindings() {
             eventInfo._code = code;
             bind->BindEvent(type, eventInfo);
         }
-        if (!addBinding(bind)) {
+        if (!AddBinding(bind)) {
             throw InvalidCmd();
         }
     }

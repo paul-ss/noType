@@ -9,61 +9,61 @@ StateManager::StateManager(SharedContext* shared) : _shared(shared) {
 
 StateManager::~StateManager(){
     for (auto &itr : _states){
-        itr.second->onDestroy();
+        itr.second->OnDestroy();
         delete itr.second;
     }
 }
 
-void StateManager::draw() {
+void StateManager::Draw() {
     if (_states.empty()) {
         return;
     }
 
-    if (_states.back().second->isTransparent() && _states.size() > 1) {
+    if (_states.back().second->IsTransparent() && _states.size() > 1) {
         auto itr = _states.end();
         while (itr != _states.begin()) {
             if (itr != _states.end()) {
-                if (!itr->second->isTransparent()) {
+                if (!itr->second->IsTransparent()) {
                     break;
                 }
             }
             --itr;
         }
         for (; itr != _states.end(); ++itr) {
-            itr->second->draw();
+            itr->second->Draw();
         }
     } else {
-        _states.back().second->draw();
+        _states.back().second->Draw();
     }
 }
 
-void StateManager::update(const sf::Time& time) {
+void StateManager::Update(const sf::Time& time) {
     if (_states.empty()) {
         return;
     }
-    if (_states.back().second->isTranscendent() && _states.size() > 1) {
+    if (_states.back().second->IsTranscendent() && _states.size() > 1) {
         auto itr = _states.end();
         while (itr != _states.begin()) {
             if (itr != _states.end()) {
-                if (!itr->second->isTranscendent()){
+                if (!itr->second->IsTranscendent()){
                     break;
                 }
             }
             --itr;
         }
         for (; itr != _states.end(); ++itr) {
-            itr->second->update(time);
+            itr->second->Update(time);
         }
     } else {
-        _states.back().second->update(time);
+        _states.back().second->Update(time);
     }
 }
 
-SharedContext* StateManager::getContext() {
+SharedContext* StateManager::GetContext() {
     return _shared;
 }
 
-bool StateManager::hasState(const StateType& type) {
+bool StateManager::HasState(const StateType& type) {
     for (auto itr = _states.begin(); itr != _states.end(); ++itr) {
         if (itr->first == type) {
             auto removed = std::find(_toRemove.begin(), _toRemove.end(), type);
@@ -76,35 +76,37 @@ bool StateManager::hasState(const StateType& type) {
     return false;
 }
 
-void StateManager::remove(const StateType& type) {
+void StateManager::Remove(const StateType& type) {
     _toRemove.push_back(type);
 }
 
-void StateManager::processRequests() {
+void StateManager::ProcessRequests() {
     while (_toRemove.begin() != _toRemove.end()) {
         removeState(*_toRemove.begin());
         _toRemove.erase(_toRemove.begin());
     }
 }
 
-void StateManager::switchTo(const StateType& type) {
-    _shared->_eventManager->setCurrentState(type);
+void StateManager::SwitchTo(const StateType& type) {
+    _shared->_eventManager->SetCurrentState(type);
+    _shared->_soundManager->ChangeState(type);
+
     for (auto itr = _states.begin(); itr != _states.end(); ++itr) {
         if (itr->first == type) {
-            _states.back().second->deactivate();
+            _states.back().second->Deactivate();
             StateType tmp_type = itr->first;
             auto tmp_state = itr->second;
             _states.erase(itr);
             _states.emplace_back(tmp_type, tmp_state);
-            tmp_state->activate();
+            tmp_state->Activate();
             return;
         }
     }
     if (!_states.empty()) {
-        _states.back().second->deactivate();
+        _states.back().second->Deactivate();
     }
     createState(type);
-    _states.back().second->activate();
+    _states.back().second->Activate();
 }
 
 void StateManager::createState(const StateType& type) {
@@ -115,7 +117,7 @@ void StateManager::createState(const StateType& type) {
 
     auto state = newState->second();
     _states.emplace_back(type, state);
-    state->onCreate();
+    state->OnCreate();
 }
 
 void StateManager::removeState(const StateType& l_type){
@@ -123,9 +125,10 @@ void StateManager::removeState(const StateType& l_type){
         itr != _states.end(); ++itr)
     {
         if (itr->first == l_type){
-            itr->second->onDestroy();
+            itr->second->OnDestroy();
             delete itr->second;
             _states.erase(itr);
+            _shared->_soundManager->RemoveState(l_type);
             return;
         }
     }

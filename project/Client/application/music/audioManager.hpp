@@ -11,7 +11,7 @@ public:
     sf::SoundBuffer* Load(const std::string& l_path) {
         sf::SoundBuffer* sound = new sf::SoundBuffer();
         if (!sound->loadFromFile(
-            utils::getWorkingDirectory() + l_path))
+            utils::GetWorkingDirectory() + l_path))
         {
             delete sound;
             sound = nullptr;

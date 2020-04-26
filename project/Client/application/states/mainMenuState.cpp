@@ -6,7 +6,7 @@ MainMenuState::MainMenuState(StateManager* stateManager)
 
 MainMenuState::~MainMenuState() {}
 
-void MainMenuState::onCreate() {
+void MainMenuState::OnCreate() {
     _font.loadFromFile("resources/media/fonts/arcade.ttf");
     _text.setFont(_font);
     _text.setString(sf::String("MAIN MENU"));
@@ -47,21 +47,21 @@ void MainMenuState::onCreate() {
         _labels[i].setPosition(buttonPosition);
     }
 
-    EventManager* evMgr = _stateMgr->getContext()->_eventManager;
+    EventManager* evMgr = _stateMgr->GetContext()->_eventManager;
     auto lambdaClick =
             [this](EventDetails& details) {
-                this->mouseClick(&details);
+                this->MouseClick(&details);
             };
-    evMgr->addCallback(StateType::MainMenu, "Mouse_Left", lambdaClick);
+    evMgr->AddCallback(StateType::MainMenu, "Mouse_Left", lambdaClick);
 }
 
-void MainMenuState::onDestroy() {
-    EventManager* evMgr = _stateMgr->getContext()->_eventManager;
-    evMgr->removeCallback(StateType::MainMenu, "Mouse_Left");
+void MainMenuState::OnDestroy() {
+    EventManager* evMgr = _stateMgr->GetContext()->_eventManager;
+    evMgr->RemoveCallback(StateType::MainMenu, "Mouse_Left");
 }
 
-void MainMenuState::activate() {
-    if(_stateMgr->hasState(StateType::Game)
+void MainMenuState::Activate() {
+    if(_stateMgr->HasState(StateType::Game)
         && _labels[0].getString() == "PLAY")
     {
         _labels[0].setString(sf::String("RESUME"));
@@ -71,7 +71,7 @@ void MainMenuState::activate() {
     }
 }
 
-void MainMenuState::mouseClick(EventDetails* details) {
+void MainMenuState::MouseClick(EventDetails* details) {
     sf::Vector2i mousePos = details->_mouse;
 
     float halfX = _buttonSize.x / 2.0f;
@@ -83,18 +83,18 @@ void MainMenuState::mouseClick(EventDetails* details) {
             mousePos.y <= _rects[i].getPosition().y + halfY)
         {
             if(i == 0){
-                _stateMgr->switchTo(StateType::Game);
+                _stateMgr->SwitchTo(StateType::Game);
             } else if(i == 1){
                 // Credits state.
             } else if(i == 2){
-                _stateMgr->getContext()->_window->close();
+                _stateMgr->GetContext()->_window->Close();
             }
         }
     }
 }
 
-void MainMenuState::draw() {
-    sf::RenderWindow* window = _stateMgr->getContext()->_window->getRenderWindow();
+void MainMenuState::Draw() {
+    sf::RenderWindow* window = _stateMgr->GetContext()->_window->GetRenderWindow();
     window->clear(sf::Color::Magenta);
     window->draw(_text);
     for(int i = 0; i < 3; ++i){
@@ -103,5 +103,5 @@ void MainMenuState::draw() {
     }
 }
 
-void MainMenuState::update(const sf::Time& time) {}
-void MainMenuState::deactivate() {}
+void MainMenuState::Update(const sf::Time& time) {}
+void MainMenuState::Deactivate() {}

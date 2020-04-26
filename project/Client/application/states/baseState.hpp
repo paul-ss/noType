@@ -16,31 +16,31 @@ class BaseState {
                 _transcendent(false) {}
         virtual ~BaseState() = default;
 
-        virtual void onCreate() = 0;
-        virtual void onDestroy() = 0;
+        virtual void OnCreate() = 0;
+        virtual void OnDestroy() = 0;
 
-        virtual void activate() = 0;
-        virtual void deactivate() = 0;
+        virtual void Activate() = 0;
+        virtual void Deactivate() = 0;
 
-        virtual void update(const sf::Time& time) = 0;
-        virtual void draw() = 0;
+        virtual void Update(const sf::Time& time) = 0;
+        virtual void Draw() = 0;
 
-        void setTransparent(const bool& transparent) {
+        void SetTransparent(const bool& transparent) {
             _transparent = transparent;
         }
-        bool isTransparent()const {
+        bool IsTransparent()const {
             return _transparent;
         }
 
-        void setTranscendent(const bool& transcendence) {
+        void SetTranscendent(const bool& transcendence) {
         _transcendent = transcendence;
         }
 
-        bool isTranscendent() const {
+        bool IsTranscendent() const {
             return _transcendent;
         }
 
-        StateManager* getStateManager() {
+        StateManager* GetStateManager() {
             return _stateMgr;
         }
 

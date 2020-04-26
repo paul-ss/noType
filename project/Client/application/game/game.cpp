@@ -7,11 +7,11 @@ Game::Game() : _window("noType", sf::Vector2u(800,600)), _context{},
     srand(time(nullptr));
 
     _context._window = &_window;
-    _context._eventManager = _window.getEventManager();
+    _context._eventManager = _window.GetEventManager();
     _context._audioManager = &_audioManager;
     _context._soundManager = &_soundManager;
 
-    _stateManager.switchTo(StateType::Intro);
+    _stateManager.SwitchTo(StateType::Intro);
 }
 
 sf::Time Game::getElapsed() {
@@ -23,23 +23,24 @@ void Game::restartClock() {
 }
 
 void Game::update() {
-    _window.update();
-    _stateManager.update(_elapsed);
+    _window.Update();
+    _stateManager.Update(_elapsed);
+    _soundManager.Update(_elapsed.asSeconds());
 }
 
 void Game::render() {
-    _window.beginDraw();
-    _stateManager.draw();
-    _window.endDraw();
+    _window.BeginDraw();
+    _stateManager.Draw();
+    _window.EndDraw();
 }
 
 void Game::lateUpdate() {
-    _stateManager.processRequests();
+    _stateManager.ProcessRequests();
     restartClock();
 }
 
-void Game::run() {
-    while (!_window.isDone()) {
+void Game::Run() {
+    while (!_window.IsDone()) {
         update();
         render();
         lateUpdate();

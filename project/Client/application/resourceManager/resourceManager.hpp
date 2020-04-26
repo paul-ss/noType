@@ -16,14 +16,14 @@ class ResourceManager {
         }
 
         virtual ~ResourceManager() {
-            purgeResources();
+            PurgeResources();
         }
 
-        T* getResource(const std::string& id);
-        std::string getPath(const std::string& id);
-        bool requireResource(const std::string& id);
-        bool releaseResource(const std::string& id);
-        void purgeResources();
+        T* GetResource(const std::string& id);
+        std::string GetPath(const std::string& id);
+        bool RequireResource(const std::string& id);
+        bool ReleaseResource(const std::string& id);
+        void PurgeResources();
 
     protected:
         T* load(const std::string& path);
@@ -40,19 +40,19 @@ class ResourceManager {
 };
 
 template <typename Derived, typename T>
-T* ResourceManager<Derived, T>::getResource(const std::string& id) {
+T* ResourceManager<Derived, T>::GetResource(const std::string& id) {
     auto res = find(id);
     return(res ? res->first : nullptr);
 }
 
 template <typename Derived, typename T>
-std::string ResourceManager<Derived, T>::getPath(const std::string& id) {
+std::string ResourceManager<Derived, T>::GetPath(const std::string& id) {
     auto path = _paths.find(id);
     return(path != _paths.end() ? path->second : "");
 }
 
 template <typename Derived, typename T>
-bool ResourceManager<Derived, T>::requireResource(const std::string& id) {
+bool ResourceManager<Derived, T>::RequireResource(const std::string& id) {
     auto res = find(id);
     if(res) {
         ++res->second;
@@ -69,7 +69,7 @@ bool ResourceManager<Derived, T>::requireResource(const std::string& id) {
 }
 
 template <typename Derived, typename T>
-bool ResourceManager<Derived, T>::releaseResource(const std::string& id) {
+bool ResourceManager<Derived, T>::ReleaseResource(const std::string& id) {
     auto res = find(id);
     if (!res) {
         return false;
@@ -82,7 +82,7 @@ bool ResourceManager<Derived, T>::releaseResource(const std::string& id) {
 }
 
 template <typename Derived, typename T>
-void ResourceManager<Derived, T>::purgeResources() {
+void ResourceManager<Derived, T>::PurgeResources() {
     std::cout << "Purging all resources:" << std::endl;
     while(_resources.begin() != _resources.end()){
         std::cout << "Removing: " 
@@ -118,7 +118,7 @@ bool ResourceManager<Derived, T>::unload(const std::string& id) {
 template <typename Derived, typename T>
 void ResourceManager<Derived, T>::loadPaths(const std::string& pathFile) {
     std::ifstream paths;
-    paths.open(utils::getWorkingDirectory() + pathFile);
+    paths.open(utils::GetWorkingDirectory() + pathFile);
     if(paths.is_open()){
         std::string line;
         while(std::getline(paths, line)){

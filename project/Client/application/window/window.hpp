@@ -9,18 +9,18 @@ class Window {
         Window();
         Window(const std::string& title, const sf::Vector2u& size);
         ~Window();
-        void beginDraw();
-        void draw(sf::Drawable& drawable);
-        void endDraw();
-        void update();
-        void close();
-        void toggleFullscreen();
-        bool isDone();
-        bool isFocused();
-        bool isFullScreen();
-        sf::Vector2u getWindowSize();
-        EventManager* getEventManager();
-        sf::RenderWindow* getRenderWindow();
+        void BeginDraw();
+        void Draw(sf::Drawable& drawable);
+        void EndDraw();
+        void Update();
+        void Close();
+        void ToggleFullscreen();
+        bool IsDone();
+        bool IsFocused();
+        bool IsFullScreen();
+        sf::Vector2u GetWindowSize();
+        EventManager* GetEventManager();
+        sf::RenderWindow* GetRenderWindow();
 
     private:
         void setup(const std::string& title, const sf::Vector2u& size);
