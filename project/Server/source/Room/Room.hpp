@@ -5,6 +5,8 @@
 #pragma once
 
 #include "RoomWait.hpp"
+#include "RoomPlay.hpp"
+#include "RoomConfig.hpp"
 
 #include <memory>
 #include <mutex>
@@ -31,6 +33,7 @@ public:
   std::vector<std::string> getPlayersUUID();
 
   friend class RoomWait;
+  friend class RoomPlay;
 
 
 private:
@@ -40,10 +43,12 @@ private:
 
   boost::asio::deadline_timer _timer;
  // RoomState _state;
+  RoomConfig _roomConfig;
   std::shared_ptr<IRoomStatus> _roomStatus;
   std::unordered_map<std::string, Player> _players; // uuid, player
   std::string _text;
   size_t _finishLine;
+  size_t _numberOfFinishers;
   size_t _maxPlayersCount;
   //- _timeFromStart : double
   std::string _roomUUID;

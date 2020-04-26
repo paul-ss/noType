@@ -50,10 +50,17 @@ ADD_EXECUTABLE(server
         Room/RoomManager.hpp
         Room/Player.cpp
         Room/Player.hpp
+        Room/RoomConfig.hpp
         RoomStatus/IRoomStatus.hpp
         TcpServer/ConnectedClients.cpp
         TcpServer/ConnectedClients.hpp
-        Utils/Expected.hpp Utils/Error.hpp Exceptions/Exceptions.hpp RoomStatus/RoomWait.cpp RoomStatus/RoomWait.hpp)
+        Utils/Expected.hpp
+        Utils/Error.hpp
+        Exceptions/Exceptions.hpp
+        RoomStatus/RoomWait.cpp
+        RoomStatus/RoomWait.hpp
+        RoomStatus/RoomPlay.cpp
+        RoomStatus/RoomPlay.hpp)
 
 
 TARGET_LINK_LIBRARIES(server ${Boost_SYSTEM_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})

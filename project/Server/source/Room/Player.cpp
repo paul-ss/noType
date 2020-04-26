@@ -7,6 +7,7 @@
 
 Player::Player(const std::string &clientUUID, const std::string &name) :
     _clientUUID(clientUUID),
+    _playerID(0),
     _name(name),
     _textPosition(0),
     _state(PLAYER_PLAY) {}

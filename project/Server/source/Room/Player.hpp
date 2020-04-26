@@ -11,9 +11,9 @@ enum PlayerState {PLAYER_PLAY, PLAYER_FINISH, PLAYER_WIN};
 struct Player {
 
   Player(const std::string &clientUUID, const std::string &name);
-
-  std::string _clientUUID;
-  std::string _name;
+  const std::string _clientUUID;
+  const size_t _playerID;
+  const std::string _name;
   size_t _textPosition;
   PlayerState _state;
   int i;

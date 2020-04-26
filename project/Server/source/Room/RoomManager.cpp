@@ -54,7 +54,9 @@ bool RoomManager::addPlayerAndRoom(boost::asio::io_service &service,
     return true;
   }
 
-  auto newRoomPtr = std::make_shared<Room>(service, text);
+
+  std::shared_ptr<Room> newRoomPtr(new Room(service, text));
+
   auto playerAddRes = newRoomPtr->addPlayer(player);
   if (!playerAddRes) {
     throw RoomManagerException("Can't add player to new room. Room msg: " + playerAddRes.error().what());

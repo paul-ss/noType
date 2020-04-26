@@ -8,6 +8,8 @@
 
 #include <unordered_map>
 #include <variant>
+#include <iostream>
+
 
 
 
@@ -15,9 +17,6 @@
 template <class T, class Error>
 class Expected {
 public:
-  Expected() : _data(std::move(T())) {}
-  Expected(const Expected &exp) : _data(exp) {}
-  Expected(Expected &&exp) : _data(std::move(exp)) {}
   Expected(T &&t) : _data(std::move(t)) {}
   Expected(const T &t) : _data(t) {}
   Expected(Error &&err) : _data(std::move(err)) {}
@@ -25,7 +24,7 @@ public:
 
 
   operator bool() const {
-    return std::holds_alternative<T>(_data);
+    return !std::holds_alternative<Error>(_data);
   }
 
   // can throw std::bad_variant_access
