@@ -23,8 +23,8 @@ using MusicContainer = std::unordered_map<StateType, std::pair<SoundInfo, sf::Mu
 
 class SoundManager {
     public:
-        SoundManager(AudioManager* audioMgr);
-        ~SoundManager();
+        SoundManager(AudioManager* audioMgr) : _audioManager{audioMgr} {};
+        ~SoundManager() = default;
 
         bool PlayMusic(const std::string& musicId, float volume = 100.f, bool loop = false);
         bool PlayMusic(const StateType& state);

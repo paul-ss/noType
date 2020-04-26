@@ -1,7 +1,7 @@
 #include "game.hpp"
 
-Game::Game() : _window("noType", sf::Vector2u(800,600)),
-        _stateManager(&_context), _soundManager(&_audioManager) {
+Game::Game() : _window("noType", sf::Vector2u(800,600)), _context{},
+        _stateManager(&_context), _audioManager{}, _soundManager(&_audioManager) {
 
     _clock.restart();
     srand(time(nullptr));

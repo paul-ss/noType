@@ -23,8 +23,8 @@ class Game : public sf::NonCopyable {
 
     private:
         Window _window;
-        StateManager _stateManager;
         SharedContext _context;
+        StateManager _stateManager;
         AudioManager _audioManager;
         SoundManager _soundManager;
         sf::Clock _clock;
