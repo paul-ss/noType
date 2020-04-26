@@ -19,7 +19,7 @@ template<class T> using ExpectedRoom = Expected<T, RoomError>;
 
 enum RoomState {ROOM_WAIT, ROOM_PLAY, ROOM_END};
 
-class Room : std::enable_shared_from_this<Room> {
+class Room : public std::enable_shared_from_this<Room> {
 public:
   Room(boost::asio::io_service &service, const std::string &text);
 

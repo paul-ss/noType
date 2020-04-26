@@ -2,7 +2,9 @@
 // Created by paul_s on 15.04.2020.
 //
 #include "TcpServer.hpp"
+#include "RoomManager.hpp"
 #include <thread>
+#include <boost/asio.hpp>
 
 
 void interface(TcpServer &serv) {
@@ -19,10 +21,29 @@ void interface(TcpServer &serv) {
 }
 
 int main() {
-  std::shared_ptr<QueueManager> q(new QueueManager);
-  TcpServer s(q, "127.0.0.1", 8000, 10);
-  std::thread interfaceThr(interface, std::ref(s));
-  s.startServer();
+//  std::shared_ptr<QueueManager> q(new QueueManager);
+//  TcpServer s(q, "127.0.0.1", 8000, 10);
+//  std::thread interfaceThr(interface, std::ref(s));
+//  s.startServer();
+
+  boost::asio::io_service service;
+  RoomManager rm;
+  Player p1("uuid1", "name1");
+  std::cout << rm.addPlayer(p1) << std::endl;
+  Player p2("uuid2", "name2");
+  std::cout << rm.addPlayerAndRoom(service, "text", p2) << std::endl;
+  Player p3("uuid3", "name1");
+  std::cout << rm.addPlayer(p3) << std::endl;
+  Player p4("uuid4", "name1");
+  std::cout << rm.addPlayer(p4) << std::endl;
+  Player p5("uuid5", "name1");
+  std::cout << rm.addPlayer(p5) << std::endl;
+  Player p6("uuid6", "name1");
+  std::cout << rm.addPlayer(p6) << std::endl;
+  Player p7("uuid7", "name1");
+  std::cout << rm.addPlayer(p7) << std::endl;
+
+  std::thread interfaceThr([&]() {service.run();});
 
   interfaceThr.join();
   return 0;
