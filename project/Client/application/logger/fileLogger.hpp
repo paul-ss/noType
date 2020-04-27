@@ -12,7 +12,7 @@ class FileLogger : public sf::NonCopyable {
         void writeToLog(const logType type, const char* msg);
 
     protected:
-        explicit FileLogger(const char* fName = "noType_Log.txt");
+        explicit FileLogger(const char* fName);
         ~FileLogger();
 
     private:

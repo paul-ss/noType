@@ -7,36 +7,25 @@ GameState::GameState(StateManager* stateManager)
 GameState::~GameState() {}
 
 void GameState::OnCreate() {
-    _texture.loadFromFile("Mushroom.png");
-    _sprite.setTexture(_texture);
-    _sprite.setPosition(0,0);
-    _increment = sf::Vector2f(400.0f, 400.0f);
 
-    EventManager* evMgr = _stateMgr->getContext()->_eventManager;
-    //evMgr->addCallback(StateType::Game,"Key_Escape",&GameState::MainMenu,this);
-    //evMgr->addCallback(StateType::Game,"Key_P",&GameState::Pause,this);
+    EventManager* evMgr = _stateMgr->GetContext()->_eventManager;
+    auto lambdaMainMenu = [this](EventDetails& details) { this->MainMenu(&details); };
+    evMgr->AddCallback(StateType::Game,"Key_Escape", lambdaMainMenu);
 }
 
 void GameState::OnDestroy() {
-    EventManager* evMgr = _stateMgr->getContext()->_eventManager;
-    evMgr->removeCallback(StateType::Game,"Key_Escape");
-    evMgr->removeCallback(StateType::Game,"Key_P");
+    EventManager* evMgr = _stateMgr->GetContext()->_eventManager;
+    evMgr->RemoveCallback(StateType::Game,"Key_Escape");
 }
 
 void GameState::Update(const sf::Time& time) {
-
 }
 
 void GameState::Draw() {
-    _stateMgr->getContext()->_window->GetRenderWindow()->draw(_sprite);
 }
 
 void GameState::MainMenu(EventDetails* details) {
-    _stateMgr->switchTo(StateType::MainMenu);
-}
-
-void GameState::Pause(EventDetails* details) {
-    _stateMgr->switchTo(StateType::Paused);
+    _stateMgr->SwitchTo(StateType::MainMenu);
 }
 
 void GameState::Activate() {}

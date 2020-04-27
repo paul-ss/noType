@@ -1,4 +1,4 @@
-#include "fileLogger.hpp"
+//#include "fileLogger.hpp"
 #include "game.hpp"
 
 int main() {

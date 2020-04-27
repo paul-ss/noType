@@ -1,8 +1,6 @@
 #pragma once
 
 #include "sharedContext.hpp"
-#include "introState.hpp"
-#include "mainMenuState.hpp"
 #include "gameState.hpp"
 
 #include <functional>

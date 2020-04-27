@@ -18,6 +18,8 @@ class MainMenuState : public BaseState{
         void Draw() override;
 
         void MouseClick(EventDetails* details);
+        void Play(EventDetails* details);
+        void Quit(EventDetails* details);
 
     private:
         sf::Font _font;

@@ -1,53 +1,59 @@
 #include "GUI_element.hpp"
 #include "GUI_interface.hpp"
 #include "GUI_manager.hpp"
-#include "SharedContext.hpp"
+#include "sharedContext.hpp"
 
-GUI_Element::GUI_Element(const std::string& l_name, const GUI_ElementType& l_type, GUI_Interface* l_owner)
-    : _name(l_name), _type(l_type), _state(GUI_ElementState::Neutral), _owner(l_owner),
-    _needsRedraw(false), _active(true), _isControl(false){}
+GUI_Element::GUI_Element(const std::string& name, const GUI_ElementType& type, GUI_Interface* owner)
+    : _name(name), _type(type), _state(GUI_ElementState::Neutral), _owner(owner),
+    _needsRedraw(false), _active(true), _isControl(false) {}
 
-GUI_Element::~GUI_Element(){ ReleaseResources(); }
+GUI_Element::~GUI_Element() {
+    releaseResources();
+}
 
-void GUI_Element::ReleaseResources(){
-    for (auto &itr : _style){
-        ReleaseTexture(itr.second._backgroundImage);
-        ReleaseTexture(itr.second._glyph);
-        ReleaseFont(itr.second._textFont);
+void GUI_Element::releaseResources() {
+    for (auto &itr : _style) {
+        releaseTexture(itr.second._backgroundImage);
+        releaseTexture(itr.second._glyph);
+        releaseFont(itr.second._textFont);
     }
 }
 
-void GUI_Element::UpdateStyle(const GUI_ElementState& l_state, 
-    const GUI_Style& l_style)
-{
+void GUI_Element::UpdateStyle(const GUI_ElementState& state,
+    const GUI_Style& style) {
     // Resource management.
-    if (l_style._backgroundImage != _style[l_state]._backgroundImage){
-        ReleaseTexture(_style[l_state]._backgroundImage);
-        RequireTexture(l_style._backgroundImage);
+    if (style._backgroundImage != _style[state]._backgroundImage) {
+        releaseTexture(_style[state]._backgroundImage);
+        requireTexture(style._backgroundImage);
     }
 
-    if (l_style._glyph != _style[l_state]._glyph){
-        ReleaseTexture(_style[l_state]._glyph);
-        RequireTexture(l_style._glyph);
+    if (style._glyph != _style[state]._glyph){
+        releaseTexture(_style[state]._glyph);
+        requireTexture(style._glyph);
     }
 
-    if (l_style._textFont != _style[l_state]._textFont){
-        ReleaseFont(_style[l_state]._textFont);
-        RequireFont(l_style._textFont);
+    if (style._textFont != _style[state]._textFont){
+        releaseFont(_style[state]._textFont);
+        requireFont(style._textFont);
     }
     // Style application.
-    _style[l_state] = l_style;
-    if (l_state == _state){ SetRedraw(true); ApplyStyle(); }
+    _style[state] = style;
+    if (state == _state) {
+        SetRedraw(true);
+        ApplyStyle();
+    }
 }
 
-void GUI_Element::ApplyStyle(){
-    ApplyTextStyle();
-    ApplyBgStyle();
-    ApplyGlyphStyle();
-    if (_owner != this && !IsControl()){ _owner->AdjustContentSize(this); }
+void GUI_Element::ApplyStyle() {
+    applyTextStyle();
+    applyBgStyle();
+    applyGlyphStyle();
+    if (_owner != this && !IsControl()) {
+        _owner->AdjustContentSize(this);
+    }
 }
 
-void GUI_Element::ApplyTextStyle(){
+void GUI_Element::applyTextStyle() {
     FontManager* fonts = _owner->GetManager()->GetContext()->_fontManager;
     const GUI_Style& CurrentStyle = _style[_state];
     if (CurrentStyle._textFont != ""){
@@ -64,10 +70,10 @@ void GUI_Element::ApplyTextStyle(){
     }
     _visual._text.setPosition(_position + CurrentStyle._textPadding);
 }
-void GUI_Element::ApplyBgStyle(){
+void GUI_Element::applyBgStyle() {
     TextureManager* textures = _owner->GetManager()->GetContext()->_textureManager;
     const GUI_Style& CurrentStyle = _style[_state];
-    if (CurrentStyle._backgroundImage != ""){
+    if (CurrentStyle._backgroundImage != "") {
         _visual._backgroundImage.setTexture(*textures->GetResource(CurrentStyle._backgroundImage));
         _visual._backgroundImage.setColor(CurrentStyle._backgroundImageColor);
     }
@@ -77,7 +83,7 @@ void GUI_Element::ApplyBgStyle(){
     _visual._backgroundSolid.setPosition(_position);
 }
 
-void GUI_Element::ApplyGlyphStyle(){
+void GUI_Element::applyGlyphStyle() {
     const GUI_Style& CurrentStyle = _style[_state];
     TextureManager* textures = _owner->GetManager()->GetContext()->_textureManager;
     if (CurrentStyle._glyph != ""){
@@ -86,73 +92,146 @@ void GUI_Element::ApplyGlyphStyle(){
     _visual._glyph.setPosition(_position + CurrentStyle._glyphPadding);
 }
 
-GUI_ElementType GUI_Element::GetType(){ return _type; }
+GUI_ElementType GUI_Element::GetType() {
+    return _type;
+}
 
-void GUI_Element::SetState(const GUI_ElementState& l_state){
-    if (_state == l_state){ return; }
-    _state = l_state;
+void GUI_Element::SetState(const GUI_ElementState& state) {
+    if (_state == state) {
+        return;
+    }
+    _state = state;
     SetRedraw(true);
 }
-const std::string& GUI_Element::GetName() const{ return _name; }
-void GUI_Element::SetName(const std::string& l_name){ _name = l_name; }
-const sf::Vector2f& GUI_Element::GetPosition() const{ return _position; }
-void GUI_Element::SetPosition(const sf::Vector2f& l_pos){
-    _position = l_pos;
-    if (_owner == nullptr || _owner == this){ return; }
-    const auto& padding = _owner->GetPadding();
-    if (_position.x < padding.x){ _position.x = padding.x; }
-    if (_position.y < padding.y){ _position.y = padding.y; }
+
+const std::string& GUI_Element::GetName() const {
+    return _name;
 }
 
-const sf::Vector2f& GUI_Element::GetSize() const{ return _style.at(_state)._size; }
-GUI_ElementState GUI_Element::GetState() const{ return _state; }
-void GUI_Element::SetRedraw(const bool& l_redraw){ _needsRedraw = l_redraw; }
-bool GUI_Element::NeedsRedraw() const{ return _needsRedraw; }
-void GUI_Element::SetOwner(GUI_Interface* l_owner){ _owner = l_owner; }
-GUI_Interface* GUI_Element::GetOwner() const{ return _owner; }
-bool GUI_Element::HasOwner() const{ return _owner != nullptr; }
-bool GUI_Element::IsActive() const{ return _active; }
-void GUI_Element::SetActive(const bool& l_active){ if (l_active != _active){ _active = l_active; SetRedraw(true); }}
-bool GUI_Element::IsControl() const{ return _isControl; }
-std::string GUI_Element::GetText() const{ return _visual._text.getString(); }
-void GUI_Element::SetText(const std::string& l_text){ _visual._text.setString(l_text); SetRedraw(true); }
-bool GUI_Element::IsInside(const sf::Vector2f& l_point) const{
-    sf::Vector2f position = GetGlobalPosition();
-    return(l_point.x >= position.x &&
-        l_point.y >= position.y &&
-        l_point.x <= position.x + _style.at(_state)._size.x &&
-        l_point.y <= position.y + _style.at(_state)._size.y);
+void GUI_Element::SetName(const std::string& name) {
+    _name = name;
 }
+
+const sf::Vector2f& GUI_Element::GetPosition() const {
+    return _position;
+}
+
+void GUI_Element::SetPosition(const sf::Vector2f& pos) {
+    _position = pos;
+    if (_owner == nullptr || _owner == this) {
+        return;
+    }
+    const auto& padding = _owner->GetPadding();
+    if (_position.x < padding.x) {
+        _position.x = padding.x;
+    }
+    if (_position.y < padding.y) {
+        _position.y = padding.y;
+    }
+}
+
+const sf::Vector2f& GUI_Element::GetSize() const {
+    return _style.at(_state)._size;
+}
+
+GUI_ElementState GUI_Element::GetState() const {
+    return _state;
+}
+
+void GUI_Element::SetRedraw(const bool& redraw) {
+    _needsRedraw = redraw;
+}
+
+bool GUI_Element::NeedsRedraw() const {
+    return _needsRedraw;
+}
+
+void GUI_Element::SetOwner(GUI_Interface* owner) {
+    _owner = owner;
+}
+
+GUI_Interface* GUI_Element::GetOwner() const {
+    return _owner;
+}
+
+bool GUI_Element::HasOwner() const {
+    return _owner != nullptr;
+}
+
+bool GUI_Element::IsActive() const {
+    return _active;
+}
+
+void GUI_Element::SetActive(const bool& active) {
+    if (active != _active) {
+        _active = active; SetRedraw(true);
+    }
+}
+
+bool GUI_Element::IsControl() const {
+    return _isControl;
+}
+
+std::string GUI_Element::GetText() const {
+    return _visual._text.getString();
+}
+
+void GUI_Element::SetText(const std::string& text) {
+    _visual._text.setString(text); SetRedraw(true);
+}
+
+bool GUI_Element::IsInside(const sf::Vector2f& point) const {
+    sf::Vector2f position = GetGlobalPosition();
+    return(point.x >= position.x &&
+        point.y >= position.y &&
+        point.x <= position.x + _style.at(_state)._size.x &&
+        point.y <= position.y + _style.at(_state)._size.y);
+}
+
 sf::Vector2f GUI_Element::GetGlobalPosition() const{
     sf::Vector2f position = GetPosition();
-    if (_owner == nullptr || _owner == this){ return position; }
+    if (_owner == nullptr || _owner == this) {
+        return position;
+    }
+
     position += _owner->GetGlobalPosition();
-    if (IsControl()){ return position; }
+    if (IsControl()) {
+        return position;
+    }
+
     position.x -= _owner->_scrollHorizontal;
     position.y -= _owner->_scrollVertical;
     return position;
 }
 
-void GUI_Element::RequireTexture(const std::string& l_name){
-    if (l_name == ""){ return; }
+void GUI_Element::requireTexture(const std::string& name){
+    if (name == "") {
+        return;
+    }
     _owner->GetManager()->GetContext()->
-        _textureManager->RequireResource(l_name);
+            _textureManager->RequireResource(name);
 }
 
-void GUI_Element::RequireFont(const std::string& l_name){
-    if (l_name == ""){ return; }
+void GUI_Element::requireFont(const std::string& name){
+    if (name == "") {
+        return;
+    }
     _owner->GetManager()->GetContext()->
-        _fontManager->RequireResource(l_name);
+            _fontManager->RequireResource(name);
 }
 
-void GUI_Element::ReleaseTexture(const std::string& l_name){
-    if (l_name == ""){ return; }
+void GUI_Element::releaseTexture(const std::string& name){
+    if (name == "") {
+        return;
+    }
     _owner->GetManager()->GetContext()->
-        _textureManager->ReleaseResource(l_name);
+        _textureManager->ReleaseResource(name);
 }
 
-void GUI_Element::ReleaseFont(const std::string& l_name){
-    if (l_name == ""){ return; }
+void GUI_Element::releaseFont(const std::string& name){
+    if (name == "") {
+        return;
+    }
     _owner->GetManager()->GetContext()->
-        _fontManager->ReleaseResource(l_name);
+        _fontManager->ReleaseResource(name);
 }

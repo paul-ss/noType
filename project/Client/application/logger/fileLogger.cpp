@@ -1,11 +1,13 @@
 #include "fileLogger.hpp"
 #include "exceptions.hpp"
 
-FileLogger::FileLogger(const char *fname = "noType_Log.txt") :
+#define FILE_NAME "notype_log.txt"
+
+FileLogger::FileLogger(const char* fName) :
         _numWarnings(0U),
         _numErrors(0U) {
 
-    _myFile.open(fname);
+    _myFile.open(fName);
     if (!_myFile.is_open()) {
         throw InvalidFile();
     }
@@ -46,7 +48,7 @@ FileLogger* FileLogger::getInstance() {
         std::lock_guard<std::mutex> lock(_mutex);
 
         if (_pInstance == nullptr) {
-            FileLogger* _pInstance = new FileLogger();
+            FileLogger* _pInstance = new FileLogger(FILE_NAME);
         }
     }
     return _pInstance;

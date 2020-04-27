@@ -21,11 +21,6 @@ class IntroState : public BaseState {
         void Continue(EventDetails* details);
 
     private:
-        sf::Texture _introTexture;
         sf::Sprite _introSprite;
-        sf::Font _font;
         sf::Text _text;
-
-    private:
-        float _timePassed;
 };

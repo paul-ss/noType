@@ -7,33 +7,38 @@ SET(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic")
 SET(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/application")
 
 SET(ALL_HEADERS
-    ${SOURCE_DIR}/utils
     ${SOURCE_DIR}/eventManager
-    ${SOURCE_DIR}/resourceManager
-    ${SOURCE_DIR}/window
-    ${SOURCE_DIR}/sharedContext
-    ${SOURCE_DIR}/states
-    ${SOURCE_DIR}/stateManager
-    ${SOURCE_DIR}/logger
     ${SOURCE_DIR}/exceptions
-    ${SOURCE_DIR}/music
     ${SOURCE_DIR}/game
+    ${SOURCE_DIR}/GUI
+    #${SOURCE_DIR}/logger
+    ${SOURCE_DIR}/musicManager
+    ${SOURCE_DIR}/resources
+    ${SOURCE_DIR}/sharedContext
+    ${SOURCE_DIR}/stateManager
+    ${SOURCE_DIR}/states
+    ${SOURCE_DIR}/utils
+    ${SOURCE_DIR}/window
 )
 
 SET(ALL_SOURCES
     ${SOURCE_DIR}/eventManager/eventManager.cpp
-    ${SOURCE_DIR}/window/window.cpp
-    ${SOURCE_DIR}/states/introState.cpp
-    ${SOURCE_DIR}/states/mainMenuState.cpp
-    #${SOURCE_DIR}/states/pauseState.cpp
-    #${SOURCE_DIR}/states/gameState.cpp
-    ${SOURCE_DIR}/stateManager/stateManager.cpp
-    ${SOURCE_DIR}/music/soundManager.cpp
+    ${SOURCE_DIR}/exceptions/exceptions.hpp
     ${SOURCE_DIR}/game/game.cpp
+    ${SOURCE_DIR}/GUI/GUI_element.cpp
+    ${SOURCE_DIR}/GUI/GUI_interface.cpp
+    ${SOURCE_DIR}/GUI/GUI_manager.cpp
+    #${SOURCE_DIR}/logger/fileLogger.cpp
+    ${SOURCE_DIR}/musicManager/musicManager.cpp
+    ${SOURCE_DIR}/stateManager/stateManager.cpp
+    ${SOURCE_DIR}/states/introState.cpp
+    ${SOURCE_DIR}/states/gameState.cpp
+    ${SOURCE_DIR}/states/mainMenuState.cpp
+    ${SOURCE_DIR}/window/window.cpp
 )
 
 SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-FIND_PACKAGE(SFML REQUIRED graphics window system network audio)
+FIND_PACKAGE(SFML 2 REQUIRED graphics window system network audio)
 
 INCLUDE_DIRECTORIES(${SFML_INCLUDE_DIR})
 INCLUDE_DIRECTORIES(${ALL_HEADERS})
