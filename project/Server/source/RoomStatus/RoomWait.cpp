@@ -37,7 +37,8 @@ ExpectedRoom<bool> RoomWait::addPlayer(std::shared_ptr<Room> room, const Player 
       room->_roomStatus = std::shared_ptr<IRoomStatus>(new RoomPlay(_roomConfig));
       room->startAsyncEvent();
     } else {
-      throw RoomException("addPlayer (WAIT) : No one async wait canceled. Maybe, that shouldn't be an exception.");
+      //throw RoomException("addPlayer (WAIT) : No one async wait canceled. Maybe, that shouldn't be an exception.");
+      std::cout << "addPlayer (WAIT) : No one async wait canceled in room " + room->_roomUUID << std::endl;
     }
   }
 
@@ -55,13 +56,13 @@ ExpectedRoom<size_t> RoomWait::validateWrittenText(std::shared_ptr<Room> room,
                                                     const std::string &text,
                                                     const std::string &clientUUID) {
   std::unique_lock<std::mutex> lock(room->_roomMutex);
-  return(RoomError("Room status is 'WAIT'. Can't validate text.\n Sent data: UUID: " + clientUUID +
+  return(RoomError("validateWrittenText (END) : Can't validate text.\n Sent data: UUID: " + clientUUID +
                     " text : " + text + "\nPlayers in this room: " + std::to_string(room->_players.size())));
 }
 
 
 void RoomWait::startAsyncEvent(std::shared_ptr<Room> room) {
-  room->_timer.expires_from_now(boost::posix_time::milliseconds(_roomConfig._waitDuration));
+  room->_timer.expires_from_now(std::chrono::milliseconds(_roomConfig._waitDuration));
   room->_timer.async_wait(boost::bind(&RoomWait::deadlineHandler, shared_from_this(), room, _1));
 }
 
@@ -84,4 +85,5 @@ void RoomWait::deadlineHandler(std::shared_ptr<Room> room, const boost::system::
 std::shared_ptr<RoomWait> RoomWait::shared_from_this() {
   return boost::static_pointer_cast<RoomWait>(IRoomStatus::shared_from_this());
 }
+
 

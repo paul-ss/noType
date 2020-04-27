@@ -10,4 +10,6 @@ Player::Player(const std::string &clientUUID, const std::string &name) :
     _playerID(0),
     _name(name),
     _textPosition(0),
-    _state(PLAYER_PLAY) {}
+    _state(PLAYER_PLAY),
+    _lastTextPosition(0),
+    _currentSpeed(0) {}

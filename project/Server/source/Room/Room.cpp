@@ -9,9 +9,7 @@ Room::Room(boost::asio::io_service &service, const std::string &text) :
     _timer(service),
     _roomStatus(new RoomWait(_roomConfig)),
     _text(text),
-    _finishLine(200),
     _numberOfFinishers(0),
-    _maxPlayersCount(5),
     _roomUUID(randomUUID()){}
 
 

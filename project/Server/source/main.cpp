@@ -40,20 +40,20 @@ int main() {
   Player p1("uuid1", "name1");
   std::cout << rm.addPlayer(p1) << std::endl;
 
-  Player p6("uuid6", "name1");
-  std::cout << rm.addPlayerAndRoom(service, "text", p6) << std::endl;
-  Player p7("uuid7", "name1");
-  if(auto res = rm.addPlayer(p7)) {
-    std::cout << res.value() << std::endl;
-  } else {
-    std::cout << res.error().what() << std::endl;
-  }
+//  Player p6("uuid6", "name1");
+//  std::cout << rm.addPlayerAndRoom(service, "text", p6) << std::endl;
+//  Player p7("uuid7", "name1");
+//  if(auto res = rm.addPlayer(p7)) {
+//    std::cout << res.value() << std::endl;
+//  } else {
+//    std::cout << res.error().what() << std::endl;
+//  }
 
   std::thread interfaceThr([&]() {service.run();});
 
-  std::cout << rm.deleteRoom(rm.getRoom("uuid2")->getUUID()) << std::endl;
-
-  std::cout << rm.addPlayer(p5) << std::endl;
+//  std::cout << rm.deleteRoom(rm.getRoom("uuid2")->getUUID()) << std::endl;
+//
+//  std::cout << rm.addPlayer(p5) << std::endl;
 
   interfaceThr.join();
   return 0;

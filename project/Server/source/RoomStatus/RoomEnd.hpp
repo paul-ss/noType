@@ -1,18 +1,19 @@
 //
-// Created by paul_s on 25.04.2020.
+// Created by paul_s on 27.04.2020.
 //
 
 #pragma once
 
 #include "IRoomStatus.hpp"
+#include "Exceptions.hpp"
+
 #include <memory>
 #include <iostream>
 
-using TimePoint = std::chrono::time_point<std::chrono::steady_clock>;
 
-class RoomPlay : public IRoomStatus {
+class RoomEnd : public IRoomStatus {
 public:
-  explicit RoomPlay(const RoomConfig &roomConfig);
+  explicit RoomEnd(const RoomConfig &roomConfig);
   ExpectedRoom<bool> addPlayer(std::shared_ptr<Room> room, const Player &player) override;
   ExpectedRoom<std::string> getText(std::shared_ptr<Room> room) override;
   ExpectedRoom<size_t> validateWrittenText(std::shared_ptr<Room> room, const std::string &text, const std::string &clientUUID) override;
@@ -20,11 +21,7 @@ public:
   void deadlineHandler(std::shared_ptr<Room> room, const boost::system::error_code& ec) override;
 
 private:
-  std::shared_ptr<RoomPlay> shared_from_this();
-  size_t compareText(const std::string &roomText, const std::string &recvText, size_t playerPos);
-  void calculatePlayersSpeed(std::shared_ptr<Room> room);
-
-
-  TimePoint _endGame;
-  TimePoint _lastTimePlayersChecked;
+  std::shared_ptr<RoomEnd> shared_from_this();
 };
+
+

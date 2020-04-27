@@ -19,6 +19,7 @@ class Room;
 template<class T> using ExpectedRoom = Expected<T, RoomError>;
 
 
+
 class IRoomStatus : public std::enable_shared_from_this<IRoomStatus> {
 public:
   explicit IRoomStatus(const RoomConfig &roomConfig) :

@@ -3,12 +3,15 @@
 //
 
 #include "RoomPlay.hpp"
+#include "RoomEnd.hpp"
 #include "Room.hpp"
 
 
 
 RoomPlay::RoomPlay(const RoomConfig &roomConfig) :
-    IRoomStatus(roomConfig) {}
+    IRoomStatus(roomConfig),
+    _endGame(std::chrono::steady_clock::now() + std::chrono::milliseconds(_roomConfig._playDuration)),
+    _lastTimePlayersChecked(std::chrono::steady_clock::now()) {}
 
 
 ExpectedRoom<bool> RoomPlay::addPlayer(std::shared_ptr<Room> room, const Player &player) {
@@ -52,7 +55,14 @@ ExpectedRoom<size_t> RoomPlay::validateWrittenText(std::shared_ptr<Room> room,
     room->_numberOfFinishers++;
 
     if (room->_numberOfFinishers == room->_players.size()) {
-      //todo end of game, change room state
+      // end game
+      if (room->_timer.cancel() > 0) {
+        room->_roomStatus = std::shared_ptr<IRoomStatus>(new RoomEnd(_roomConfig));
+        room->startAsyncEvent();
+      } else {
+       // throw RoomException("addPlayer (WAIT) : No one async wait canceled. Maybe, that shouldn't be an exception.");
+        std::cout << "addPlayer (WAIT) : No one async wait canceled in room " + room->_roomUUID << std::endl;
+      }
     }
   }
 
@@ -61,13 +71,27 @@ ExpectedRoom<size_t> RoomPlay::validateWrittenText(std::shared_ptr<Room> room,
 
 
 void RoomPlay::startAsyncEvent(std::shared_ptr<Room> room) {
-  room->_timer.expires_from_now(boost::posix_time::milliseconds(_roomConfig._playHandlerInterval));
+  if (std::chrono::steady_clock::now() + std::chrono::milliseconds(_roomConfig._playHandlerInterval) < _endGame) {
+    room->_timer.expires_from_now(std::chrono::milliseconds(_roomConfig._playHandlerInterval));
+  } else {
+    auto now = std::chrono::steady_clock::now();
+
+    if (_endGame > now) {
+      room->_timer.expires_from_now(_endGame - now);
+    } else {
+      room->_roomStatus = std::shared_ptr<IRoomStatus>(new RoomEnd(_roomConfig));
+      room->startAsyncEvent();
+      return;
+    }
+  }
+
   room->_timer.async_wait(boost::bind(&RoomPlay::deadlineHandler, shared_from_this(), room, _1));
 }
 
 
+
 void RoomPlay::deadlineHandler(std::shared_ptr<Room> room, const boost::system::error_code& ec) {
-  if (ec /*&& ec != boost::asio::error::operation_aborted*/) {
+  if (ec) {
     std::cout << "RoomPlay handler error: " << ec.message() << std::endl;
     return;
   }
@@ -75,10 +99,8 @@ void RoomPlay::deadlineHandler(std::shared_ptr<Room> room, const boost::system::
 
   std::unique_lock<std::mutex> lock(room->_roomMutex);
 
-  // todo calculate players speed
-//  if () {
-//    room->_roomStatus = std::shared_ptr<IRoomStatus>(new RoomPlay(_roomConfig)); // todo RoomEnd
-//  }
+  calculatePlayersSpeed(room);
+
   room->startAsyncEvent();
 }
 
@@ -99,6 +121,17 @@ size_t RoomPlay::compareText(const std::string &roomText, const std::string &rec
       break;
     }
   }
-
+  // todo finishline
   return i;
+}
+
+
+void RoomPlay::calculatePlayersSpeed(std::shared_ptr<Room> room) {
+  std::chrono::duration<double, std::ratio<60>> timeDelta = std::chrono::steady_clock::now() - _lastTimePlayersChecked;
+  for (auto &player : room->_players) {
+    auto textDelta = player.second._textPosition - player.second._lastTextPosition;
+    player.second._currentSpeed = textDelta / timeDelta.count();
+    player.second._lastTextPosition = player.second._textPosition;
+  }
+  _lastTimePlayersChecked = std::chrono::steady_clock::now();
 }

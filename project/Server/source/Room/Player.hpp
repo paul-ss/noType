@@ -5,6 +5,8 @@
 #pragma once
 
 #include <string>
+#include <chrono>
+
 
 enum PlayerState {PLAYER_PLAY, PLAYER_FINISH, PLAYER_WIN};
 
@@ -16,7 +18,8 @@ struct Player {
   const std::string _name;
   size_t _textPosition;
   PlayerState _state;
-  int i;
+
+  size_t _lastTextPosition;
   double _currentSpeed;
 };
 

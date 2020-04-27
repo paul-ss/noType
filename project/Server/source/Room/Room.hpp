@@ -12,6 +12,7 @@
 #include <mutex>
 #include <unordered_map>
 #include <boost/asio.hpp>
+#include <boost/asio/steady_timer.hpp>
 #include <boost/bind.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/uuid.hpp>
@@ -37,7 +38,7 @@ public:
 
   friend class RoomWait;
   friend class RoomPlay;
-
+  friend class RoomEnd;
 
 private:
   //ExpectedRoom<RoomState> getStatus();
@@ -45,15 +46,13 @@ private:
   std::string randomUUID();
 
 
-  boost::asio::deadline_timer _timer;
+  boost::asio::steady_timer _timer;
  // RoomState _state;
   RoomConfig _roomConfig;
   std::shared_ptr<IRoomStatus> _roomStatus;
   std::unordered_map<std::string, Player> _players; // uuid, player
   std::string _text;
-  size_t _finishLine;
   size_t _numberOfFinishers;
-  size_t _maxPlayersCount;
   //- _timeFromStart : double
   std::string _roomUUID;
   std::mutex _roomMutex;

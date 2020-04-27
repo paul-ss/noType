@@ -60,7 +60,7 @@ ADD_EXECUTABLE(server
         RoomStatus/RoomWait.cpp
         RoomStatus/RoomWait.hpp
         RoomStatus/RoomPlay.cpp
-        RoomStatus/RoomPlay.hpp)
+        RoomStatus/RoomPlay.hpp RoomStatus/RoomEnd.cpp RoomStatus/RoomEnd.hpp)
 
 
 TARGET_LINK_LIBRARIES(server ${Boost_SYSTEM_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
