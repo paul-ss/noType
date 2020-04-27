@@ -16,11 +16,12 @@ ExpectedRoom<bool> RoomWait::addPlayer(std::shared_ptr<Room> room, const Player 
   std::unique_lock<std::mutex> lock(room->_roomMutex);
 
   if (room->_players.size() >= _roomConfig._maxPlayersCount) {
-    //throw
+    throw RoomException("addPlayer (WAIT) : Attempt to add player "
+    + player._clientUUID + " to filled room " + room->_roomUUID);
   }
 
   if (player._clientUUID.empty() ||  player._name.empty()) {
-    //throw
+    throw RoomException("addPlayer (WAIT) : Invalid Player UUID or name at room " + room->_roomUUID);
   }
 
   room->_players.emplace(player._clientUUID, player);
@@ -36,7 +37,7 @@ ExpectedRoom<bool> RoomWait::addPlayer(std::shared_ptr<Room> room, const Player 
       room->_roomStatus = std::shared_ptr<IRoomStatus>(new RoomPlay(_roomConfig));
       room->startAsyncEvent();
     } else {
-      // throw
+      throw RoomException("addPlayer (WAIT) : No one async wait canceled. Maybe, that shouldn't be an exception.");
     }
   }
 

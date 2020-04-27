@@ -29,10 +29,10 @@ public:
 };
 
 
+class RoomException: public ServerException {
+public:
+  explicit RoomException(const std::string& msg)
+      : ServerException("Room-> " + msg) {}
+};
 
-//class InvalidUUIDException: public RoomManagerException {
-//public:
-//  InvalidUUIDException(const std::string &msg)
-//      : RoomManagerException(msg) {}
-//};
 

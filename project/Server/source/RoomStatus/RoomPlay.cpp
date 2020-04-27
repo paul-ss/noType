@@ -32,7 +32,7 @@ ExpectedRoom<size_t> RoomPlay::validateWrittenText(std::shared_ptr<Room> room,
   std::unique_lock<std::mutex> lock(room->_roomMutex);
 
   if (room->_players.count(clientUUID) == 0) {
-    // todo throw player not found
+    throw RoomException("validateWrittenText (PLAY): Requested player " + clientUUID + " not found in room " + room->_roomUUID);
   }
 
 

@@ -5,6 +5,8 @@
 #pragma once
 
 #include "IRoomStatus.hpp"
+#include "Exceptions.hpp"
+
 #include <memory>
 #include <iostream>
 
