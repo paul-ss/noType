@@ -57,6 +57,7 @@ ExpectedRoom<size_t> RoomPlay::validateWrittenText(std::shared_ptr<Room> room,
     if (room->_numberOfFinishers == room->_players.size()) {
       // end game
       if (room->_timer.cancel() > 0) {
+        //TODO use make shared !!
         room->_roomStatus = std::shared_ptr<IRoomStatus>(new RoomEnd(_roomConfig));
         room->startAsyncEvent();
       } else {
@@ -79,6 +80,7 @@ void RoomPlay::startAsyncEvent(std::shared_ptr<Room> room) {
     if (_endGame > now) {
       room->_timer.expires_from_now(_endGame - now);
     } else {
+      //TODO use make shared !!
       room->_roomStatus = std::shared_ptr<IRoomStatus>(new RoomEnd(_roomConfig));
       room->startAsyncEvent();
       return;

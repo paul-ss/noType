@@ -60,16 +60,29 @@ ADD_EXECUTABLE(server
         RoomStatus/RoomWait.cpp
         RoomStatus/RoomWait.hpp
         RoomStatus/RoomPlay.cpp
-        RoomStatus/RoomPlay.hpp RoomStatus/RoomEnd.cpp RoomStatus/RoomEnd.hpp)
+        RoomStatus/RoomPlay.hpp
+        RoomStatus/RoomEnd.cpp
+        RoomStatus/RoomEnd.hpp)
 
 
 TARGET_LINK_LIBRARIES(server ${Boost_SYSTEM_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 #SET(USED_LIBS ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARY})
 
 ADD_EXECUTABLE(serverTests
-        mainTest.cpp)
+        mainTest.cpp
+        Room/Tests/RoomTests.cpp
+        Room/Player.hpp
+        Room/Player.cpp
+        Room/Room.hpp
+        Room/Room.cpp
+        RoomStatus/RoomWait.cpp
+        RoomStatus/RoomWait.hpp
+        RoomStatus/RoomPlay.cpp
+        RoomStatus/RoomPlay.hpp
+        RoomStatus/RoomEnd.cpp
+        RoomStatus/RoomEnd.hpp)
 
-TARGET_LINK_LIBRARIES(serverTests ${GTEST_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+TARGET_LINK_LIBRARIES(serverTests ${GTEST_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${Boost_SYSTEM_LIBRARY})
 
 
 

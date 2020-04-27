@@ -55,7 +55,7 @@ bool RoomManager::addPlayerAndRoom(boost::asio::io_service &service,
   }
 
 
-  std::shared_ptr<Room> newRoomPtr(new Room(service, text));
+  auto newRoomPtr = std::make_shared<Room>(service, text, shared_from_this());
 
   auto playerAddRes = newRoomPtr->addPlayer(player);
   if (!playerAddRes) {
@@ -66,7 +66,7 @@ bool RoomManager::addPlayerAndRoom(boost::asio::io_service &service,
   if (_rooms.count(newRoomPtr->getUUID()) > 0) {
     throw RoomManagerException("Room with UUID " + newRoomPtr->getUUID() + " already exists");
   }
-
+  // TODO check insertion return value!!!
   _rooms.emplace(newRoomPtr->getUUID(), newRoomPtr);
   _players.emplace(player._clientUUID, newRoomPtr->getUUID());
 

@@ -20,12 +20,16 @@
 
 
 template<class T> using ExpectedRoom = Expected<T, RoomError>;
+class RoomManager;
 
 enum RoomState {ROOM_WAIT, ROOM_PLAY, ROOM_END};
 
 class Room : public std::enable_shared_from_this<Room> {
 public:
-  Room(boost::asio::io_service &service, const std::string &text);
+  Room(boost::asio::io_service &service,  
+        const std::string &text,
+        const std::shared_ptr<RoomManager> &roomManager,
+        const RoomConfig &roomConfig = RoomConfig());
 
   ExpectedRoom<bool> addPlayer(const Player &player);
   ExpectedRoom<std::string> getText();
@@ -47,7 +51,7 @@ private:
 
 
   boost::asio::steady_timer _timer;
- // RoomState _state;
+  std::weak_ptr<RoomManager> _roomManager;
   RoomConfig _roomConfig;
   std::shared_ptr<IRoomStatus> _roomStatus;
   std::unordered_map<std::string, Player> _players; // uuid, player

@@ -15,7 +15,7 @@
 #include <boost/uuid/random_generator.hpp>
 
 
-class RoomManager {
+class RoomManager : public std::enable_shared_from_this<RoomManager> {
 public:
   RoomManager(/* Data */);
  // void addPlayer(const Player &player, boost::asio::io_service &service);
@@ -40,7 +40,7 @@ private:
   std::weak_ptr<Room> _lastRoom;
   std::unordered_map<std::string, std::shared_ptr<Room>> _rooms;
   std::unordered_map<std::string, std::string> _players; // <clientUUID, roomId>
-  boost::asio::io_service _service;
+  //boost::asio::io_service _service;
   std::mutex _roomManagerMutex;
 };
 

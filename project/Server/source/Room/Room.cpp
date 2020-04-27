@@ -5,12 +5,19 @@
 #include "Room.hpp"
 
 
-Room::Room(boost::asio::io_service &service, const std::string &text) :
+Room::  Room(boost::asio::io_service &service,
+             const std::string &text,
+             const std::shared_ptr<RoomManager> &roomManager,
+             const RoomConfig &roomConfig) :
     _timer(service),
+    _roomManager(roomManager),
+    _roomConfig(roomConfig),
     _roomStatus(new RoomWait(_roomConfig)),
     _text(text),
     _numberOfFinishers(0),
     _roomUUID(randomUUID()){}
+    
+    //TODO use make shared !!
 
 
 
