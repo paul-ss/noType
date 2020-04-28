@@ -45,9 +45,10 @@ ExpectedRoom<bool> RoomManager::addPlayer(const Player &player) {
 
 
 
-bool RoomManager::addPlayerAndRoom(boost::asio::io_service &service,
-                                    const std::string &text,
-                                    const Player &player) {
+bool RoomManager::addPlayerAndRoom(const Player &player,
+                                   boost::asio::io_service &service,
+                                   const std::string &text,
+                                   const RoomConfig &roomConfig) {
   std::unique_lock<std::mutex> lock(_roomManagerMutex);
 
   if (auto addPlayerResult = addPlayerInternal(player)) {
@@ -55,7 +56,7 @@ bool RoomManager::addPlayerAndRoom(boost::asio::io_service &service,
   }
 
 
-  auto newRoomPtr = std::make_shared<Room>(service, text, shared_from_this());
+  auto newRoomPtr = std::make_shared<Room>(service, text, shared_from_this(), roomConfig);
 
   auto playerAddRes = newRoomPtr->addPlayer(player);
   if (!playerAddRes) {

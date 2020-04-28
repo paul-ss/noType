@@ -22,9 +22,10 @@ public:
 
   bool deleteRoom(const std::string &roomUUID);
   ExpectedRoom<bool> addPlayer(const Player &player);
-  bool addPlayerAndRoom(boost::asio::io_service &service,
+  bool addPlayerAndRoom(const Player &player,
+                         boost::asio::io_service &service,
                          const std::string &text,
-                         const Player &player);
+                         const RoomConfig &roomConfig = RoomConfig());
   std::shared_ptr<Room> getRoom(const std::string &clientUUID);
 
 

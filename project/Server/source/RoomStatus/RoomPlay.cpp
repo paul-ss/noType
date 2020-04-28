@@ -59,7 +59,7 @@ ExpectedRoom<size_t> RoomPlay::validateWrittenText(std::shared_ptr<Room> room,
       // end game
       if (room->_timer.cancel() > 0) {
         //TODO use make shared !!
-        room->_roomStatus = std::shared_ptr<IRoomStatus>(new RoomEnd(_roomConfig));
+        room->_roomStatus = std::shared_ptr<IRoomStatus>(std::make_shared<RoomEnd>(_roomConfig));
         room->startAsyncEvent();
       } else {
        // throw RoomException("addPlayer (WAIT) : No one async wait canceled. Maybe, that shouldn't be an exception.");
@@ -82,7 +82,7 @@ void RoomPlay::startAsyncEvent(std::shared_ptr<Room> room) {
       room->_timer.expires_from_now(_endGame - now);
     } else {
       //TODO use make shared !!
-      room->_roomStatus = std::shared_ptr<IRoomStatus>(new RoomEnd(_roomConfig));
+      room->_roomStatus = std::shared_ptr<IRoomStatus>(std::make_shared<RoomEnd>(_roomConfig));
       room->startAsyncEvent();
       return;
     }

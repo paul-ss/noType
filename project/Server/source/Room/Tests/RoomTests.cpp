@@ -19,7 +19,7 @@ void playersEQ(const Player &l, const Player &r) {
 
 
 TEST(room, game_session) {
-  RoomConfig rc(200, 5, 500, 700, 700, 0);
+  RoomConfig rc(200, 5, 500, 2000, 700, 0);
   boost::asio::io_service service;
   auto rm =  std::make_shared<RoomManager>();
   std::vector<std::thread> thr;
@@ -191,7 +191,7 @@ TEST(room, PLAY_other_func) {
 
   thr.emplace_back([&]() { service.run(); });
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(300));
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
   ASSERT_THROW(room->validateWrittenText("text", "123"), RoomException);
 

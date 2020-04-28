@@ -12,12 +12,11 @@ Room::  Room(boost::asio::io_service &service,
     _timer(service),
     _roomManager(roomManager),
     _roomConfig(roomConfig),
-    _roomStatus(new RoomWait(_roomConfig)),
+    _roomStatus(std::make_shared<RoomWait>(_roomConfig)),
     _text(text),
     _numberOfFinishers(0),
     _roomUUID(randomUUID()){}
-
-    //TODO use make shared !!
+    
 
 
 

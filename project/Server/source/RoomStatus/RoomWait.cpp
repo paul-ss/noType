@@ -37,7 +37,7 @@ ExpectedRoom<bool> RoomWait::addPlayer(std::shared_ptr<Room> room, const Player 
 
   if (room->_players.size() == _roomConfig._maxPlayersCount) {
     if (room->_timer.cancel() > 0) {
-      room->_roomStatus = std::shared_ptr<IRoomStatus>(new RoomPlay(_roomConfig));
+      room->_roomStatus = std::shared_ptr<IRoomStatus>(std::make_shared<RoomPlay>(_roomConfig));
       room->startAsyncEvent();
     } else {
       //throw RoomException("addPlayer (WAIT) : No one async wait canceled. Maybe, that shouldn't be an exception.");
@@ -79,7 +79,7 @@ void RoomWait::deadlineHandler(std::shared_ptr<Room> room, const boost::system::
 
   std::unique_lock<std::mutex> lock(room->_roomMutex);
 
-  room->_roomStatus = std::shared_ptr<IRoomStatus>(new RoomPlay(_roomConfig)); // todo RoomPlay
+  room->_roomStatus = std::shared_ptr<IRoomStatus>(std::make_shared<RoomPlay>(_roomConfig));
   room->startAsyncEvent();
 }
 

@@ -30,7 +30,7 @@ int main() {
   auto rm = std::make_shared<RoomManager>();
 
   Player p2("uuid2", "name2");
-  std::cout << rm->addPlayerAndRoom(service, "text", p2) << std::endl;
+  std::cout << rm->addPlayerAndRoom(p2, service, "text") << std::endl;
   Player p3("uuid3", "name1");
   std::cout << rm->addPlayer(p3) << std::endl;
   Player p4("uuid4", "name1");
