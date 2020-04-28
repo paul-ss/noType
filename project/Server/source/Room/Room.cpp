@@ -16,8 +16,17 @@ Room::  Room(boost::asio::io_service &service,
     _text(text),
     _numberOfFinishers(0),
     _roomUUID(randomUUID()){}
-    
+
     //TODO use make shared !!
+
+
+
+std::unordered_map<std::string, Player> Room::getPlayers() {
+  std::unique_lock<std::mutex> lock(_roomMutex);
+  return _players;
+}
+
+
 
 
 

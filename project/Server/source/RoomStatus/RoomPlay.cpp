@@ -46,7 +46,8 @@ ExpectedRoom<size_t> RoomPlay::validateWrittenText(std::shared_ptr<Room> room,
   size_t rightWritten = compareText(room->_text, recvText, room->_players.at(clientUUID)._textPosition);
   room->_players.at(clientUUID)._textPosition += rightWritten;
 
-  if (room->_players.at(clientUUID)._textPosition >= room->_text.size()) {
+  auto textPosition = room->_players.at(clientUUID)._textPosition;
+  if (textPosition >= room->_text.size() || textPosition >= _roomConfig._finishLine) {
     if (room->_numberOfFinishers == 0) {
       room->_players.at(clientUUID)._state = PLAYER_WIN;
     } else {
@@ -123,7 +124,7 @@ size_t RoomPlay::compareText(const std::string &roomText, const std::string &rec
       break;
     }
   }
-  // todo finishline
+
   return i;
 }
 

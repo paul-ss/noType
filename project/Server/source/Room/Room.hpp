@@ -26,16 +26,17 @@ enum RoomState {ROOM_WAIT, ROOM_PLAY, ROOM_END};
 
 class Room : public std::enable_shared_from_this<Room> {
 public:
-  Room(boost::asio::io_service &service,  
+  Room(boost::asio::io_service &service,
         const std::string &text,
         const std::shared_ptr<RoomManager> &roomManager,
         const RoomConfig &roomConfig = RoomConfig());
 
+  std::unordered_map<std::string, Player> getPlayers();
   ExpectedRoom<bool> addPlayer(const Player &player);
   ExpectedRoom<std::string> getText();
   ExpectedRoom<size_t> validateWrittenText(const std::string &text, const std::string &clientUUID);
   void startAsyncEvent();
- // void deadlineHandler(const boost::system::error_code& error);
+
 
   std::string getUUID();
   std::vector<std::string> getPlayersUUID();

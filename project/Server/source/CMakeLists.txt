@@ -71,6 +71,8 @@ TARGET_LINK_LIBRARIES(server ${Boost_SYSTEM_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 ADD_EXECUTABLE(serverTests
         mainTest.cpp
         Room/Tests/RoomTests.cpp
+        Room/RoomManager.cpp
+        Room/RoomManager.hpp
         Room/Player.hpp
         Room/Player.cpp
         Room/Room.hpp
@@ -80,7 +82,7 @@ ADD_EXECUTABLE(serverTests
         RoomStatus/RoomPlay.cpp
         RoomStatus/RoomPlay.hpp
         RoomStatus/RoomEnd.cpp
-        RoomStatus/RoomEnd.hpp)
+        RoomStatus/RoomEnd.hpp Room/Tests/RoomManagerTests.cpp)
 
 TARGET_LINK_LIBRARIES(serverTests ${GTEST_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${Boost_SYSTEM_LIBRARY})
 

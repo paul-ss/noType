@@ -25,7 +25,9 @@ ExpectedRoom<bool> RoomWait::addPlayer(std::shared_ptr<Room> room, const Player 
   }
 
   // TODO check insertion return value
-  room->_players.emplace(player._clientUUID, player);
+  if (!room->_players.emplace(player._clientUUID, player).second) {
+    throw RoomException("addPlayer (WAIT) : Can't add player " + room->_roomUUID);
+  }
   std::cout << "PLayer " << player._clientUUID << " added" << std::endl;
 
 
