@@ -18,7 +18,7 @@ class GUI_Element {
     friend class GUI_Interface;
 
     public:
-        GUI_Element(const std::string& name, const GUI_ElementType& type, GUI_Interface* owner);
+        explicit GUI_Element(const std::string& name, const GUI_ElementType& type, GUI_Interface* owner);
         virtual ~GUI_Element();
 
         virtual void ReadIn(std::stringstream& stream) = 0;

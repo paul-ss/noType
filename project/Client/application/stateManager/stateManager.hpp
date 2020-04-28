@@ -20,7 +20,7 @@ using StateFactory = std::unordered_map< StateType,
 
 class StateManager{
     public:
-        StateManager(SharedContext* shared);
+        explicit StateManager(SharedContext* shared);
         ~StateManager();
 
         void Update(const sf::Time& time);

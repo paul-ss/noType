@@ -11,7 +11,7 @@
 template <typename Derived, typename T>
 class ResourceManager {
     public:
-        ResourceManager(const std::string& pathsFile) {
+        explicit ResourceManager(const std::string& pathsFile) {
             loadPaths(pathsFile);
         }
 

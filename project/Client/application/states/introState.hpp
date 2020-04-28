@@ -6,7 +6,7 @@
 
 class IntroState : public BaseState {
     public:
-        IntroState(StateManager* stateManager);
+        explicit IntroState(StateManager* stateManager);
         ~IntroState();
 
         void OnCreate() override;

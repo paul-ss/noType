@@ -1,7 +1,7 @@
 #include "eventManager.hpp"
 #include "exceptions.hpp"
 
-EventManager::EventManager(): _hasFocus(true) {
+EventManager::EventManager():_currentState(StateType(0)), _hasFocus(true) {
     LoadBindings();
 }
 
@@ -55,7 +55,7 @@ bool EventManager::RemoveBinding(std::string name) {
     return true;
 }
 
-void EventManager::HandleEvent(sf::Event& event) {
+void EventManager::HandleEvent(const sf::Event& event) {
     for (auto &b_itr : _bindings) {
         auto bind = b_itr.second;
         for (auto &e_itr : bind->_events) {
@@ -157,7 +157,6 @@ void EventManager::LoadBindings() {
     bindings.open("resources/keys.cfg");
     if (!bindings.is_open()) {
         throw InvalidFile();
-        return;
     }
 
     std::string line;

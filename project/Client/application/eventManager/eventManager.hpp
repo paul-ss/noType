@@ -96,7 +96,7 @@ class EventManager {
         void SetCurrentState(StateType state);
         void SetFocus(const bool& focus);
 
-        void HandleEvent(sf::Event& event);
+        void HandleEvent(const sf::Event& event);
         void Update();
 
         bool AddCallback(StateType state,
