@@ -5,7 +5,7 @@
 #include "GameController.hpp"
 
 
-GameController::GameController(std::shared_ptr<QueueManager> queueManager /*data : std::shared_ptr<Data>*/) :
+GameController::GameController(const std::shared_ptr<QueueManager> &queueManager /*data : std::shared_ptr<Data>*/) :
     _queueManager(queueManager),
     //std::shared_ptr<Data> _data;
     _state(GAME_CONTROLLER_STOP) {}
@@ -58,11 +58,23 @@ void GameController::sendWrittenTextHandler(const std::shared_ptr<Command> &comm
 
 
 void GameController::runGameSessions() {
-
+  _service.run();
 }
 
 
 void GameController::runQueueWorker() {
+  while(1) {
+    {
+      std::unique_lock<std::mutex> lock(_gameControllerMutex);
+      if (_state == GAME_CONTROLLER_STOP) {
+        break;
+      }
+    }
 
+    std::shared_ptr<Command> command;
+    if (_queueManager->serverPop(command)) {
+      commandDistributor(command);
+    }
+  }
 }
 

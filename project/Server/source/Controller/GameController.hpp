@@ -19,7 +19,7 @@ enum GameControllerState {GAME_CONTROLLER_RUN, GAME_CONTROLLER_STOP};
 class GameController {
 public:
 
-  GameController(std::shared_ptr<QueueManager> queueManager /*data : std::shared_ptr<Data>*/);
+  GameController(const std::shared_ptr<QueueManager> &queueManager /*data : std::shared_ptr<Data>*/);
   ~GameController();
   void startController();
   void stopController();
@@ -38,8 +38,8 @@ private:
 
   std::shared_ptr<QueueManager> _queueManager ;
   //std::shared_ptr<Data> _data;
- // RoomManager _roomManager;
- // boost::asio::io_service _service; ??
+  RoomManager _roomManager;
+  boost::asio::io_service _service;
   std::mutex _gameControllerMutex;
   GameControllerState _state;
   std::vector<std::thread> _threads;
