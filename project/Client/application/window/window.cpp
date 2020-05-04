@@ -24,8 +24,6 @@ void Window::setup(const std::string& title, const sf::Vector2u& size) {
     _isDone = false;
     _window.setFramerateLimit(FPS);
 
-    _eventManager.SetFocus(true);
-    // NOTE(vendroid): Нобходимо чтобы сигнатура функций совпадала, поэтому объявляем тут переменную пустышку
     auto lambdaClose = [this](EventDetails& details) { this->Close(); };
     _eventManager.AddCallback(StateType(0), "Window_close", lambdaClose);
 

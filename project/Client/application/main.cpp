@@ -1,8 +1,8 @@
-//#include "fileLogger.hpp"
+#include "logger.hpp"
 #include "game.hpp"
 
 int main() {
-    //FileLogger::getInstance();
+    init_logger();
     Game game;
     game.Run();
     return 0;

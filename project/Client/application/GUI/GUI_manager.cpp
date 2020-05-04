@@ -4,8 +4,8 @@
 GUI_Manager::GUI_Manager(EventManager* evMgr, SharedContext* shared)
     : _eventMgr(evMgr), _context(shared), _currentState(StateType(0)) {
 
-    RegisterElement<GUI_Label>(GUI_ElementType::Label);
-    RegisterElement<GUI_Textfield>(GUI_ElementType::Textfield);
+    //RegisterElement<GUI_Label>(GUI_ElementType::Label);
+    //RegisterElement<GUI_Textfield>(GUI_ElementType::Textfield);
 
     _elemTypes.emplace("Label", GUI_ElementType::Label);
     _elemTypes.emplace("Button", GUI_ElementType::Button);
@@ -197,7 +197,7 @@ void GUI_Manager::Update(float dT) {
     }
 }
 
-void GUI_Manager::Render(sf::RenderWindow* wind){
+void GUI_Manager::Render(sf::RenderWindow* window){
     auto state = _interfaces.find(_currentState);
     if (state == _interfaces.end()) {
         return;
@@ -221,7 +221,7 @@ void GUI_Manager::Render(sf::RenderWindow* wind){
             i->RedrawControls();
         }
 
-        i->Draw(wind);
+        i->Draw(window);
     }
 }
 

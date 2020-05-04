@@ -23,7 +23,7 @@ class GUI_Manager {
     friend class GUI_Interface;
 
     public:
-        GUI_Manager(EventManager* evMgr, SharedContext* shared);
+        explicit GUI_Manager(EventManager* evMgr, SharedContext* shared);
         ~GUI_Manager();
 
         bool AddInterface(const StateType& state,
@@ -50,14 +50,14 @@ class GUI_Manager {
         bool PollEvent(GUI_Event& event);
 
         void Update(float dT);
-        void Render(sf::RenderWindow* wind);
+        void Render(sf::RenderWindow* window);
 
-        template<class T>
+        /*template<class T>
         void RegisterElement(const GUI_ElementType& id) {
             _factory[id] = [](GUI_Interface* owner) -> GUI_Element* {
                 return new T("", owner);
             };
-        }
+        }*/
 
     private:
         GUI_Element* CreateElement(const GUI_ElementType& id, GUI_Interface* owner);
