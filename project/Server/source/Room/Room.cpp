@@ -54,10 +54,13 @@ void Room::startAsyncEvent() {
 
 
 std::string Room::getUUID() {
+  std::unique_lock<std::mutex> lock(_roomMutex);
   return _roomUUID;
 }
 
 std::vector<std::string> Room::getPlayersUUID() {
+  std::unique_lock<std::mutex> lock(_roomMutex);
+
   std::vector<std::string> result;
   for (auto &player : _players) {
     result.push_back(player.first);
@@ -65,6 +68,13 @@ std::vector<std::string> Room::getPlayersUUID() {
 
   return result;
 }
+
+
+void Room::setRoomStatus(const std::shared_ptr<IRoomStatus> &roomStatus) {
+  std::unique_lock<std::mutex> lock(_roomMutex);
+  _roomStatus = roomStatus;
+}
+
 
 std::string Room::randomUUID() {
   boost::uuids::random_generator gen;

@@ -82,7 +82,7 @@ ADD_EXECUTABLE(serverTests
         RoomStatus/RoomPlay.cpp
         RoomStatus/RoomPlay.hpp
         RoomStatus/RoomEnd.cpp
-        RoomStatus/RoomEnd.hpp Room/Tests/RoomManagerTests.cpp)
+        RoomStatus/RoomEnd.hpp Room/Tests/RoomManagerTests.cpp Room/Tests/RoomWaitTest.cpp Room/Tests/RoomPlayTest.cpp)
 
 TARGET_LINK_LIBRARIES(serverTests ${GTEST_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${Boost_SYSTEM_LIBRARY})
 

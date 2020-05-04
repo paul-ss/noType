@@ -40,6 +40,7 @@ public:
 
   std::string getUUID();
   std::vector<std::string> getPlayersUUID();
+  void setRoomStatus(const std::shared_ptr<IRoomStatus> &roomStatus);
 
   friend class RoomWait;
   friend class RoomPlay;
