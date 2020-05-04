@@ -14,9 +14,9 @@
 
 class QueueManager {
 public:
-  void serverPush(const std::string &data, const std::string &connectionUUID);
+  virtual void serverPush(const std::string &data, const std::string &connectionUUID);
   void controllerPush(const std::shared_ptr<Command> &command);
-  bool serverPop(std::shared_ptr<Command> &command);
+  virtual bool serverPop(std::shared_ptr<Command> &command);
   bool basicControllerPop(std::shared_ptr<Command> &command);
   bool gameControllerPop(std::shared_ptr<Command> &command);
   void serverNotify();

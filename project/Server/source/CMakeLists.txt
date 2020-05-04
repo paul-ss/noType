@@ -68,7 +68,7 @@ ADD_EXECUTABLE(server
 TARGET_LINK_LIBRARIES(server ${Boost_SYSTEM_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 #SET(USED_LIBS ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARY})
 
-ADD_EXECUTABLE(serverTests
+ADD_EXECUTABLE(roomTests
         mainTest.cpp
         Room/Tests/RoomTests.cpp
         Room/RoomManager.cpp
@@ -82,9 +82,29 @@ ADD_EXECUTABLE(serverTests
         RoomStatus/RoomPlay.cpp
         RoomStatus/RoomPlay.hpp
         RoomStatus/RoomEnd.cpp
-        RoomStatus/RoomEnd.hpp Room/Tests/RoomManagerTests.cpp Room/Tests/RoomWaitTest.cpp Room/Tests/RoomPlayTest.cpp)
+        RoomStatus/RoomEnd.hpp
+        Room/Tests/RoomManagerTests.cpp
+        Room/Tests/RoomWaitTest.cpp
+        Room/Tests/RoomPlayTest.cpp)
 
-TARGET_LINK_LIBRARIES(serverTests ${GTEST_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${Boost_SYSTEM_LIBRARY})
+TARGET_LINK_LIBRARIES(roomTests ${GTEST_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${Boost_SYSTEM_LIBRARY})
+
+
+ADD_EXECUTABLE(tcpServerTests
+        mainTest.cpp
+        TcpServer/Tests/ClientTests.cpp
+        TcpServer/Client.cpp
+        TcpServer/Client.hpp
+        TcpServer/ConnectedClients.cpp
+        TcpServer/ConnectedClients.hpp
+        TcpServer/TcpServer.cpp
+        TcpServer/TcpServer.hpp
+        QueueManager/Queue.cpp
+        QueueManager/Queue.hpp
+        QueueManager/QueueManager.cpp
+        QueueManager/QueueManager.hpp)
+
+TARGET_LINK_LIBRARIES(tcpServerTests ${GTEST_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${Boost_SYSTEM_LIBRARY})
 
 
 
