@@ -54,7 +54,6 @@ void Room::startAsyncEvent() {
 
 
 std::string Room::getUUID() {
-  std::unique_lock<std::mutex> lock(_roomMutex);
   return _roomUUID;
 }
 

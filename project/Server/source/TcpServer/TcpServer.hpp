@@ -7,6 +7,7 @@
 #include "Client.hpp"
 #include "ConnectedClients.hpp"
 #include "QueueManager.hpp"
+#include "ServerConfig.hpp"
 
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
@@ -26,8 +27,7 @@ enum ServerState {SERVER_RUN, SERVER_STOP};
 class TcpServer {
 public:
 
-  TcpServer(std::shared_ptr<QueueManager> queueManager, const std::string &ipAddress, unsigned int port,
-            unsigned int timeout);
+  TcpServer(const std::shared_ptr<QueueManager> &queueManager, const ServerConfig &config);
   ~TcpServer(); // join
   void startServer();
   void stopServer();
@@ -51,6 +51,7 @@ private:
   std::shared_ptr<QueueManager> _queueManager;
   boost::asio::ip::tcp::endpoint _ep;
   ServerState _state;
+  ServerConfig _config;
   std::mutex _serverMutex;
 };
 

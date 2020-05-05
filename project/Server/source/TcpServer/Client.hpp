@@ -21,7 +21,8 @@ public:
   Client(boost::asio::io_service &io,
          const std::weak_ptr<ConnectedClients> &clients,
          const std::shared_ptr<QueueManager> &queueManager,
-         const std::string &connectionUUID);
+         const std::string &connectionUUID,
+         const std::string &delim);
   void read();
   void handleRead(const boost::system::error_code& ec, size_t n_bytes);
   void write();
@@ -43,6 +44,7 @@ private:
   std::queue<std::string> _dataToSendQueue;
   std::weak_ptr<ConnectedClients> _clients;
   std::shared_ptr<QueueManager> _queueManager;
+  std::string _delim;
   std::mutex _clientMutex;
 
 };

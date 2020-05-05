@@ -6,53 +6,169 @@
 #include "Client.hpp"
 #include "ConnectedClients.hpp"
 #include "TcpServer.hpp"
+
+#include <fstream>
+
 #include <thread>
 
+
 class FakeQueueManager : public QueueManager {
+public:
   void serverPush(const std::string &data, const std::string &connectionUUID) override {
-    std::cout << data << " " << connectionUUID << std::endl;
+    recv.emplace_back(data, connectionUUID);
   }
+
+  struct Recv {
+    Recv(const std::string &data, const std::string &uuid) : data(data), uuid(uuid) {}
+    std::string data;
+    std::string uuid;
+  };
+
+  std::vector<Recv> recv;
 };
 
 
-TEST(Client, what) {
-  boost::asio::io_service service;
-  auto clients = std::make_shared<ConnectedClients>();
-  auto qm  = std::make_shared<FakeQueueManager>();
-  auto c = std::make_shared<Client>(service, clients, qm, "uuid");
+class ClientTest : public ::testing::Test {
+protected:
+  void SetUp() override {
+    delim = "delim";
+    clients = std::make_shared<ConnectedClients>();
+    qm = std::make_shared<FakeQueueManager>();
+    client = std::make_shared<Client>(service, clients, qm, "uuid", delim);
 
+    ep = boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string("127.0.0.1"), 10000);
+  }
+
+  void TearDown() override {}
+
+  std::string delim;
+  boost::asio::io_service service;
+  std::shared_ptr<ConnectedClients> clients;
+  std::shared_ptr<FakeQueueManager> qm;
+  std::shared_ptr<Client> client;
+  boost::asio::ip::tcp::endpoint ep;
+};
+
+
+std::string makeString(size_t length) {
+  std::string result;
+  for (size_t i = 0; i < length; ++i) {
+    char sym = rand();
+    result += sym;
+  }
+
+  return result;
+}
+
+
+void readData(std::string &res, boost::asio::ip::tcp::socket &sock, const std::string &delim) {
+  boost::asio::streambuf buf;
+  size_t bytes = read_until(sock, buf, delim);
+  if (bytes == 0) {
+    FAIL();
+  }
+
+  std::istream is(&buf);
+  std::string data(bytes, '0');
+
+  if (is.readsome(&data[0], bytes) != (long) bytes) {
+    FAIL();
+  }
+
+  res = data.substr(0, data.size() - std::string(delim).size());
+}
+
+
+
+TEST_F(ClientTest, read) {
   std::vector<std::thread> thr;
 
-  boost::asio::ip::tcp::endpoint ep(boost::asio::ip::address::from_string("127.0.0.1"), 10000);
-  boost::asio::ip::tcp::acceptor a(service, ep);
-  a.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
-  a.listen(1024);
+  boost::asio::ip::tcp::acceptor acceptor(service, ep);
+  acceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
+  acceptor.listen(1024);
 
   thr.emplace_back([&]() {
-    a.accept(c->sock());
-    c->read();
+    acceptor.accept(client->sock());
+    client->read();
   });
 
-
+  boost::asio::io_service::work w(service);
+  thr.emplace_back([&]() {service.run();});
 
   boost::asio::ip::tcp::socket sock(service);
   sock.open(boost::asio::ip::tcp::v4());
   sock.connect(ep);
-  sock.write_some(boost::asio::buffer("123213123123jopa"));
+
+  std::string msg1(makeString(11) + delim);
+  write(sock, boost::asio::buffer(msg1, msg1.size()));
+  std::string msg2(makeString(100) + delim);
+  write(sock, boost::asio::buffer(msg2, msg2.size()));
+  std::string msg3(makeString(123123) + delim);
+  write(sock, boost::asio::buffer(msg3, msg3.size()));
+
+  int i = 0;
+  while (qm->recv.size() != 3) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    i++;
+    if (i == 10) {
+      FAIL();
+    }
+  }
+
   sock.close();
-
-//  auto cmd = std::make_shared<Command>("data", "uuid");
-//  qm->serverPop(cmd);
-//  std::cout << cmd->data << std::endl;
-
-
-
-
-  thr.emplace_back([&]() {service.run();});
-
+  service.stop();
 
 
   for (auto &t : thr) {
     t.join();
   }
+
+
+  ASSERT_EQ(qm->recv.size(), 3);
+  ASSERT_EQ(qm->recv[0].data + delim, msg1);
+  ASSERT_EQ(qm->recv[1].data + delim, msg2);
+  ASSERT_EQ(qm->recv[0].uuid, "uuid");
+  ASSERT_EQ(qm->recv[1].uuid, "uuid");
+}
+
+
+
+TEST_F(ClientTest, write) {
+  std::vector<std::thread> thr;
+
+  boost::asio::ip::tcp::acceptor acceptor(service, ep);
+  acceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
+  acceptor.listen(1024);
+
+  std::vector<std::string> msgs;
+  thr.emplace_back([&]() {
+    acceptor.accept(client->sock());
+
+    msgs.emplace_back(makeString(13));
+    msgs.emplace_back(makeString(23123));
+    msgs.emplace_back(makeString(142214));
+    client->putDataToSend(msgs[0]);
+    client->putDataToSend(msgs[1]);
+    client->putDataToSend(msgs[2]);
+  });
+
+  boost::asio::io_service::work w(service);
+  thr.emplace_back([&]() {service.run();});
+
+  boost::asio::ip::tcp::socket sock(service);
+  sock.open(boost::asio::ip::tcp::v4());
+  sock.connect(ep);
+
+  for (int i = 0; i < 3; i++) {
+    std::string res;
+    readData(res, sock, delim);
+    ASSERT_EQ(msgs[i], res);
+  }
+
+  service.stop();
+
+  for (auto &t : thr) {
+    t.join();
+  }
+
 }

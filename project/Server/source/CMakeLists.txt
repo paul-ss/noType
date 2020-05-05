@@ -62,7 +62,7 @@ ADD_EXECUTABLE(server
         RoomStatus/RoomPlay.cpp
         RoomStatus/RoomPlay.hpp
         RoomStatus/RoomEnd.cpp
-        RoomStatus/RoomEnd.hpp)
+        RoomStatus/RoomEnd.hpp TcpServer/ServerConfig.hpp)
 
 
 TARGET_LINK_LIBRARIES(server ${Boost_SYSTEM_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
@@ -102,7 +102,7 @@ ADD_EXECUTABLE(tcpServerTests
         QueueManager/Queue.cpp
         QueueManager/Queue.hpp
         QueueManager/QueueManager.cpp
-        QueueManager/QueueManager.hpp)
+        QueueManager/QueueManager.hpp TcpServer/ServerConfig.hpp)
 
 TARGET_LINK_LIBRARIES(tcpServerTests ${GTEST_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${Boost_SYSTEM_LIBRARY})
 

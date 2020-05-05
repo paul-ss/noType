@@ -4,16 +4,13 @@
 
 #include "TcpServer.hpp"
 
-TcpServer::TcpServer(std::shared_ptr<QueueManager> queueManager, const std::string &ipAddress, unsigned int port,
-                     unsigned int timeout) :
+TcpServer::TcpServer(const std::shared_ptr<QueueManager> &queueManager, const ServerConfig &config) :
     _acceptor(_service),
     _clients (new ConnectedClients()),
     _queueManager(queueManager),
-    _ep(boost::asio::ip::address::from_string(ipAddress), port),
-    _state(SERVER_STOP) {
-  timeout++;  // TODO (PavelS) Implement it
-  // ip::tcp::v4()
-}
+    _ep(boost::asio::ip::address::from_string(config._ip), config._port),
+    _state(SERVER_STOP),
+    _config(config) {}
 
 
 TcpServer::~TcpServer() {
@@ -27,7 +24,7 @@ void TcpServer::startServer() {
   _acceptor.open(_ep.protocol());
   _acceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
   _acceptor.bind(_ep);
-  _acceptor.listen(1024);  // To config
+  _acceptor.listen(_config._listenCount);
 
 
   startAccept();
@@ -35,11 +32,13 @@ void TcpServer::startServer() {
   {
     std::unique_lock<std::mutex> lock(_serverMutex);
     // worker threads
-    for (size_t i = 0; i < 2; i++) {  // To config
-      _threads.push_back(std::thread(std::bind(&TcpServer::runService, this)));
+    for (size_t i = 0; i < _config._workerThreadsCount; i++) {
+      _threads.emplace_back(std::bind(&TcpServer::runService, this));
     }
 
-    _threads.push_back(std::thread(std::bind(&TcpServer::runQueueWorker, this)));
+    for (size_t i = 0; i < _config._queueWorkersCount; i++) {
+      _threads.emplace_back(std::bind(&TcpServer::runQueueWorker, this));
+    }
     _state = SERVER_RUN;
   }
 }
@@ -55,7 +54,11 @@ void TcpServer::stopServer() {
 
 void TcpServer::startAccept() {
   std::unique_lock<std::mutex> lock(_serverMutex);
-  std::shared_ptr<Client> c(new Client(_service, _clients, _queueManager, randomUUID()));
+  std::shared_ptr<Client> c(new Client(_service,
+                                              _clients,
+                                              _queueManager,
+                                              randomUUID(),
+                                              _config._delim));
   _acceptor.async_accept(c->sock(), boost::bind(&TcpServer::handleAccept, this, c, boost::asio::placeholders::error));
 }
 
@@ -89,7 +92,7 @@ void TcpServer::pushToQueue(const std::string &data, const std::string &connecti
 
 
 void TcpServer::runQueueWorker() {
-  while(1) {
+  while(true) {
     {
       std::unique_lock<std::mutex> lock(_serverMutex);
       if (_state == SERVER_STOP) {

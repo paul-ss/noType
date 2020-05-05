@@ -5,23 +5,23 @@
 #include "Client.hpp"
 #include "TcpServer.hpp"
 
-#define DELIM "jopa"
-
 
 Client::Client(boost::asio::io_service &io,
                 const std::weak_ptr<ConnectedClients> &clients,
                 const std::shared_ptr<QueueManager> &queueManager,
-                const std::string &connectionUUID) :
+                const std::string &connectionUUID,
+                const std::string &delim) :
     _sock(io),
     _isWriting(false),
     _connectionUUID(connectionUUID),
     _clients(clients),
-    _queueManager(queueManager) {}
+    _queueManager(queueManager),
+    _delim(delim) {}
 
 
 void Client::read() {
   std::unique_lock<std::mutex> lock(_clientMutex);
-  boost::asio::async_read_until(_sock, _recvBuf, DELIM, boost::bind(&Client::handleRead, shared_from_this(), _1, _2));
+  boost::asio::async_read_until(_sock, _recvBuf, _delim, boost::bind(&Client::handleRead, shared_from_this(), _1, _2));
 }
 
 
@@ -45,8 +45,8 @@ void Client::handleRead(const boost::system::error_code& ec, size_t n_bytes) {
     std::string data(n_bytes, '0');
 
     if (is.readsome(&data[0], n_bytes) == (long) n_bytes) {
-      data.erase(data.begin() + data.rfind(DELIM), data.end());
-      //std::cout << data << std::endl;
+      data.erase(data.begin() + data.rfind(_delim), data.end());
+      std::cout << "server push" << std::endl;
       _queueManager->serverPush(data, _connectionUUID);
     } else {
       //todo log
@@ -69,7 +69,7 @@ void Client::write() {
     return;
   }
 
-  _sendBuf = _dataToSendQueue.front() + DELIM;
+  _sendBuf = _dataToSendQueue.front() + _delim;
   _dataToSendQueue.pop();
   _isWriting = true;
 
