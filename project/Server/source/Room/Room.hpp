@@ -9,6 +9,7 @@
 #include "RoomConfig.hpp"
 
 #include <memory>
+
 #include <mutex>
 #include <unordered_map>
 #include <boost/asio.hpp>
@@ -50,8 +51,13 @@ private:
   //ExpectedRoom<RoomState> getStatus();
 //  void transitionTo(std::shared_ptr<IRoomStatus> roomStatus);
   std::string randomUUID();
+  void setPlayerState(const std::string &clientUUID, PlayerState state);
+  PlayerState getPlayerState(const std::string &clientUUID);
+  void increaseTextPosition(const std::string &clientUUID, size_t increaseSize);
+  size_t getTextPosition(const std::string &clientUUID);
 
 
+private:
   boost::asio::steady_timer _timer;
   std::weak_ptr<RoomManager> _roomManager;
   RoomConfig _roomConfig;

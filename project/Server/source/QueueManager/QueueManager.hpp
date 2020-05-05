@@ -20,6 +20,8 @@ public:
   bool basicControllerPop(std::shared_ptr<Command> &command);
   bool gameControllerPop(std::shared_ptr<Command> &command);
   void serverNotify();
+
+
 private:
   Queue _queueToServer;
   Queue _queueToBasicController;

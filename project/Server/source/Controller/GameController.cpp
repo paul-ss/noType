@@ -63,7 +63,7 @@ void GameController::runGameSessions() {
 
 
 void GameController::runQueueWorker() {
-  while(1) {
+  while(true) {
     {
       std::unique_lock<std::mutex> lock(_gameControllerMutex);
       if (_state == GAME_CONTROLLER_STOP) {

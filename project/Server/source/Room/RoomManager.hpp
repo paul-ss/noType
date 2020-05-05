@@ -35,9 +35,8 @@ private:
   bool deletePlayer(const std::string &playerUUID); // doesn't catch mutex!
   std::string randomUUID();
 
-
-
-
+  
+private:
   std::weak_ptr<Room> _lastRoom;
   std::unordered_map<std::string, std::shared_ptr<Room>> _rooms;
   std::unordered_map<std::string, std::string> _players; // <clientUUID, roomId>

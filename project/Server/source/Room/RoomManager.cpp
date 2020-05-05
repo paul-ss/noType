@@ -51,7 +51,8 @@ bool RoomManager::addPlayerAndRoom(const Player &player,
                                    const RoomConfig &roomConfig) {
   std::unique_lock<std::mutex> lock(_roomManagerMutex);
 
-  if (auto addPlayerResult = addPlayerInternal(player)) {
+  auto addPlayerResult = addPlayerInternal(player);
+  if (addPlayerResult) {
     return true;
   }
 
@@ -69,7 +70,7 @@ bool RoomManager::addPlayerAndRoom(const Player &player,
   }
   // TODO check insertion return value!!!
   _rooms.emplace(newRoomPtr->getUUID(), newRoomPtr);
-  _players.emplace(player._clientUUID, newRoomPtr->getUUID());
+  _players.emplace(player.clientUUID, newRoomPtr->getUUID());
 
   return true;
 }
@@ -91,18 +92,20 @@ std::shared_ptr<Room> RoomManager::getRoom(const std::string &clientUUID) {
 
 
 ExpectedRoom<bool> RoomManager::addPlayerInternal(const Player &player) {
-  if (player._clientUUID.empty()) {
+  if (player.clientUUID.empty()) {
     throw RoomManagerException("Invalid client UUID");
   }
 
-  if (_players.count(player._clientUUID) > 0) {
-    throw RoomManagerException("Player with UUID " + player._clientUUID + "already added to some room");
+  if (_players.count(player.clientUUID) > 0) {
+    throw RoomManagerException("Player with UUID " + player.clientUUID + "already added to some room");
   }
 
-  if (auto lastShared = _lastRoom.lock()) {
-    if (auto addPlayerResult =  lastShared->addPlayer(player)) {
+  auto lastShared = _lastRoom.lock();
+  if (lastShared) {
+    auto addPlayerResult =  lastShared->addPlayer(player);
+    if (addPlayerResult) {
       // player added!
-      _players.emplace(player._clientUUID, lastShared->getUUID());
+      _players.emplace(player.clientUUID, lastShared->getUUID());
 
       return true;
     } else {

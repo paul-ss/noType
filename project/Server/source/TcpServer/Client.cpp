@@ -135,7 +135,8 @@ void Client::putRecvDataToQueue(const std::string &data) {
 
 
 void Client::removeThisConnection() {
-  if (auto clientsShared = _clients.lock()) {
+  auto clientsShared = _clients.lock();
+  if (clientsShared) {
     if (!clientsShared->erase(_connectionUUID)) {
       std::cout << "RemoveThisConnection error: can't erase client" << std::endl;
     }

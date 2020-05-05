@@ -37,13 +37,12 @@ public:
 private:
   void startAccept();
   void handleAccept(std::shared_ptr<Client> client, const boost::system::error_code& ec);
-
   void runService();
   void runQueueWorker();
-
   std::string randomUUID();
 
 
+private:
   boost::asio::io_service _service;
   boost::asio::ip::tcp::acceptor _acceptor;
   std::shared_ptr<ConnectedClients> _clients;

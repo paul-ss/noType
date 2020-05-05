@@ -42,12 +42,12 @@ protected:
 
 
 void playersEQ(const Player &l, const Player &r) {
-  ASSERT_EQ(l._clientUUID, r._clientUUID);
-  ASSERT_EQ(l._name, r._name);
-  ASSERT_EQ(l._textPosition, r._textPosition);
-  ASSERT_EQ(l._lastTextPosition, r._lastTextPosition);
-  ASSERT_EQ(l._playerID, r._playerID);
-  ASSERT_EQ(l._state, r._state);
+  ASSERT_EQ(l.clientUUID, r.clientUUID);
+  ASSERT_EQ(l.name, r.name);
+  ASSERT_EQ(l.textPosition, r.textPosition);
+  ASSERT_EQ(l.lastTextPosition, r.lastTextPosition);
+  ASSERT_EQ(l.playerID, r.playerID);
+  ASSERT_EQ(l.state, r.state);
 }
 
 
@@ -69,6 +69,6 @@ TEST_F(RoomTest, get_players_uuid) {
   ASSERT_EQ(uuids.size(), 5);
 
   for (int i = 0; i < 5; i++) {
-    ASSERT_TRUE(std::find(uuids.begin(), uuids.end(), pls[i]._clientUUID) != uuids.end());
+    ASSERT_TRUE(std::find(uuids.begin(), uuids.end(), pls[i].clientUUID) != uuids.end());
   }
 }

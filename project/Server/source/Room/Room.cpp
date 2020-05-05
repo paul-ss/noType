@@ -80,3 +80,46 @@ std::string Room::randomUUID() {
   boost::uuids::uuid uuid = gen();
   return to_string(uuid);
 }
+
+
+
+void Room::setPlayerState(const std::string &clientUUID, PlayerState state) {
+  if (_players.count(clientUUID) == 0) {
+    throw RoomException("setPlayerState : player with uuid " + clientUUID + " doesn't exist");
+  }
+  _players.at(clientUUID).state = state;
+}
+
+
+
+
+PlayerState Room::getPlayerState(const std::string &clientUUID) {
+  if (_players.count(clientUUID) == 0) {
+    throw RoomException("getPlayerState : player with uuid " + clientUUID + " doesn't exist");
+  }
+  return _players.at(clientUUID).state;
+}
+
+
+
+
+void Room::increaseTextPosition(const std::string &clientUUID, size_t increaseSize) {
+  if (_players.count(clientUUID) == 0) {
+    throw RoomException("increaseTextPosition : player with uuid " + clientUUID + " doesn't exist");
+  }
+
+  _players.at(clientUUID).textPosition += increaseSize;
+}
+
+
+
+
+size_t Room::getTextPosition(const std::string &clientUUID) {
+  if (_players.count(clientUUID) == 0) {
+    throw RoomException("getTextPosition : player with uuid " + clientUUID + " doesn't exist");
+  }
+
+  return _players.at(clientUUID).textPosition;
+}
+
+

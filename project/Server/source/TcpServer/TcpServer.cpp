@@ -102,7 +102,9 @@ void TcpServer::runQueueWorker() {
     std::shared_ptr<Command> command;
     if (_queueManager->serverPop(command)) {
       try {
-        _clients->getClient(command->connectionUUID)->putDataToSend(command->parseToJSON());
+        auto client = _clients->getClient(command->connectionUUID);
+        client->putDataToSend(command->parseToJSON());
+
       } catch(const std::out_of_range& exc) {
         // todo log
         std::cout << exc.what() << std::endl;

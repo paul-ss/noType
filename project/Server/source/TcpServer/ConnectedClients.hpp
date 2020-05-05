@@ -19,6 +19,7 @@ public:
   virtual bool insert(const std::shared_ptr<Client> &client);
   virtual bool erase(const std::string &clientUUID);
   virtual std::shared_ptr<Client> getClient(const std::string &clientUUID);
+
 private:
   std::unordered_map<std::string, std::shared_ptr<Client>> _clients;
   std::mutex _connectedClientsMutex;

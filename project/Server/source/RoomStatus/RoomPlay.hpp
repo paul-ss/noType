@@ -24,7 +24,7 @@ private:
   size_t compareText(const std::string &roomText, const std::string &recvText, size_t playerPos);
   void calculatePlayersSpeed(std::shared_ptr<Room> room);
 
-
+private:
   TimePoint _endGame;
   TimePoint _lastTimePlayersChecked;
 };

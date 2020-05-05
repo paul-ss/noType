@@ -17,18 +17,18 @@ ExpectedRoom<bool> RoomWait::addPlayer(std::shared_ptr<Room> room, const Player 
 
   if (room->_players.size() >= _roomConfig._maxPlayersCount) {
     throw RoomException("addPlayer (WAIT) : Attempt to add player "
-    + player._clientUUID + " to filled room " + room->_roomUUID);
+                        + player.clientUUID + " to filled room " + room->_roomUUID);
   }
 
-  if (player._clientUUID.empty() ||  player._name.empty()) {
+  if (player.clientUUID.empty() || player.name.empty()) {
     throw RoomException("addPlayer (WAIT) : Invalid Player UUID or name at room " + room->_roomUUID);
   }
 
   // TODO check insertion return value
-  if (!room->_players.emplace(player._clientUUID, player).second) {
+  if (!room->_players.emplace(player.clientUUID, player).second) {
     throw RoomException("addPlayer (WAIT) : Can't add player " + room->_roomUUID);
   }
-  std::cout << "PLayer " << player._clientUUID << " added" << std::endl;
+  std::cout << "PLayer " << player.clientUUID << " added" << std::endl;
 
 
   if (room->_players.size() == 1) {

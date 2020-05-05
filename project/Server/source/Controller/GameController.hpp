@@ -10,7 +10,6 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <memory>
-#include <unordered_map>
 #include <thread>
 
 
@@ -36,6 +35,7 @@ private:
   void runQueueWorker();
 
 
+private:
   std::shared_ptr<QueueManager> _queueManager ;
   //std::shared_ptr<Data> _data;
   RoomManager _roomManager;

@@ -16,8 +16,8 @@ RoomPlay::RoomPlay(const RoomConfig &roomConfig) :
 
 ExpectedRoom<bool> RoomPlay::addPlayer(std::shared_ptr<Room> room, const Player &player) {
   std::unique_lock<std::mutex> lock(room->_roomMutex);
-  std::cout << "PLayer " << player._clientUUID << " was not added" << std::endl;
-  return RoomError("Room status is 'PLAY'. Can't add player with UUID " + player._clientUUID);
+  std::cout << "PLayer " << player.clientUUID << " was not added" << std::endl;
+  return RoomError("Room status is 'PLAY'. Can't add player with UUID " + player.clientUUID);
 }
 
 
@@ -39,19 +39,19 @@ ExpectedRoom<size_t> RoomPlay::validateWrittenText(std::shared_ptr<Room> room,
   }
 
 
-  if (room->_players.at(clientUUID)._state != PLAYER_PLAY) {
+  if (room->getPlayerState(clientUUID) != PLAYER_PLAY) {
     return RoomError("Sorry, you can't enter the text, because you have already finished! Congratulations!");
   }
 
-  size_t rightWritten = compareText(room->_text, recvText, room->_players.at(clientUUID)._textPosition);
-  room->_players.at(clientUUID)._textPosition += rightWritten;
+  size_t rightWritten = compareText(room->_text, recvText, room->getTextPosition(clientUUID));
+  room->increaseTextPosition(clientUUID, rightWritten);
 
-  auto textPosition = room->_players.at(clientUUID)._textPosition;
+  auto textPosition = room->getTextPosition(clientUUID);
   if (textPosition >= room->_text.size() || textPosition >= _roomConfig._finishLine) {
     if (room->_numberOfFinishers == 0) {
-      room->_players.at(clientUUID)._state = PLAYER_WIN;
+      room->setPlayerState(clientUUID, PLAYER_WIN);
     } else {
-      room->_players.at(clientUUID)._state = PLAYER_FINISH;
+      room->setPlayerState(clientUUID, PLAYER_FINISH);
     }
     room->_numberOfFinishers++;
 
@@ -132,9 +132,9 @@ size_t RoomPlay::compareText(const std::string &roomText, const std::string &rec
 void RoomPlay::calculatePlayersSpeed(std::shared_ptr<Room> room) {
   std::chrono::duration<double, std::ratio<60>> timeDelta = std::chrono::steady_clock::now() - _lastTimePlayersChecked;
   for (auto &player : room->_players) {
-    auto textDelta = player.second._textPosition - player.second._lastTextPosition;
-    player.second._currentSpeed = textDelta / timeDelta.count();
-    player.second._lastTextPosition = player.second._textPosition;
+    auto textDelta = player.second.textPosition - player.second.lastTextPosition;
+    player.second.currentSpeed = textDelta / timeDelta.count();
+    player.second.lastTextPosition = player.second.textPosition;
   }
   _lastTimePlayersChecked = std::chrono::steady_clock::now();
 }

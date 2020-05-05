@@ -67,12 +67,12 @@ TEST_F(RoomPlayTest, validate_text) {
   auto players = room->getPlayers();
 
 
-  ASSERT_EQ(players.at("uuid0")._textPosition, 200);
-  ASSERT_EQ(players.at("uuid0")._state, PLAYER_WIN);
-  ASSERT_GT(players.at("uuid1")._textPosition, 200);
-  ASSERT_EQ(players.at("uuid1")._state, PLAYER_FINISH);
-  ASSERT_EQ(players.at("uuid2")._textPosition, 0);
-  ASSERT_EQ(players.at("uuid2")._state, PLAYER_PLAY);
+  ASSERT_EQ(players.at("uuid0").textPosition, 200);
+  ASSERT_EQ(players.at("uuid0").state, PLAYER_WIN);
+  ASSERT_GT(players.at("uuid1").textPosition, 200);
+  ASSERT_EQ(players.at("uuid1").state, PLAYER_FINISH);
+  ASSERT_EQ(players.at("uuid2").textPosition, 0);
+  ASSERT_EQ(players.at("uuid2").state, PLAYER_PLAY);
 }
 
 
@@ -98,7 +98,7 @@ TEST_F(RoomPlayTest, validate_text_multithread) {
   ASSERT_EQ(players.size(), 5);
 
   for (int i = 1; i < 5; i++) {
-    ASSERT_EQ(players.at("uuid" + std::to_string(i))._textPosition, i * i * 5);
+    ASSERT_EQ(players.at("uuid" + std::to_string(i)).textPosition, i * i * 5);
   }
 }
 

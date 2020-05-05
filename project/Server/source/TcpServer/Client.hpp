@@ -36,6 +36,8 @@ private:
   void putRecvDataToQueue(const std::string &data); // except this?
   void removeThisConnection();
 
+
+private:
   boost::asio::ip::tcp::socket _sock;
   bool _isWriting;
   std::string _connectionUUID;
@@ -46,6 +48,5 @@ private:
   std::shared_ptr<QueueManager> _queueManager;
   std::string _delim;
   std::mutex _clientMutex;
-
 };
 
