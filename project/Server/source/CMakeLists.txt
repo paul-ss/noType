@@ -118,6 +118,17 @@ TARGET_LINK_LIBRARIES(tcpServerTests
         -lgmock)
 
 
+ADD_EXECUTABLE(queueTests
+        mainTest.cpp
+        QueueManager/Tests/QueueTests.cpp)
+
+TARGET_LINK_LIBRARIES(queueTests
+        ${GTEST_LIBRARIES}
+        ${CMAKE_THREAD_LIBS_INIT}
+        ${Boost_SYSTEM_LIBRARY}
+        Queue
+        -lgmock)
+
 
 #add_executable(tst)
 #target_link_libraries (tst ${CMAKE_THREAD_LIBS_INIT}

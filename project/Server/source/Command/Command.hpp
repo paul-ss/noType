@@ -11,7 +11,9 @@ public:
       connectionUUID(connectionUUID),
       data(data) {}
 
-  const std::string &parseToJSON () {
+  Command() {}
+
+  virtual std::string parseToJSON () {
     return data;
   }
   std::string connectionUUID;

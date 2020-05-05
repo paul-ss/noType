@@ -8,6 +8,7 @@
 GameController::GameController(const std::shared_ptr<QueueManager> &queueManager /*data : std::shared_ptr<Data>*/) :
     _queueManager(queueManager),
     //std::shared_ptr<Data> _data;
+    _work(_service),
     _state(GAME_CONTROLLER_STOP) {}
 
 
@@ -19,12 +20,24 @@ GameController::~GameController() {
 
 
 void GameController::startController() {
+  std::unique_lock<std::mutex> lock(_gameControllerMutex);
+  for (size_t i = 0; i < 1; i++) {
+    _threads.emplace_back(std::bind(&GameController::runGameSessions, this));
+  }
 
+  for (size_t i = 0; i < 1; i++) {
+    _threads.emplace_back(std::bind(&GameController::runQueueWorker, this));
+  }
+
+  _state = GAME_CONTROLLER_RUN;
 }
 
 
 void GameController::stopController() {
-
+  std::unique_lock<std::mutex> lock(_gameControllerMutex);
+  _service.stop();
+  _state = GAME_CONTROLLER_STOP;
+  //  todo notify
 }
 
 

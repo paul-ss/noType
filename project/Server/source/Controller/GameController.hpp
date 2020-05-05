@@ -40,6 +40,7 @@ private:
   //std::shared_ptr<Data> _data;
   RoomManager _roomManager;
   boost::asio::io_service _service;
+  boost::asio::io_service::work _work;
   std::mutex _gameControllerMutex;
   GameControllerState _state;
   std::vector<std::thread> _threads;

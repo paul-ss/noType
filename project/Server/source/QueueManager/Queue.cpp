@@ -12,10 +12,12 @@ void Queue::push(const std::shared_ptr<Command> &command) {
 
 bool Queue::pop(std::shared_ptr<Command> &command) {
   std::unique_lock<std::mutex> lock(_queueMutex);
+  _notified = false; // work after notify
+
   if (_queue.empty()) {
     _queueCheck.wait(lock, [&]() {
         if (_notified) {
-          _notified = false;
+          //_notified = false;
           return true;
         } else {
           return !_queue.empty();
@@ -35,5 +37,5 @@ bool Queue::pop(std::shared_ptr<Command> &command) {
 void Queue::notify() {
   std::unique_lock<std::mutex> lock(_queueMutex);
   _notified = true;
-  _queueCheck.notify_one();
+  _queueCheck.notify_all();
 }
