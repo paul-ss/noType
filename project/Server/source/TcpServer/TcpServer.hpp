@@ -31,7 +31,7 @@ public:
   ~TcpServer(); // join
   void startServer();
   void stopServer();
-  void pushToQueue(const std::string &data, const std::string &connectionUUID);
+ // void pushToQueue(const std::string &data, const std::string &connectionUUID);
 
 
 private:

@@ -17,7 +17,7 @@ struct ServerConfig {
 
   std::string _ip;
   unsigned int _port;
-  unsigned int _listenCount;
+  int _listenCount;
   unsigned int _workerThreadsCount;
   unsigned int _queueWorkersCount;
   std::string _delim;

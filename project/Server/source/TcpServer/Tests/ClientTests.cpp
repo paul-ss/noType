@@ -3,13 +3,17 @@
 //
 
 #include "gtest/gtest.h"
+#include "gmock/gmock.h"
 #include "Client.hpp"
 #include "ConnectedClients.hpp"
-#include "TcpServer.hpp"
 
-#include <fstream>
 
 #include <thread>
+
+class MockClients : public ConnectedClients {
+public:
+  MOCK_METHOD1(erase, bool(const std::string &));
+};
 
 
 class FakeQueueManager : public QueueManager {
@@ -28,11 +32,12 @@ public:
 };
 
 
+
 class ClientTest : public ::testing::Test {
 protected:
   void SetUp() override {
     delim = "delim";
-    clients = std::make_shared<ConnectedClients>();
+    clients = std::make_shared<MockClients>();
     qm = std::make_shared<FakeQueueManager>();
     client = std::make_shared<Client>(service, clients, qm, "uuid", delim);
 
@@ -43,11 +48,12 @@ protected:
 
   std::string delim;
   boost::asio::io_service service;
-  std::shared_ptr<ConnectedClients> clients;
+  std::shared_ptr<MockClients> clients;
   std::shared_ptr<FakeQueueManager> qm;
   std::shared_ptr<Client> client;
   boost::asio::ip::tcp::endpoint ep;
 };
+
 
 
 std::string makeString(size_t length) {
@@ -61,8 +67,7 @@ std::string makeString(size_t length) {
 }
 
 
-void readData(std::string &res, boost::asio::ip::tcp::socket &sock, const std::string &delim) {
-  boost::asio::streambuf buf;
+void readData(std::string &res, boost::asio::streambuf &buf, boost::asio::ip::tcp::socket &sock, const std::string &delim) {
   size_t bytes = read_until(sock, buf, delim);
   if (bytes == 0) {
     FAIL();
@@ -101,9 +106,9 @@ TEST_F(ClientTest, read) {
 
   std::string msg1(makeString(11) + delim);
   write(sock, boost::asio::buffer(msg1, msg1.size()));
-  std::string msg2(makeString(100) + delim);
+  std::string msg2(makeString(1123123) + delim);
   write(sock, boost::asio::buffer(msg2, msg2.size()));
-  std::string msg3(makeString(123123) + delim);
+  std::string msg3(makeString(223123) + delim);
   write(sock, boost::asio::buffer(msg3, msg3.size()));
 
   int i = 0;
@@ -144,9 +149,9 @@ TEST_F(ClientTest, write) {
   thr.emplace_back([&]() {
     acceptor.accept(client->sock());
 
-    msgs.emplace_back(makeString(13));
-    msgs.emplace_back(makeString(23123));
-    msgs.emplace_back(makeString(142214));
+    msgs.emplace_back(makeString(1309438));
+    msgs.emplace_back(makeString(1023034));
+    msgs.emplace_back(makeString(125214));
     client->putDataToSend(msgs[0]);
     client->putDataToSend(msgs[1]);
     client->putDataToSend(msgs[2]);
@@ -159,10 +164,12 @@ TEST_F(ClientTest, write) {
   sock.open(boost::asio::ip::tcp::v4());
   sock.connect(ep);
 
+  boost::asio::streambuf buf;
   for (int i = 0; i < 3; i++) {
     std::string res;
-    readData(res, sock, delim);
-    ASSERT_EQ(msgs[i], res);
+    readData(res, buf, sock, delim);
+    EXPECT_EQ(msgs[i].size(), res.size());
+    EXPECT_EQ(msgs[i], res);
   }
 
   service.stop();
@@ -171,4 +178,18 @@ TEST_F(ClientTest, write) {
     t.join();
   }
 
+}
+
+TEST(Client, run_call) {
+  auto mc = std::make_shared<MockClients>();
+  EXPECT_CALL(*mc.get(), erase("uuid")).Times(1);
+
+  boost::asio::io_service service;
+  auto qm = std::make_shared<FakeQueueManager>();
+  auto client = std::make_shared<Client>(service, mc, qm, "uuid", "delim");
+  client->read();
+
+  std::thread t([&]() { service.run(); });
+
+  t.join();
 }

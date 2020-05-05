@@ -69,9 +69,14 @@ void Client::write() {
     return;
   }
 
+  if(_dataToSendQueue.front().find(_delim) != std::string::npos) {
+    std::cout << "delim found" << std::endl;
+  }
+
   _sendBuf = _dataToSendQueue.front() + _delim;
   _dataToSendQueue.pop();
   _isWriting = true;
+
 
   boost::asio::async_write(
       _sock,
@@ -89,11 +94,13 @@ void Client::handleWrite(const boost::system::error_code& ec, size_t n_bytes) {
       return;
     }
 
+
     if (n_bytes != _sendBuf.size()) {
       std::cout << "handleWrite error" << std::endl; // todo log
     }
 
     _isWriting = false;
+    _sendBuf.clear();
   }
 
   write();

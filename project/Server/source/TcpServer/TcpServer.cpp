@@ -83,11 +83,10 @@ void TcpServer::runService() {
   _service.run();
 }
 
-void TcpServer::pushToQueue(const std::string &data, const std::string &connectionUUID) {
-  _queueManager->serverPush(data, connectionUUID);
-  // errors?
-}
-
+//void TcpServer::pushToQueue(const std::string &data, const std::string &connectionUUID) {
+//  _queueManager->serverPush(data, connectionUUID);
+//  // errors?
+//}
 
 
 

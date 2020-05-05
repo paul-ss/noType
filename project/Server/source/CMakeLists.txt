@@ -24,6 +24,9 @@ FIND_PACKAGE(Boost 1.42.0 REQUIRED COMPONENTS system thread regex)
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
+#find_package(GMock REQUIRED)
+#message(GMOCK_FOUND)
+
 
 
 ADD_EXECUTABLE(server
@@ -102,9 +105,9 @@ ADD_EXECUTABLE(tcpServerTests
         QueueManager/Queue.cpp
         QueueManager/Queue.hpp
         QueueManager/QueueManager.cpp
-        QueueManager/QueueManager.hpp TcpServer/ServerConfig.hpp)
+        QueueManager/QueueManager.hpp TcpServer/ServerConfig.hpp TcpServer/Tests/ConnectedClientsTest.cpp)
 
-TARGET_LINK_LIBRARIES(tcpServerTests ${GTEST_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${Boost_SYSTEM_LIBRARY})
+TARGET_LINK_LIBRARIES(tcpServerTests ${GTEST_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${Boost_SYSTEM_LIBRARY} -lgmock)
 
 
 
