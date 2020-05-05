@@ -1,12 +1,13 @@
 #pragma once
 
-#include <SFML/System/Vector2.hpp>
-#include <SFML/Graphics/RenderTarget.hpp>
 #include <string>
+#include <sstream>
 #include <unordered_map>
 
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
+
 #include "GUI_style.hpp"
-#include <sstream>
 
 enum class GUI_ElementType{ None = -1, Window, Label, Button, Textfield };
 
@@ -47,7 +48,7 @@ class GUI_Element {
         GUI_Interface* GetOwner() const;
         bool HasOwner() const;
         bool IsActive() const;
-        void SetActive(const bool& active);
+        void SetActive(const bool active);
         bool IsInside(const sf::Vector2f& point) const;
         sf::Vector2f GetGlobalPosition() const;
         bool IsControl() const;

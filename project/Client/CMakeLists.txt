@@ -26,6 +26,8 @@ SET(ALL_SOURCES
     ${SOURCE_DIR}/exceptions/exceptions.hpp
     ${SOURCE_DIR}/game/game.cpp
     ${SOURCE_DIR}/GUI/GUI_element.cpp
+    ${SOURCE_DIR}/GUI/GUI_textField.cpp
+    ${SOURCE_DIR}/GUI/GUI_label.cpp
     ${SOURCE_DIR}/GUI/GUI_interface.cpp
     ${SOURCE_DIR}/GUI/GUI_manager.cpp
     ${SOURCE_DIR}/musicManager/musicManager.cpp
@@ -38,7 +40,9 @@ SET(ALL_SOURCES
 
 SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 FIND_PACKAGE(SFML 2 REQUIRED graphics window system network audio)
-FIND_PACKAGE(Boost REQUIRED)
+FIND_PACKAGE(Boost COMPONENTS log log_setup REQUIRED)
+
+SET(Boost_USE_STATIC_LIBS ON)
 
 INCLUDE_DIRECTORIES(${SFML_INCLUDE_DIR})
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})

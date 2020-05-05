@@ -1,10 +1,12 @@
 #pragma once
 
-#include "sharedContext.hpp"
-#include "gameState.hpp"
-
 #include <functional>
 #include <unordered_map>
+
+#include "sharedContext.hpp"
+#include "gameState.hpp"
+#include "introState.hpp"
+#include "mainMenuState.hpp"
 
 enum class StateType{
 Intro = 1, MainMenu, Game, Paused, GameOver, Credits

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 enum class GUI_EventType { None, Click, Release, Hover, Leave };
 
 struct ClickCoordinates {

@@ -1,11 +1,12 @@
 #pragma once
-#include "GUI_element.hpp"
 
 #include <unordered_map>
 
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+
+#include "GUI_element.hpp"
 
 using Elements = std::unordered_map<std::string,GUI_Element*>;
 

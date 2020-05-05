@@ -154,7 +154,7 @@ void EventManager::Update() {
 void EventManager::LoadBindings() {
     std::string delimiter = ":";
     std::ifstream bindings;
-    bindings.open("resources/keys.cfg");
+    bindings.open("assets/keys.cfg");
     if (!bindings.is_open()) {
         throw InvalidFile();
     }

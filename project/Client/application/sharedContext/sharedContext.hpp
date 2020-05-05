@@ -2,11 +2,11 @@
 
 #include "window.hpp"
 #include "eventManager.hpp"
+#include "GUI_manager.hpp"
 #include "fontManager.hpp"
 #include "textureManager.hpp"
 #include "audioManager.hpp"
 #include "musicManager.hpp"
-#include "GUI_manager.hpp"
 
 struct SharedContext {
     SharedContext():

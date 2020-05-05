@@ -2,6 +2,7 @@
 
 #include "baseState.hpp"
 #include "eventManager.hpp"
+#include "stateManager.hpp"
 
 class MainMenuState : public BaseState{
     public:

@@ -1,8 +1,7 @@
-#include "GUI_label.hpp"
-
 #include <algorithm>
 #include <iostream>
 
+#include "GUI_label.hpp"
 #include "utils.hpp"
 
 GUI_Label::GUI_Label(const std::string& name, GUI_Interface* owner) :

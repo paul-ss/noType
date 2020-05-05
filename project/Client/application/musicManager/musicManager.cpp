@@ -1,4 +1,5 @@
 #include "musicManager.hpp"
+#include "utils.hpp"
 
 
 void SoundManager::RemoveState(const StateType& state) {

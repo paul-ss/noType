@@ -1,11 +1,14 @@
+#include <fstream>
+
 #include "GUI_manager.hpp"
-#include "sharedContext.hpp"
+#include "GUI_textField.hpp"
+#include "GUI_label.hpp"
 
 GUI_Manager::GUI_Manager(EventManager* evMgr, SharedContext* shared)
-    : _eventMgr(evMgr), _context(shared), _currentState(StateType(0)) {
+    : _context(shared), _eventMgr(evMgr), _currentState(StateType(0)) {
 
-    //RegisterElement<GUI_Label>(GUI_ElementType::Label);
-    //RegisterElement<GUI_Textfield>(GUI_ElementType::Textfield);
+    registerElement<GUI_Label>(GUI_ElementType::Label);
+    registerElement<GUI_Textfield>(GUI_ElementType::Textfield);
 
     _elemTypes.emplace("Label", GUI_ElementType::Label);
     _elemTypes.emplace("Button", GUI_ElementType::Button);
@@ -27,8 +30,8 @@ GUI_Manager::~GUI_Manager() {
     _eventMgr->RemoveCallback(StateType(0), "Mouse_Left_Release");
     _eventMgr->RemoveCallback(StateType(0), "Text_Entered");
 
-    for (auto &itr : _interfaces){
-        for (auto &itr2 : itr.second){
+    for (auto &itr : _interfaces) {
+        for (auto &itr2 : itr.second) {
             delete itr2.second;
         }
     }
@@ -152,11 +155,11 @@ void GUI_Manager::HandleTextEntered(EventDetails* details) {
     }
 }
 
-void GUI_Manager::AddEvent(GUI_Event event){
+void GUI_Manager::AddEvent(GUI_Event event) {
     _events[_currentState].push_back(event);
 }
 
-bool GUI_Manager::PollEvent(GUI_Event& event){
+bool GUI_Manager::PollEvent(GUI_Event& event) {
     if (_events[_currentState].empty()) {
         return false;
     }
@@ -197,7 +200,7 @@ void GUI_Manager::Update(float dT) {
     }
 }
 
-void GUI_Manager::Render(sf::RenderWindow* window){
+void GUI_Manager::Render(sf::RenderWindow* window) {
     auto state = _interfaces.find(_currentState);
     if (state == _interfaces.end()) {
         return;
@@ -225,7 +228,7 @@ void GUI_Manager::Render(sf::RenderWindow* window){
     }
 }
 
-GUI_Element* GUI_Manager::CreateElement(const GUI_ElementType& id, GUI_Interface* owner) {
+GUI_Element* GUI_Manager::createElement(const GUI_ElementType& id, GUI_Interface* owner) {
     if (id == GUI_ElementType::Window) {
         return new GUI_Interface("", this);
     }
@@ -251,34 +254,34 @@ bool GUI_Manager::LoadInterface(const StateType& state,
     const std::string& interface, const std::string& name)
 {
     std::ifstream file;
-    file.open(utils::GetWorkingDirectory() + "media/GUI_Interfaces/" + interface);
+    file.open(utils::GetWorkingDirectory() + "assets/media/GUI_Interfaces/" + interface);
     std::string InterfaceName;
 
-    if (!file.is_open()){
+    if (!file.is_open()) {
         std::cout << "! Failed to load: " << interface << std::endl;
         return false;
     }
     std::string line;
-    while (std::getline(file, line)){
-        if (line[0] == '|'){ continue; }
+    while (std::getline(file, line)) {
+        if (line[0] == '|') { continue; }
         std::stringstream keystream(line);
         std::string key;
         keystream >> key;
-        if (key == "Interface"){
+        if (key == "Interface") {
             std::string style;
             keystream >> InterfaceName >> style;
-            if (!AddInterface(state, name)){
+            if (!AddInterface(state, name)) {
                 std::cout << "Failed adding interface: " << name << std::endl;
                 return false;
             }
             GUI_Interface* i = GetInterface(state, name);
             keystream >> *i;
-            if (!LoadStyle(style, i)){
+            if (!loadStyle(style, i)) {
                 std::cout << "Failed loading style file: " << style << " for interface " << name << std::endl;
             }
             i->SetContentSize(i->GetSize());
-        } else if (key == "Element"){
-            if (InterfaceName == ""){
+        } else if (key == "Element") {
+            if (InterfaceName == "") {
                 std::cout << "Error: 'Element' outside or before declaration of 'Interface'!" << std::endl;
                 continue;
             }
@@ -287,19 +290,19 @@ bool GUI_Manager::LoadInterface(const StateType& state,
             sf::Vector2f position;
             std::string style;
             keystream >> type >> name >> position.x >> position.y >> style;
-            GUI_ElementType eType = StringToType(type);
-            if (eType == GUI_ElementType::None){
+            GUI_ElementType eType = stringToType(type);
+            if (eType == GUI_ElementType::None) {
                 std::cout << "Unknown element('" << name << "') type: '" << type << "'" << std::endl;
                 continue;
             }
 
             GUI_Interface* i = GetInterface(state, name);
-            if (!i){ continue; }
-            if (!i->AddElement(eType, name)){ continue; }
+            if (!i) { continue; }
+            if (!i->AddElement(eType, name)) { continue; }
             GUI_Element* e = i->GetElement(name);
             keystream >> *e;
             e->SetPosition(position);
-            if (!LoadStyle(style, e)){
+            if (!loadStyle(style, e)) {
                 std::cout << "Failed loading style file: " << style << " for element " << name << std::endl;
                 continue;
             }
@@ -308,40 +311,40 @@ bool GUI_Manager::LoadInterface(const StateType& state,
     file.close();
     return true;
 }
-bool GUI_Manager::LoadStyle(const std::string& path, GUI_Element* element) {
+bool GUI_Manager::loadStyle(const std::string& path, GUI_Element* element) {
     std::ifstream file;
-    file.open(utils::GetWorkingDirectory() + "media/GUI_Styles/" + path);
+    file.open(utils::GetWorkingDirectory() + "assets/media/GUI_Styles/" + path);
 
     std::string currentState;
     GUI_Style ParentStyle;
     GUI_Style TemporaryStyle;
-    if (!file.is_open()){
+    if (!file.is_open()) {
         std::cout << "! Failed to load: " << path << std::endl;
         return false;
     }
     std::string line;
-    while (std::getline(file, line)){
-        if (line[0] == '|'){ continue; }
+    while (std::getline(file, line)) {
+        if (line[0] == '|') { continue; }
         std::stringstream keystream(line);
         std::string type;
         keystream >> type;
-        if (type == ""){ continue; }
-        if (type == "State"){
-            if (currentState != ""){
+        if (type == "") { continue; }
+        if (type == "State") {
+            if (currentState != "") {
                 std::cout << "Error: 'State' keyword found inside another state!" << std::endl;
                 continue;
             }
             keystream >> currentState;
-        } else if (type == "/State"){
-            if (currentState == ""){
+        } else if (type == "/State") {
+            if (currentState == "") {
                 std::cout << "Error: '/State' keyword found prior to 'State'!" << std::endl;
                 continue;
             }
             GUI_ElementState state = GUI_ElementState::Neutral;
-            if (currentState == "Hover"){ state = GUI_ElementState::Focused; }
-            else if (currentState == "Clicked"){ state = GUI_ElementState::Clicked; }
+            if (currentState == "Hover") { state = GUI_ElementState::Focused; }
+            else if (currentState == "Clicked") { state = GUI_ElementState::Clicked; }
 
-            if (state == GUI_ElementState::Neutral){
+            if (state == GUI_ElementState::Neutral) {
                 ParentStyle = TemporaryStyle;
                 element->UpdateStyle(GUI_ElementState::Neutral, TemporaryStyle);
                 element->UpdateStyle(GUI_ElementState::Focused, TemporaryStyle);
@@ -353,41 +356,41 @@ bool GUI_Manager::LoadStyle(const std::string& path, GUI_Element* element) {
             currentState = "";
         } else {
             // Handling style information.
-            if (currentState == ""){
+            if (currentState == "") {
                 std::cout << "Error: '" << type << "' keyword found outside of a state!" << std::endl;
                 continue;
             }
-            if (type == "Size"){
+            if (type == "Size") {
                 keystream >> TemporaryStyle._size.x >> TemporaryStyle._size.y;
-            } else if (type == "BgColor"){
+            } else if (type == "BgColor") {
                 int r, g, b, a = 0;
                 keystream >> r >> g >> b >> a;
                 TemporaryStyle._backgroundColor = sf::Color(r,g,b,a);
-            } else if (type == "BgImage"){
+            } else if (type == "BgImage") {
                 keystream >> TemporaryStyle._backgroundImage;
-            } else if (type == "BgImageColor"){
+            } else if (type == "BgImageColor") {
                 int r, g, b, a = 0;
                 keystream >> r >> g >> b >> a;
                 TemporaryStyle._backgroundImageColor = sf::Color(r, g, b, a);
-            } else if (type == "TextColor"){
+            } else if (type == "TextColor") {
                 int r, g, b, a = 0;
                 keystream >> r >> g >> b >> a;
                 TemporaryStyle._textColor = sf::Color(r, g, b, a);
-            } else if (type == "TextSize"){
+            } else if (type == "TextSize") {
                 keystream >> TemporaryStyle._textSize;
-            } else if (type == "TextOriginCenter"){
+            } else if (type == "TextOriginCenter") {
                 TemporaryStyle._textCenterOrigin = true;
-            } else if (type == "Font"){
+            } else if (type == "Font") {
                 keystream >> TemporaryStyle._textFont;
-            } else if (type == "TextPadding"){
+            } else if (type == "TextPadding") {
                 keystream >> TemporaryStyle._textPadding.x >> TemporaryStyle._textPadding.y;
-            } else if (type == "ElementColor"){
+            } else if (type == "ElementColor") {
                 int r, g, b, a = 0;
                 keystream >> r >> g >> b >> a;
                 TemporaryStyle._elementColor = sf::Color(r, g, b, a);
-            } else if (type == "Glyph"){
+            } else if (type == "Glyph") {
                 keystream >> TemporaryStyle._glyph;
-            } else if (type == "GlyphPadding"){
+            } else if (type == "GlyphPadding") {
                 keystream >> TemporaryStyle._glyphPadding.x >> TemporaryStyle._glyphPadding.y;
             } else {
                 std::cout << "Error: style tag '" << type << "' is unknown!" << std::endl;
@@ -399,7 +402,7 @@ bool GUI_Manager::LoadStyle(const std::string& path, GUI_Element* element) {
     return true;
 }
 
-GUI_ElementType GUI_Manager::StringToType(const std::string& string) {
+GUI_ElementType GUI_Manager::stringToType(const std::string& string) {
     auto t = _elemTypes.find(string);
     return (t != _elemTypes.end() ? t->second : GUI_ElementType::None);
 }

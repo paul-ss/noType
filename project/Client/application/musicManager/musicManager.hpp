@@ -1,13 +1,12 @@
 #pragma once
 
-#include "audioManager.hpp"
-#include "utils.hpp"
-
 #include <unordered_map>
 #include <vector>
 #include <string>
 
 #include <SFML/Audio.hpp>
+
+#include "audioManager.hpp"
 
 using SoundID = int;
 
@@ -23,7 +22,9 @@ using MusicContainer = std::unordered_map<StateType, std::pair<SoundInfo, sf::Mu
 
 class SoundManager {
     public:
-        explicit SoundManager(AudioManager* audioMgr) : _audioManager{audioMgr} {};
+        explicit SoundManager(AudioManager* audioMgr) :
+                _numSounds(0), _elapsed(0.f), _audioManager(audioMgr) {};
+
         ~SoundManager() = default;
 
         void ChangeState(const StateType& state);

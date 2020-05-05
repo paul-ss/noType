@@ -1,22 +1,20 @@
 #pragma once
 
+#include <unordered_map>
+#include <functional>
+
 #include <SFML/Graphics.hpp>
-#include "eventManager.hpp"
 
 #include "GUI_interface.hpp"
 #include "GUI_event.hpp"
-#include "GUI_textField.hpp"
-#include "GUI_label.hpp"
-
-#include <unordered_map>
-#include <functional>
-#include <fstream>
+#include "eventManager.hpp"
+#include "sharedContext.hpp"
 
 using GUI_Interfaces = std::unordered_map<std::string, GUI_Interface*>;
 using GUI_Container = std::unordered_map<StateType, GUI_Interfaces>;
 using GUI_Events = std::unordered_map<StateType, std::vector<GUI_Event>>;
 using GUI_Factory = std::unordered_map<GUI_ElementType, std::function<GUI_Element*(GUI_Interface*)>>;
-using GUI_ElemTypes = std::unordered_map <std::string,GUI_ElementType>;
+using GUI_ElemTypes = std::unordered_map <std::string, GUI_ElementType>;
 
 struct SharedContext;
 class GUI_Manager {
@@ -52,17 +50,17 @@ class GUI_Manager {
         void Update(float dT);
         void Render(sf::RenderWindow* window);
 
-        /*template<class T>
-        void RegisterElement(const GUI_ElementType& id) {
+    private:
+        GUI_Element* createElement(const GUI_ElementType& id, GUI_Interface* owner);
+        GUI_ElementType stringToType(const std::string& string);
+        bool loadStyle(const std::string& file, GUI_Element* element);
+
+        template<class T>
+        void registerElement(const GUI_ElementType& id) {
             _factory[id] = [](GUI_Interface* owner) -> GUI_Element* {
                 return new T("", owner);
             };
-        }*/
-
-    private:
-        GUI_Element* CreateElement(const GUI_ElementType& id, GUI_Interface* owner);
-        GUI_ElementType StringToType(const std::string& string);
-        bool LoadStyle(const std::string& file, GUI_Element* element);
+        }
 
     private:
         GUI_Container _interfaces;

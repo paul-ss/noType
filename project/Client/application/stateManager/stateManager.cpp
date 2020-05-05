@@ -1,6 +1,4 @@
 #include "stateManager.hpp"
-#include "introState.hpp"
-#include "mainMenuState.hpp"
 
 StateManager::StateManager(SharedContext* shared) : _shared(shared) {
     registerState<IntroState>(StateType::Intro);

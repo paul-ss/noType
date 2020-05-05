@@ -1,8 +1,7 @@
-#include "GUI_textfield.hpp"
-
 #include <algorithm>
 #include <iostream>
 
+#include "GUI_textField.hpp"
 #include "utils.hpp"
 
 GUI_Textfield::GUI_Textfield(const std::string& name, GUI_Interface* owner) :

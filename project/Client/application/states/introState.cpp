@@ -1,5 +1,4 @@
 #include "introState.hpp"
-#include "stateManager.hpp"
 
 IntroState::IntroState(StateManager* stateManager)
     : BaseState(stateManager) {}

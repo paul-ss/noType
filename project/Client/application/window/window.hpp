@@ -1,8 +1,8 @@
 #pragma once
 
-#include "eventManager.hpp"
-
 #include <SFML/Graphics.hpp>
+
+#include "eventManager.hpp"
 
 class Window {
     public:

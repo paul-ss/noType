@@ -1,7 +1,7 @@
 #pragma once
 
-#include "eventManager.hpp"
 #include "baseState.hpp"
+#include "eventManager.hpp"
 #include "stateManager.hpp"
 
 class IntroState : public BaseState {

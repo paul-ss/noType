@@ -1,14 +1,13 @@
 #pragma once
 
-#include "resourceManager.hpp"
-#include "utils.hpp"
-
 #include <SFML/Audio.hpp>
+
+#include "resourceManager.hpp"
 
 class AudioManager : public ResourceManager<AudioManager, sf::SoundBuffer> {
 public:
-    AudioManager() : ResourceManager("resources/audio.cfg") {}
-    sf::SoundBuffer* Load(const std::string& path) {
+    AudioManager() : ResourceManager("assets/audio.cfg") {}
+    sf::SoundBuffer* load(const std::string& path) {
         sf::SoundBuffer* sound = new sf::SoundBuffer();
         if (!sound->loadFromFile(utils::GetWorkingDirectory() + path)) {
             delete sound;

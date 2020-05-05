@@ -58,7 +58,7 @@ void GUI_Element::applyTextStyle() {
     const GUI_Style& CurrentStyle = _style[_state];
     if (CurrentStyle._textFont != ""){
         _visual._text.setFont(*fonts->GetResource(CurrentStyle._textFont));
-        _visual._text.setColor(CurrentStyle._textColor);
+        _visual._text.setFillColor(CurrentStyle._textColor);
         _visual._text.setCharacterSize(CurrentStyle._textSize);
         if (CurrentStyle._textCenterOrigin){
             sf::FloatRect rect = _visual._text.getLocalBounds();
@@ -162,7 +162,7 @@ bool GUI_Element::IsActive() const {
     return _active;
 }
 
-void GUI_Element::SetActive(const bool& active) {
+void GUI_Element::SetActive(const bool active) {
     if (active != _active) {
         _active = active; SetRedraw(true);
     }
@@ -184,8 +184,8 @@ bool GUI_Element::IsInside(const sf::Vector2f& point) const {
     sf::Vector2f position = GetGlobalPosition();
     return(point.x >= position.x &&
         point.y >= position.y &&
-        point.x <= position.x + _style.at(_state)._size.x &&
-        point.y <= position.y + _style.at(_state)._size.y);
+        point.x <= (position.x + _style.at(_state)._size.x) &&
+        point.y <= (position.y + _style.at(_state)._size.y));
 }
 
 sf::Vector2f GUI_Element::GetGlobalPosition() const{

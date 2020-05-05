@@ -1,12 +1,12 @@
 #pragma once
 
-#include "utils.hpp"
-
 #include <string>
 #include <unordered_map>
 #include <iostream>
 #include <fstream>
 #include <sstream>
+
+#include "utils.hpp"
 
 template <typename Derived, typename T>
 class ResourceManager {
@@ -95,7 +95,7 @@ void ResourceManager<Derived, T>::PurgeResources() {
 
 template <typename Derived, class T>
 T* ResourceManager<Derived, T>::load(const std::string& path) {
-    return static_cast<Derived*>(this)->Load(path);
+    return static_cast<Derived*>(this)->load(path);
 }
 
 template <typename Derived, typename T>

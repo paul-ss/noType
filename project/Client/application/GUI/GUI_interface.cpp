@@ -2,9 +2,13 @@
 #include "GUI_manager.hpp"
 #include "sharedContext.hpp"
 
+#define FIRST_INTRESTING_ASCII_CODE 32
+#define LAST_INTRESTING_ASCII_CODE 126
+#define ASCII_BACKSLASH 8
+
 GUI_Interface::GUI_Interface(const std::string& name, GUI_Manager* guiManager)
     : GUI_Element(name, GUI_ElementType::Window, this), _parent(nullptr), _guiManager(guiManager),
-    _movable(false), _beingMoved(false), _showTitleBar(false), _focused(false), _scrollHorizontal(0),
+    _showTitleBar(false), _movable(false), _beingMoved(false), _focused(false), _scrollHorizontal(0),
     _scrollVertical(0), _contentRedraw(true), _controlRedraw(true)
 {
     _backdropTexture = new sf::RenderTexture();
@@ -38,7 +42,7 @@ bool GUI_Interface::AddElement(const GUI_ElementType& type,
     }
 
     GUI_Element* element = nullptr;
-    element = _guiManager->CreateElement(type, this);
+    element = _guiManager->createElement(type, this);
     if (!element) {
         return false;
     }
@@ -159,15 +163,20 @@ void GUI_Interface::OnLeave() {
 
 void GUI_Interface::OnTextEntered(const char& letter) {
     for (auto &itr : _elements) {
-        if (itr.second->GetType() != GUI_ElementType::Textfield) { continue; }
-        if (itr.second->GetState() != GUI_ElementState::Clicked) { continue; }
-        if (letter == 8) {
-            // Backspace.
+        if (itr.second->GetType() != GUI_ElementType::Textfield) {
+            continue;
+        }
+        if (itr.second->GetState() != GUI_ElementState::Clicked) {
+            continue;
+        }
+        if (letter == ASCII_BACKSLASH) {
             const auto& text = itr.second->GetText();
             itr.second->SetText(text.substr(0, text.length() -1));
             return;
         }
-        if (letter < 32 || letter > 126) { return; }
+        if (letter < FIRST_INTRESTING_ASCII_CODE || letter > LAST_INTRESTING_ASCII_CODE) {
+            return;
+        }
         std::string text = itr.second->GetText();
         text.push_back(letter);
         itr.second->SetText(text);
@@ -175,8 +184,13 @@ void GUI_Interface::OnTextEntered(const char& letter) {
     }
 }
 
-const sf::Vector2f& GUI_Interface::GetPadding() const{ return _elementPadding; }
-void GUI_Interface::SetPadding(const sf::Vector2f& padding) { _elementPadding = padding;  }
+const sf::Vector2f& GUI_Interface::GetPadding() const {
+    return _elementPadding;
+}
+
+void GUI_Interface::SetPadding(const sf::Vector2f& padding) {
+    _elementPadding = padding;
+}
 
 void GUI_Interface::Update(float dT) {
     sf::Vector2f mousePos = sf::Vector2f(
@@ -223,25 +237,37 @@ void GUI_Interface::Draw(sf::RenderTarget* target) {
     target->draw(_content);
     target->draw(_control);
 
-    if (!_showTitleBar) { return; }
+    if (!_showTitleBar) {
+        return;
+    }
     target->draw(_titleBar);
     target->draw(_visual._text);
 }
 
-bool GUI_Interface::IsBeingMoved() const{ return _beingMoved; }
-bool GUI_Interface::IsMovable() const{ return _movable;  }
+bool GUI_Interface::IsBeingMoved() const {
+    return _beingMoved;
+}
+
+bool GUI_Interface::IsMovable() const {
+    return _movable;
+}
 
 void GUI_Interface::BeginMoving() {
-    if (!_showTitleBar || !_movable) { return; }
+    if (!_showTitleBar || !_movable) {
+        return;
+    }
+
     _beingMoved = true;
     SharedContext* context = _guiManager->GetContext();
     _moveMouseLast = sf::Vector2f(context->_eventManager->
         GetMousePos(context->_window->GetRenderWindow()));
 }
 
-void GUI_Interface::StopMoving() { _beingMoved = false; }
+void GUI_Interface::StopMoving() {
+    _beingMoved = false;
+}
 
-sf::Vector2f GUI_Interface::GetGlobalPosition() const{
+sf::Vector2f GUI_Interface::GetGlobalPosition() const {
     sf::Vector2f pos = _position;
     GUI_Interface* i = _parent;
     while (i) {
@@ -281,7 +307,11 @@ void GUI_Interface::Redraw() {
     _backdrop.setTextureRect(sf::IntRect(0, 0, _style[_state]._size.x, _style[_state]._size.y));
     SetRedraw(false);
 }
-bool GUI_Interface::NeedsContentRedraw() const{ return _contentRedraw; }
+
+bool GUI_Interface::NeedsContentRedraw() const {
+    return _contentRedraw;
+}
+
 void GUI_Interface::RedrawContent() {
     if (_contentTexture->getSize().x != _contentSize.x ||
         _contentTexture->getSize().y != _contentSize.y)
@@ -293,7 +323,9 @@ void GUI_Interface::RedrawContent() {
 
     for (auto &itr : _elements) {
         GUI_Element* element = itr.second;
-        if (!element->IsActive() || element->IsControl()) { continue; }
+        if (!element->IsActive() || element->IsControl()) {
+            continue;
+        }
         element->ApplyStyle();
         element->Draw(_contentTexture);
         element->SetRedraw(false);
@@ -302,10 +334,17 @@ void GUI_Interface::RedrawContent() {
     _contentTexture->display();
     _content.setTexture(_contentTexture->getTexture());
 
-    _content.setTextureRect(sf::IntRect(_scrollHorizontal, _scrollVertical, _style[_state]._size.x, _style[_state]._size.y));
+    _content.setTextureRect(sf::IntRect(_scrollHorizontal,
+            _scrollVertical,
+            _style[_state]._size.x,
+            _style[_state]._size.y));
     _contentRedraw = false;
 }
-bool GUI_Interface::NeedsControlRedraw() const{ return _controlRedraw; }
+
+bool GUI_Interface::NeedsControlRedraw() const {
+    return _controlRedraw;
+}
+
 void GUI_Interface::RedrawControls() {
     if (_controlTexture->getSize().x != _style[_state]._size.x ||
         _controlTexture->getSize().y != _style[_state]._size.y)
@@ -316,7 +355,9 @@ void GUI_Interface::RedrawControls() {
 
     for (auto &itr : _elements) {
         GUI_Element* element = itr.second;
-        if (!element->IsActive() || !element->IsControl()) { continue; }
+        if (!element->IsActive() || !element->IsControl()) {
+            continue;
+        }
         element->ApplyStyle();
         element->Draw(_controlTexture);
         element->SetRedraw(false);
@@ -333,8 +374,14 @@ void GUI_Interface::ToggleTitleBar() { _showTitleBar = !_showTitleBar; }
 void GUI_Interface::AdjustContentSize(const GUI_Element* reference) {
     if (reference) {
         sf::Vector2f bottomRight = reference->GetPosition() + reference->GetSize();
-        if (bottomRight.x > _contentSize.x) { _contentSize.x = bottomRight.x; _controlRedraw = true; }
-        if (bottomRight.y > _contentSize.y) { _contentSize.y = bottomRight.y; _controlRedraw = true; }
+        if (bottomRight.x > _contentSize.x) {
+            _contentSize.x = bottomRight.x;
+            _controlRedraw = true;
+        }
+        if (bottomRight.y > _contentSize.y) {
+            _contentSize.y = bottomRight.y;
+            _controlRedraw = true;
+        }
         return;
     }
 
@@ -342,31 +389,47 @@ void GUI_Interface::AdjustContentSize(const GUI_Element* reference) {
 
     for (auto &itr : _elements) {
         GUI_Element* element = itr.second;
-        if (!element->IsActive() || element->IsControl()) { continue; }
+        if (!element->IsActive() || element->IsControl()) {
+            continue;
+        }
         sf::Vector2f bottomRight = element->GetPosition() + element->GetSize();
-        if (bottomRight.x > farthest.x) { farthest.x = bottomRight.x; _controlRedraw = true; }
-        if (bottomRight.y > farthest.y) { farthest.y = bottomRight.y; _controlRedraw = true; }
+        if (bottomRight.x > farthest.x) {
+            farthest.x = bottomRight.x;
+            _controlRedraw = true;
+        }
+        if (bottomRight.y > farthest.y) {
+            farthest.y = bottomRight.y;
+            _controlRedraw = true;
+        }
     }
     SetContentSize(farthest);
 }
 
-void GUI_Interface::SetContentSize(const sf::Vector2f& vec) { _contentSize = vec; }
+void GUI_Interface::SetContentSize(const sf::Vector2f& vec) {
+    _contentSize = vec;
+}
 
 void GUI_Interface::UpdateScrollHorizontal(unsigned int percent) {
-    if (percent > 100) { return; }
+    if (percent > 100) {
+        return;
+    }
     _scrollHorizontal = ((_contentSize.x - GetSize().x) / 100) * percent;
     sf::IntRect rect = _content.getTextureRect();
     _content.setTextureRect(sf::IntRect(_scrollHorizontal, _scrollVertical, rect.width, rect.height));
 }
 
 void GUI_Interface::UpdateScrollVertical(unsigned int percent) {
-    if (percent > 100) { return; }
+    if (percent > 100) {
+        return;
+    }
     _scrollVertical = ((_contentSize.y - GetSize().y) / 100) * percent;
     sf::IntRect rect = _content.getTextureRect();
     _content.setTextureRect(sf::IntRect(_scrollHorizontal, _scrollVertical, rect.width, rect.height));
 }
 
-const sf::Vector2f& GUI_Interface::GetContentSize() const{ return _contentSize; }
+const sf::Vector2f& GUI_Interface::GetContentSize() const {
+    return _contentSize;
+}
 
 void GUI_Interface::DefocusTextfields() {
     GUI_Event event;
@@ -374,7 +437,9 @@ void GUI_Interface::DefocusTextfields() {
     event._interface = _name.c_str();
     event._element = "";
     for (auto &itr : _elements) {
-        if (itr.second->GetType() != GUI_ElementType::Textfield) { continue; }
+        if (itr.second->GetType() != GUI_ElementType::Textfield) {
+            continue;
+        }
         itr.second->SetState(GUI_ElementState::Neutral);
         event._element = itr.second->_name.c_str();
         _guiManager->AddEvent(event);
