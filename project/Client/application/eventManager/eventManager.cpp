@@ -1,63 +1,54 @@
 #include "eventManager.hpp"
-#include "exceptions.hpp"
 
-EventManager::EventManager():_currentState(StateType(0)), _hasFocus(true) {
-    LoadBindings();
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
+EventManager::EventManager(): _hasFocus(true) {
+    loadBindings();
 }
 
-void EventManager::SetFocus(const bool& focus) {
-    _hasFocus = focus;
-}
-
-void EventManager::SetCurrentState(StateType state) {
-    _currentState = state;
-}
-
-bool EventManager::AddCallback(StateType state,
-        const std::string& name,
-        const std::function<void(EventDetails&)>& func) {
-
-    auto itr = _callbacks.emplace(state, CallbackContainer()).first;
-    return itr->second.emplace(name, func).second;
-}
-
-bool EventManager::RemoveCallback(StateType state, const std::string& name) {
-    auto itr = _callbacks.find(state);
-    if (itr == _callbacks.end()) {
-        return false;
+EventManager::~EventManager() {
+    for (auto &itr : _bindings) {
+        delete itr.second;
+        itr.second = nullptr;
     }
-
-    auto itr2 = itr->second.find(name);
-    if (itr2 == itr->second.end()) {
-        return false;
-    }
-    itr->second.erase(name);
-    return true;
 }
 
-sf::Vector2i EventManager::GetMousePos(const sf::RenderWindow* wind) {
+template <class T>
+bool EventManager::addCallback(const std::string& name,
+                        const T& func) {
+    return _callbacks.emplace(name, func).second;
+}
+
+sf::Vector2i EventManager::getMousePos(sf::RenderWindow* wind = nullptr) {
     return (wind ? sf::Mouse::getPosition(*wind) : sf::Mouse::getPosition());
 }
 
-bool EventManager::AddBinding(std::shared_ptr<Binding> binding) {
+void EventManager::removeCallback(const std::string& name) {
+    _callbacks.erase(name);
+}
+
+bool EventManager::addBinding(Binding *binding) {
     if (_bindings.find(binding->_name) != _bindings.end()) {
         return false;
     }
     return _bindings.emplace(binding->_name, binding).second;
 }
 
-bool EventManager::RemoveBinding(std::string name) {
+bool EventManager::removeBinding(std::string name) {
     auto itr = _bindings.find(name);
     if (itr == _bindings.end()) {
         return false;
     }
+    delete itr->second;
     _bindings.erase(itr);
     return true;
 }
 
-void EventManager::HandleEvent(const sf::Event& event) {
+void EventManager::handleEvent(sf::Event& event) {
     for (auto &b_itr : _bindings) {
-        auto bind = b_itr.second;
+        Binding* bind = b_itr.second;
         for (auto &e_itr : bind->_events) {
             EventType sfmlEvent = (EventType)event.type;
             if (e_itr.first != sfmlEvent) {
@@ -96,25 +87,24 @@ void EventManager::HandleEvent(const sf::Event& event) {
     }
 }
 
-void EventManager::Update() {
+void EventManager::update() {
     if (!_hasFocus) {
         return;
     }
     for (auto &b_itr : _bindings) {
-        auto bind = (b_itr.second);
+        Binding* bind = b_itr.second;
         for (auto &e_itr : bind->_events) {
             switch (e_itr.first) {
-                case(EventType::Keyboard) : {
+                case(EventType::Keyboard) :
                     if (sf::Keyboard::isKeyPressed( sf::Keyboard::Key(e_itr.second._code))) {
                         if (bind->_details._keyCode != -1) {
                             bind->_details._keyCode = e_itr.second._code;
                         }
-                        ++(bind->_count);
+                            ++(bind->_count);
                     }
                     break;
-                }
 
-                case(EventType::Mouse) : {
+                case(EventType::Mouse) :
                     if (sf::Mouse::isButtonPressed( sf::Mouse::Button(e_itr.second._code))) {
                         if (bind->_details._keyCode != -1) {
                             bind->_details._keyCode = e_itr.second._code;
@@ -122,75 +112,56 @@ void EventManager::Update() {
                         ++(bind->_count);
                     }
                     break;
-                }
-
-                default: {
-                }
             }
         }
 
         if (bind->_events.size() == bind->_count) {
-            auto stateCallbacks = _callbacks.find(_currentState);
-            auto otherCallbacks = _callbacks.find(StateType(0));
-            if (stateCallbacks != _callbacks.end()) {
-                auto callItr = stateCallbacks->second.find(bind->_name);
-                if (callItr != stateCallbacks->second.end()) {
-                    callItr->second(bind->_details);
-                }
-            }
-            if (otherCallbacks != _callbacks.end()) {
-                auto callItr = otherCallbacks->second.find(bind->_name);
-                if (callItr != otherCallbacks->second.end()) {
-                    callItr->second(bind->_details);
-                }
+            auto callItr = _callbacks.find(bind->_name);
+            if(callItr != _callbacks.end()) {
+                callItr->second(&bind->_details);
             }
         }
-
-        bind->_count = 0;
-        bind->_details.Clear();
+            bind->_count = 0; bind->_details.Clear();
     }
 }
 
-void EventManager::LoadBindings() {
+void EventManager::loadBindings() {
     std::string delimiter = ":";
     std::ifstream bindings;
-    bindings.open("assets/keys.cfg");
-    if (!bindings.is_open()) {
-        throw InvalidFile();
-    }
+    bindings.open("keys.cfg");
+        if (!bindings.is_open()) {
+            std::cout << "! Failed loading keys.cfg." << std::endl;
+            return;
+        }
 
     std::string line;
     while (std::getline(bindings, line)) {
         std::stringstream keystream(line);
         std::string callbackName;
         keystream >> callbackName;
-        if (keystream.bad()) {
-            throw InvalidFile();
-        }
+        Binding* bind = new Binding(callbackName);
 
-        auto bind = std::make_shared<Binding>(callbackName);
         while (!keystream.eof()) {
             std::string keyval;
             keystream >> keyval;
-            if (keystream.bad()) {
-                throw InvalidFile();
-            }
-            size_t start = 0;
-            size_t end = keyval.find(delimiter);
+            int start = 0;
+            int end = keyval.find(delimiter);
             if (end == std::string::npos) {
+                delete bind;
+                bind = nullptr;
                 break;
             }
             EventType type = EventType(stoi(keyval.substr(start, end - start)));
             int code = stoi(keyval.substr(end + delimiter.length(),
             keyval.find(delimiter, end + delimiter.length())));
-
-            EventInfo eventInfo;
-            eventInfo._code = code;
+            EventInfo eventInfo; eventInfo._code = code;
             bind->BindEvent(type, eventInfo);
         }
-        if (!AddBinding(bind)) {
-            throw InvalidCmd();
+
+        if (!addBinding(bind)) {
+            delete bind;
         }
+        bind = nullptr;
     }
     bindings.close();
 }

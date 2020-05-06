@@ -1,27 +1,25 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
-
 #include "eventManager.hpp"
+
+#include <SFML/Graphics.hpp>
 
 class Window {
     public:
         Window();
-        explicit Window(const std::string& title, const sf::Vector2u& size);
+        Window(const std::string& title, const sf::Vector2u& size);
         ~Window();
-
-        void BeginDraw();
-        void Draw(sf::Drawable& drawable);
-        void EndDraw();
-        void Update();
-        void Close();
-        void ToggleFullscreen();
-        bool IsDone();
-        bool IsFocused();
-        bool IsFullScreen();
-        sf::Vector2u GetWindowSize();
-        EventManager* GetEventManager();
-        sf::RenderWindow* GetRenderWindow();
+        void beginDraw();
+        void draw(sf::Drawable& drawable);
+        void endDraw();
+        void update();
+        void close();
+        bool isDone();
+        bool isFullScreen();
+        bool isFocused();
+        sf::Vector2u getWindowSize();
+        EventManager* getEventManager();
+        void toggleFullscreen(EventDetails* details);
 
     private:
         void setup(const std::string& title, const sf::Vector2u& size);

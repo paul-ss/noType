@@ -33,10 +33,9 @@
 
 #IDE
 .idea
-project/Server/cmake-build-debug/*
+cmake-build-debug/*
 .vscode
 
 #Local
 .DS_Store
 build
-notype

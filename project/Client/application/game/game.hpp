@@ -1,31 +1,18 @@
 #pragma once
 
-#include "window.hpp"
-#include "stateManager.hpp"
-#include "sharedContext.hpp"
+#include <window.hpp>
 
-class Game : public sf::NonCopyable {
+class Game {
     public:
-        Game();
-        ~Game() = default;
-
-        void Run();
+        bool run();
+        static Game& getInstance();
 
     private:
+        Game();
         void update();
         void render();
-        void lateUpdate();
-
-    private:
-        sf::Time getElapsed();
-        void restartClock();
 
     private:
         Window _window;
-        SharedContext _context;
-        StateManager _stateManager;
-        AudioManager _audioManager;
-        SoundManager _soundManager;
-        sf::Clock _clock;
-        sf::Time _elapsed;
 };
+
