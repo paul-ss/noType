@@ -12,7 +12,7 @@ SET(ALL_HEADERS
     ${SOURCE_DIR}/game
     ${SOURCE_DIR}/GUI
     ${SOURCE_DIR}/logger
-    ${SOURCE_DIR}/musicManager
+    ${SOURCE_DIR}/soundManager
     ${SOURCE_DIR}/resources
     ${SOURCE_DIR}/sharedContext
     ${SOURCE_DIR}/stateManager
@@ -30,7 +30,7 @@ SET(ALL_SOURCES
     ${SOURCE_DIR}/GUI/GUI_label.cpp
     ${SOURCE_DIR}/GUI/GUI_interface.cpp
     ${SOURCE_DIR}/GUI/GUI_manager.cpp
-    ${SOURCE_DIR}/musicManager/musicManager.cpp
+    ${SOURCE_DIR}/soundManager/soundManager.cpp
     ${SOURCE_DIR}/stateManager/stateManager.cpp
     ${SOURCE_DIR}/states/introState.cpp
     ${SOURCE_DIR}/states/gameState.cpp

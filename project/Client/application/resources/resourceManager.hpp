@@ -6,6 +6,8 @@
 #include <fstream>
 #include <sstream>
 
+#include <boost/log/trivial.hpp>
+
 #include "utils.hpp"
 
 template <typename Derived, typename T>
@@ -59,7 +61,9 @@ bool ResourceManager<Derived, T>::RequireResource(const std::string& id) {
         return true;
     }
     auto path = _paths.find(id);
-    if (path == _paths.end()){ return false; }
+    if (path == _paths.end()) {
+        return false;
+    }
     T* resource = load(path->second);
     if (!resource) {
         return false;
@@ -83,14 +87,13 @@ bool ResourceManager<Derived, T>::ReleaseResource(const std::string& id) {
 
 template <typename Derived, typename T>
 void ResourceManager<Derived, T>::PurgeResources() {
-    std::cout << "Purging all resources:" << std::endl;
-    while(_resources.begin() != _resources.end()){
-        std::cout << "Removing: " 
-            << _resources.begin()->first << std::endl;
+    BOOST_LOG_TRIVIAL(info) << "Purging all resources";
+    while(_resources.begin() != _resources.end()) {
+    BOOST_LOG_TRIVIAL(info) << "Removing: " << _resources.begin()->first;
         delete _resources.begin()->second.first;
         _resources.erase(_resources.begin());
     }
-    std::cout << "Purging finished." << std::endl;
+    BOOST_LOG_TRIVIAL(info) << "Purging finished";
 }
 
 template <typename Derived, class T>
@@ -118,10 +121,10 @@ bool ResourceManager<Derived, T>::unload(const std::string& id) {
 template <typename Derived, typename T>
 void ResourceManager<Derived, T>::loadPaths(const std::string& pathFile) {
     std::ifstream paths;
-    paths.open(utils::GetWorkingDirectory() + pathFile);
-    if(paths.is_open()){
+    paths.open(std::filesystem::absolute(pathFile));
+    if(paths.is_open()) {
         std::string line;
-        while(std::getline(paths, line)){
+        while(std::getline(paths, line)) {
             std::stringstream keystream(line);
             std::string pathName;
             std::string path;
@@ -132,7 +135,5 @@ void ResourceManager<Derived, T>::loadPaths(const std::string& pathFile) {
         paths.close();
         return;
     }
-    std::cerr <<
-        "! Failed loading the path file: "
-        << pathFile << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "Failed loading the path file: " << pathFile;
 }

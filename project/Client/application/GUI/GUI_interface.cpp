@@ -34,9 +34,8 @@ void GUI_Interface::SetPosition(const sf::Vector2f& pos) {
     _visual._text.setPosition(_titleBar.getPosition() + _style[_state]._textPadding);
 }
 
-bool GUI_Interface::AddElement(const GUI_ElementType& type, 
-    const std::string& name)
-{
+bool GUI_Interface::AddElement(const GUI_ElementType& type,
+    const std::string& name) {
     if (_elements.find(name) != _elements.end()) {
         return false;
     }
@@ -54,9 +53,12 @@ bool GUI_Interface::AddElement(const GUI_ElementType& type,
     return true;
 }
 
-GUI_Element* GUI_Interface::GetElement(const std::string& name) const{
+GUI_Element* GUI_Interface::GetElement(const std::string& name) const {
     auto itr = _elements.find(name);
-    return(itr != _elements.end() ? itr->second : nullptr);
+    for (auto itr : _elements) {
+        std::cout << itr.first << "\n";
+    }
+    return (itr != _elements.end() ? itr->second : nullptr);
 }
 
 bool GUI_Interface::RemoveElement(const std::string& name) {
@@ -112,7 +114,9 @@ void GUI_Interface::OnClick(const sf::Vector2f& mousePos) {
         event._clickCoords.y = mousePos.y;
         _guiManager->AddEvent(event);
         for (auto &itr : _elements) {
-            if (!itr.second->IsInside(mousePos)) { continue; }
+            if (!itr.second->IsInside(mousePos)) {
+                continue;
+            }
             itr.second->OnClick(mousePos);
             event._element = itr.second->_name.c_str();
             _guiManager->AddEvent(event);
@@ -128,8 +132,7 @@ void GUI_Interface::OnRelease() {
     event._element = "";
     _guiManager->AddEvent(event);
     for (auto &itr : _elements) {
-        if (itr.second->GetState() != GUI_ElementState::Clicked)
-        {
+        if (itr.second->GetState() != GUI_ElementState::Clicked) {
             continue;
         }
         itr.second->OnRelease();
@@ -142,7 +145,7 @@ void GUI_Interface::OnRelease() {
 void GUI_Interface::OnHover(const sf::Vector2f& mousePos) {
     GUI_Event event;
     event._type = GUI_EventType::Hover;
-    event._interface = _name.c_str();
+    event._interface = _name;
     event._element = "";
     event._clickCoords.x = mousePos.x;
     event._clickCoords.y = mousePos.y;
@@ -154,7 +157,7 @@ void GUI_Interface::OnHover(const sf::Vector2f& mousePos) {
 void GUI_Interface::OnLeave() {
     GUI_Event event;
     event._type = GUI_EventType::Leave;
-    event._interface = _name.c_str();
+    event._interface = _name;
     event._element = "";
     _guiManager->AddEvent(event);
 
@@ -209,9 +212,13 @@ void GUI_Interface::Update(float dT) {
             if (itr.second->IsControl()) { _controlRedraw = true; } 
             else { _contentRedraw = true; }
         }
-        if (!itr.second->IsActive()) { continue; }
+        if (!itr.second->IsActive()) {
+            continue;
+        }
         itr.second->Update(dT);
-        if (_beingMoved) { continue; }
+        if (_beingMoved) {
+            continue;
+        }
         GUI_Event event;
         event._interface = _name.c_str();
         event._element = itr.second->_name.c_str();
@@ -220,7 +227,9 @@ void GUI_Interface::Update(float dT) {
         if (IsInside(mousePos) && itr.second->IsInside(mousePos) 
             && !_titleBar.getGlobalBounds().contains(mousePos))
         {
-            if (itr.second->GetState() != GUI_ElementState::Neutral) { continue; }
+            if (itr.second->GetState() != GUI_ElementState::Neutral) {
+                continue;
+            }
             itr.second->OnHover(mousePos);
             event._type = GUI_EventType::Hover;
             _guiManager->AddEvent(event);

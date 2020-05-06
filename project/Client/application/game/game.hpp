@@ -21,11 +21,14 @@ class Game : public sf::NonCopyable {
         void restartClock();
 
     private:
-        Window _window;
-        SharedContext _context;
-        StateManager _stateManager;
-        AudioManager _audioManager;
-        SoundManager _soundManager;
         sf::Clock _clock;
         sf::Time _elapsed;
+        SharedContext _context;
+        Window _window;
+        TextureManager _textureManager;
+        FontManager _fontManager;
+        AudioManager _audioManager;
+        SoundManager _soundManager;
+        GUI_Manager _guiManager;
+        StateManager _stateManager;
 };

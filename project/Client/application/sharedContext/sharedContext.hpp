@@ -6,7 +6,7 @@
 #include "fontManager.hpp"
 #include "textureManager.hpp"
 #include "audioManager.hpp"
-#include "musicManager.hpp"
+#include "soundManager.hpp"
 
 struct SharedContext {
     SharedContext():

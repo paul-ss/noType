@@ -6,8 +6,9 @@ MainMenuState::MainMenuState(StateManager* stateManager)
 MainMenuState::~MainMenuState() {}
 
 void MainMenuState::OnCreate() {
+    std::cout << "oncreate menu\n";
     GUI_Manager* gui = _stateMgr->GetContext()->_guiManager;
-    gui->LoadInterface(StateType::MainMenu, "MainMenu.interface", "MainMenu");
+    gui->LoadInterface(StateType::MainMenu, "mainMenu.interface", "MainMenu");
     gui->GetInterface(StateType::MainMenu, "MainMenu")->SetPosition(sf::Vector2f(250.f, 168.f));
 
     EventManager* eMgr = _stateMgr->GetContext()->_eventManager;
@@ -28,17 +29,11 @@ void MainMenuState::OnDestroy() {
 void MainMenuState::Activate() {
     auto& play = *_stateMgr->GetContext()->_guiManager->
         GetInterface(StateType::MainMenu, "MainMenu")->GetElement("Play");
-    if (_stateMgr->HasState(StateType::Game)) {
-        // Resume
-        play.SetText("Resume");
-    } else {
-        // Play
-        play.SetText("Play");
-    }
+    play.SetText("Play");
 }
 
 void MainMenuState::Play(EventDetails* details) {
-    _stateMgr->SwitchTo(StateType::Game);
+    //_stateMgr->SwitchTo(StateType::Game);
 }
 
 void MainMenuState::Quit(EventDetails* details) {

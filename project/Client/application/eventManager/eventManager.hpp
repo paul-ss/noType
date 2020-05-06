@@ -10,6 +10,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
+#include "GUI_event.hpp"
+
 enum class EventType {
 KeyDown = sf::Event::KeyPressed,
 KeyUp = sf::Event::KeyReleased,
@@ -23,27 +25,43 @@ MouseEntered = sf::Event::MouseEntered,
 MouseLeft = sf::Event::MouseLeft,
 Closed = sf::Event::Closed,
 TextEntered = sf::Event::TextEntered,
-Keyboard = sf::Event::Count + 1, Mouse, Joystick
+Keyboard = sf::Event::Count + 1, Mouse, Joystick,
+        GUI_Click, GUI_Release, GUI_Hover, GUI_Leave
 };
 
 struct EventInfo {
     EventInfo() {
         _code = 0;
     }
-
-    explicit EventInfo(int event) {
+    EventInfo(int event) {
         _code = event;
     }
-
-    union{
+    EventInfo(const GUI_Event& guiEvent) {
+        _gui = guiEvent;
+    }
+    EventInfo(const EventInfo& guiEvent) : _gui(guiEvent._gui) {}
+    ~EventInfo() {}
+    union {
         int _code;
+        GUI_Event _gui;
     };
 };
 
 struct EventDetails {
-    explicit EventDetails(const std::string& bindName) : _name(bindName) {
-        Clear();
+    EventDetails(const std::string& bindName) : _name(bindName) {
+            Clear();
     }
+    std::string _name;
+
+    sf::Vector2i _size;
+    sf::Uint32 _textEntered;
+    sf::Vector2i _mouse;
+    int _mouseWheelDelta;
+    int _keyCode;
+
+    std::string _guiInterface;
+    std::string _guiElement;
+    GUI_EventType _guiEvent;
 
     void Clear() {
         _size = sf::Vector2i(0, 0);
@@ -51,22 +69,16 @@ struct EventDetails {
         _mouse = sf::Vector2i(0, 0);
         _mouseWheelDelta = 0;
         _keyCode = -1;
+        _guiInterface = "";
+        _guiElement = "";
+        _guiEvent = GUI_EventType::None;
     }
-
-    std::string _name;
-    sf::Vector2i _size;
-    sf::Uint32 _textEntered;
-    sf::Vector2i _mouse;
-    int _mouseWheelDelta;
-    int _keyCode;
 };
 
 using Events = std::vector<std::pair<EventType, EventInfo> >;
 struct Binding {
-    explicit Binding(const std::string& name) : _name(name),
-                                        _details(name),
-                                        _count(0) {
-    }
+    Binding(const std::string& name): _name(name), _details(name), _count(0) {}
+    ~Binding() {}
 
     void BindEvent(EventType type, EventInfo info = EventInfo()) {
         _events.emplace_back(type, info);
@@ -74,11 +86,12 @@ struct Binding {
 
     Events _events;
     std::string _name;
+    int _count;
+
     EventDetails _details;
-    size_t _count;
 };
 
-using Bindings = std::unordered_map<std::string, std::shared_ptr<Binding> >;
+using Bindings = std::unordered_map<std::string, std::shared_ptr<Binding>>;
 
 using CallbackContainer = std::unordered_map<std::string,
         std::function<void(EventDetails&)> >;
@@ -97,6 +110,7 @@ class EventManager {
         void SetFocus(const bool& focus);
 
         void HandleEvent(const sf::Event& event);
+        void HandleEvent(const GUI_Event& event);
         void Update();
 
         bool AddCallback(StateType state,

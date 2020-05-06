@@ -177,7 +177,8 @@ std::string GUI_Element::GetText() const {
 }
 
 void GUI_Element::SetText(const std::string& text) {
-    _visual._text.setString(text); SetRedraw(true);
+    _visual._text.setString(text);
+    SetRedraw(true);
 }
 
 bool GUI_Element::IsInside(const sf::Vector2f& point) const {

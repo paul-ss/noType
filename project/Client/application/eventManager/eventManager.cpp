@@ -1,5 +1,10 @@
+#include <filesystem>
+
+#include <boost/log/trivial.hpp>
+
 #include "eventManager.hpp"
 #include "exceptions.hpp"
+#include "utils.hpp"
 
 EventManager::EventManager():_currentState(StateType(0)), _hasFocus(true) {
     LoadBindings();
@@ -96,6 +101,31 @@ void EventManager::HandleEvent(const sf::Event& event) {
     }
 }
 
+void EventManager::HandleEvent(const GUI_Event& event) {
+    for (auto &b_itr : _bindings) {
+        auto bind = b_itr.second;
+        for (auto &e_itr : bind->_events) {
+            if (e_itr.first != EventType::GUI_Click && e_itr.first != EventType::GUI_Release &&
+                e_itr.first != EventType::GUI_Hover && e_itr.first != EventType::GUI_Leave) {
+                continue;
+            }
+            if ((e_itr.first == EventType::GUI_Click && event._type != GUI_EventType::Click) ||
+                (e_itr.first == EventType::GUI_Release && event._type != GUI_EventType::Release) ||
+                (e_itr.first == EventType::GUI_Hover && event._type != GUI_EventType::Hover) ||
+                (e_itr.first == EventType::GUI_Leave && event._type != GUI_EventType::Leave)) {
+                    continue;
+            }
+            if ((e_itr.second._gui._interface == event._interface) ||
+                (e_itr.second._gui._element == event._element)) {
+                    continue;
+            }
+            bind->_details._guiInterface = event._interface;
+            bind->_details._guiElement = event._element;
+            ++(bind->_count);
+        }
+    }
+}
+
 void EventManager::Update() {
     if (!_hasFocus) {
         return;
@@ -154,41 +184,53 @@ void EventManager::Update() {
 void EventManager::LoadBindings() {
     std::string delimiter = ":";
     std::ifstream bindings;
-    bindings.open("assets/keys.cfg");
+    std::filesystem::path path = std::filesystem::absolute("assets/keys.cfg");
+    bindings.open(path);
     if (!bindings.is_open()) {
-        throw InvalidFile();
+        BOOST_LOG_TRIVIAL(error) << "Failed to load keys file: " << path;
+        return;
     }
-
     std::string line;
-    while (std::getline(bindings, line)) {
+    while(std::getline(bindings, line)) {
         std::stringstream keystream(line);
         std::string callbackName;
         keystream >> callbackName;
-        if (keystream.bad()) {
-            throw InvalidFile();
-        }
-
         auto bind = std::make_shared<Binding>(callbackName);
-        while (!keystream.eof()) {
+        while(!keystream.eof()) {
             std::string keyval;
             keystream >> keyval;
-            if (keystream.bad()) {
-                throw InvalidFile();
-            }
-            size_t start = 0;
-            size_t end = keyval.find(delimiter);
+            int start = 0;
+            int end = keyval.find(delimiter);
             if (end == std::string::npos) {
                 break;
             }
-            EventType type = EventType(stoi(keyval.substr(start, end - start)));
-            int code = stoi(keyval.substr(end + delimiter.length(),
-            keyval.find(delimiter, end + delimiter.length())));
+            EventType type = EventType(stoi(keyval.substr(start, end-start)));
 
             EventInfo eventInfo;
-            eventInfo._code = code;
+            if (type == EventType::GUI_Click || type == EventType::GUI_Release ||
+                type == EventType::GUI_Hover || type == EventType::GUI_Leave) {
+                start = end + delimiter.length();
+                end = keyval.find(delimiter, start);
+                std::string window = keyval.substr(start, end - start);
+                std::string element;
+                if (end != std::string::npos) {
+                    start = end + delimiter.length();
+                    end = keyval.length();
+                    element = keyval.substr(start, end);
+                }
+
+                eventInfo._gui._interface = window;
+                eventInfo._gui._element = element;
+            } else {
+                int code = stoi(keyval.substr(end + delimiter.length(),
+                    keyval.find(delimiter,end + delimiter.length())));
+                eventInfo._code = code;
+            }
             bind->BindEvent(type, eventInfo);
         }
+
         if (!AddBinding(bind)) {
+            BOOST_LOG_TRIVIAL(error) << "Failed to add new Binding";
             throw InvalidCmd();
         }
     }

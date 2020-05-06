@@ -10,12 +10,10 @@ class TextureManager: public ResourceManager<TextureManager, sf::Texture> {
 
         sf::Texture* load(const std::string& path) {
             sf::Texture* texture = new sf::Texture();
-            if(!texture->loadFromFile(
-                utils::GetWorkingDirectory() + path))
-            {
+            if(!texture->loadFromFile(std::filesystem::absolute(path))) {
                 delete texture;
                 texture = nullptr;
-                std::cerr << "! Failed to load texture: " << path << std::endl;
+                BOOST_LOG_TRIVIAL(error) << "Failed to load texture file: " << path;
             }
             return texture;
         }

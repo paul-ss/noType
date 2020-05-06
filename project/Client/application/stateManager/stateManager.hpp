@@ -9,7 +9,9 @@
 #include "mainMenuState.hpp"
 
 enum class StateType{
-Intro = 1, MainMenu, Game, Paused, GameOver, Credits
+    Intro = 1,
+    MainMenu,
+    Game
 };
 
 using StateContainer = 

@@ -1,4 +1,8 @@
-#include "musicManager.hpp"
+#include <filesystem>
+
+#include <boost/log/trivial.hpp>
+
+#include "soundManager.hpp"
 #include "utils.hpp"
 
 
@@ -109,7 +113,7 @@ bool SoundManager::PlayMusic(const std::string& musicId, float volume, bool loop
     }
 
     sf::Music* music = s->second.second;
-    if (!music->openFromFile(utils::GetWorkingDirectory() + path)) {
+    if (!music->openFromFile(std::filesystem::absolute(path))) {
         delete music;
         --_numSounds;
         s->second.second = nullptr;

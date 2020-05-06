@@ -8,8 +8,8 @@ struct ClickCoordinates {
 
 struct GUI_Event {
     GUI_EventType _type;
-    const char* _element;
-    const char* _interface;
+    std::string _element;
+    std::string _interface;
     union {
         ClickCoordinates _clickCoords;
     };

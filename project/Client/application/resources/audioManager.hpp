@@ -1,5 +1,7 @@
 #pragma once
 
+#include <filesystem>
+
 #include <SFML/Audio.hpp>
 
 #include "resourceManager.hpp"
@@ -9,10 +11,10 @@ public:
     AudioManager() : ResourceManager("assets/audio.cfg") {}
     sf::SoundBuffer* load(const std::string& path) {
         sf::SoundBuffer* sound = new sf::SoundBuffer();
-        if (!sound->loadFromFile(utils::GetWorkingDirectory() + path)) {
+        if (!sound->loadFromFile(std::filesystem::absolute(path))) {
             delete sound;
             sound = nullptr;
-            std::cerr << "! Failed to load sound: " << path << std::endl;
+            BOOST_LOG_TRIVIAL(error) << "Failed to load audio file: " << path;
         }
         return sound;
     }

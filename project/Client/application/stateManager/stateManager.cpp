@@ -3,11 +3,10 @@
 StateManager::StateManager(SharedContext* shared) : _shared(shared) {
     registerState<IntroState>(StateType::Intro);
     registerState<MainMenuState>(StateType::MainMenu);
-    registerState<GameState>(StateType::Game);
 }
 
-StateManager::~StateManager(){
-    for (auto &itr : _states){
+StateManager::~StateManager() {
+    for (auto &itr : _states) {
         itr.second->OnDestroy();
         delete itr.second;
     }
@@ -87,20 +86,23 @@ void StateManager::ProcessRequests() {
 }
 
 void StateManager::SwitchTo(const StateType& type) {
+    std::cout << static_cast<int>(type) << "\n";
     _shared->_eventManager->SetCurrentState(type);
-    _shared->_soundManager->ChangeState(type);
-
-    for (auto itr = _states.begin(); itr != _states.end(); ++itr) {
+    _shared->_guiManager->SetCurrentState(type);
+    for (auto itr = _states.begin();
+        itr != _states.end(); ++itr) {
         if (itr->first == type) {
             _states.back().second->Deactivate();
             StateType tmp_type = itr->first;
-            auto tmp_state = itr->second;
+            BaseState* tmp_state = itr->second;
             _states.erase(itr);
             _states.emplace_back(tmp_type, tmp_state);
             tmp_state->Activate();
             return;
         }
     }
+
+    // State with type wasn't found.
     if (!_states.empty()) {
         _states.back().second->Deactivate();
     }
@@ -114,20 +116,20 @@ void StateManager::createState(const StateType& type) {
         return;
     }
 
-    auto state = newState->second();
+    auto* state = newState->second();
     _states.emplace_back(type, state);
     state->OnCreate();
 }
 
-void StateManager::removeState(const StateType& l_type){
+void StateManager::removeState(const StateType& type){
     for (auto itr = _states.begin();
         itr != _states.end(); ++itr)
     {
-        if (itr->first == l_type){
+        if (itr->first == type){
             itr->second->OnDestroy();
             delete itr->second;
             _states.erase(itr);
-            _shared->_soundManager->RemoveState(l_type);
+            _shared->_soundManager->RemoveState(type);
             return;
         }
     }

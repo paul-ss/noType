@@ -9,7 +9,7 @@ void GameState::OnCreate() {
 
     EventManager* evMgr = _stateMgr->GetContext()->_eventManager;
     auto lambdaMainMenu = [this](EventDetails& details) { this->MainMenu(&details); };
-    evMgr->AddCallback(StateType::Game,"Key_Escape", lambdaMainMenu);
+    evMgr->AddCallback(StateType::Game, "Key_Escape", lambdaMainMenu);
 }
 
 void GameState::OnDestroy() {

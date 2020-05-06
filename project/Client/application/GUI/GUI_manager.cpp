@@ -1,4 +1,7 @@
 #include <fstream>
+#include <filesystem>
+
+#include <boost/log/trivial.hpp>
 
 #include "GUI_manager.hpp"
 #include "GUI_textField.hpp"
@@ -254,16 +257,19 @@ bool GUI_Manager::LoadInterface(const StateType& state,
     const std::string& interface, const std::string& name)
 {
     std::ifstream file;
-    file.open(utils::GetWorkingDirectory() + "assets/media/GUI_Interfaces/" + interface);
+    //file.open(utils::GetWorkingDirectory() + "assets/media/GUI_Interfaces/" + interface);
+    file.open(std::filesystem::absolute("assets/media/GUI_Interfaces/" + interface));
     std::string InterfaceName;
 
     if (!file.is_open()) {
-        std::cout << "! Failed to load: " << interface << std::endl;
+        BOOST_LOG_TRIVIAL(error) << "Failed to load: " << interface;
         return false;
     }
     std::string line;
     while (std::getline(file, line)) {
-        if (line[0] == '|') { continue; }
+        if (line[0] == '|') {
+            continue;
+        }
         std::stringstream keystream(line);
         std::string key;
         keystream >> key;
@@ -271,18 +277,18 @@ bool GUI_Manager::LoadInterface(const StateType& state,
             std::string style;
             keystream >> InterfaceName >> style;
             if (!AddInterface(state, name)) {
-                std::cout << "Failed adding interface: " << name << std::endl;
+                BOOST_LOG_TRIVIAL(error) << "Failed adding interface: " << name;
                 return false;
             }
             GUI_Interface* i = GetInterface(state, name);
             keystream >> *i;
             if (!loadStyle(style, i)) {
-                std::cout << "Failed loading style file: " << style << " for interface " << name << std::endl;
+                BOOST_LOG_TRIVIAL(error) << "Failed adding interface: " << style << "for interface " << name;
             }
             i->SetContentSize(i->GetSize());
         } else if (key == "Element") {
             if (InterfaceName == "") {
-                std::cout << "Error: 'Element' outside or before declaration of 'Interface'!" << std::endl;
+                BOOST_LOG_TRIVIAL(error) << "Error: 'Element' outside or before declaration of 'Interface'!";
                 continue;
             }
             std::string type;
@@ -290,20 +296,26 @@ bool GUI_Manager::LoadInterface(const StateType& state,
             sf::Vector2f position;
             std::string style;
             keystream >> type >> name >> position.x >> position.y >> style;
+            std::cout << name << "\n";
             GUI_ElementType eType = stringToType(type);
             if (eType == GUI_ElementType::None) {
                 std::cout << "Unknown element('" << name << "') type: '" << type << "'" << std::endl;
+                BOOST_LOG_TRIVIAL(error) << "Unknown element('" << name << "') type: '" << type << "'";
                 continue;
             }
 
             GUI_Interface* i = GetInterface(state, name);
-            if (!i) { continue; }
-            if (!i->AddElement(eType, name)) { continue; }
+            if (!i) {
+                continue;
+            }
+            if (!i->AddElement(eType, name)) {
+                continue;
+            }
             GUI_Element* e = i->GetElement(name);
             keystream >> *e;
             e->SetPosition(position);
             if (!loadStyle(style, e)) {
-                std::cout << "Failed loading style file: " << style << " for element " << name << std::endl;
+                BOOST_LOG_TRIVIAL(error) <<"Failed loading style file: " << style << " for element " << name;
                 continue;
             }
         }
@@ -311,33 +323,40 @@ bool GUI_Manager::LoadInterface(const StateType& state,
     file.close();
     return true;
 }
+
 bool GUI_Manager::loadStyle(const std::string& path, GUI_Element* element) {
     std::ifstream file;
-    file.open(utils::GetWorkingDirectory() + "assets/media/GUI_Styles/" + path);
+    //file.open(utils::GetWorkingDirectory() + "assets/media/GUI_Styles/" + path);
+    file.open(std::filesystem::absolute("assets/media/GUI_Interfaces/" + path));
 
     std::string currentState;
     GUI_Style ParentStyle;
     GUI_Style TemporaryStyle;
     if (!file.is_open()) {
         std::cout << "! Failed to load: " << path << std::endl;
+        BOOST_LOG_TRIVIAL(error) <<"! Failed to load: " << path;
         return false;
     }
     std::string line;
     while (std::getline(file, line)) {
-        if (line[0] == '|') { continue; }
+        if (line[0] == '|') {
+            continue;
+        }
         std::stringstream keystream(line);
         std::string type;
         keystream >> type;
-        if (type == "") { continue; }
+        if (type == "") {
+            continue;
+        }
         if (type == "State") {
             if (currentState != "") {
-                std::cout << "Error: 'State' keyword found inside another state!" << std::endl;
+                BOOST_LOG_TRIVIAL(error) <<"Error: 'State' keyword found inside another state!";
                 continue;
             }
             keystream >> currentState;
         } else if (type == "/State") {
             if (currentState == "") {
-                std::cout << "Error: '/State' keyword found prior to 'State'!" << std::endl;
+                BOOST_LOG_TRIVIAL(error) <<"Error: '/State' keyword found prior to 'State'!";
                 continue;
             }
             GUI_ElementState state = GUI_ElementState::Neutral;
@@ -357,7 +376,7 @@ bool GUI_Manager::loadStyle(const std::string& path, GUI_Element* element) {
         } else {
             // Handling style information.
             if (currentState == "") {
-                std::cout << "Error: '" << type << "' keyword found outside of a state!" << std::endl;
+                BOOST_LOG_TRIVIAL(error) << "Error: '" << type << "' keyword found outside of a state!";
                 continue;
             }
             if (type == "Size") {
@@ -393,7 +412,7 @@ bool GUI_Manager::loadStyle(const std::string& path, GUI_Element* element) {
             } else if (type == "GlyphPadding") {
                 keystream >> TemporaryStyle._glyphPadding.x >> TemporaryStyle._glyphPadding.y;
             } else {
-                std::cout << "Error: style tag '" << type << "' is unknown!" << std::endl;
+                BOOST_LOG_TRIVIAL(error) <<"Error: style tag '" << type << "' is unknown!";
             }
         }
     }

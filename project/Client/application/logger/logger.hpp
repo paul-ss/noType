@@ -10,7 +10,7 @@ void init_logger() {
     boost::log::register_simple_formatter_factory<boost::log::trivial::severity_level, char>("Severity");
 
     boost::log::add_file_log(
-        boost::log::keywords::file_name = "sample.log",
+        boost::log::keywords::file_name = "notype.log",
         boost::log::keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%"
     );
 
