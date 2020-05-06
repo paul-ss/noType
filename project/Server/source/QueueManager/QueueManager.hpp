@@ -14,6 +14,10 @@
 
 class QueueManager {
 public:
+  QueueManager();
+  QueueManager(const std::shared_ptr<Queue> &qToServer,
+               const std::shared_ptr<Queue> &qToBasic,
+               const std::shared_ptr<Queue> &qToGame);
   virtual void serverPush(const std::string &data, const std::string &connectionUUID);
   void controllerPush(const std::shared_ptr<Command> &command);
   virtual bool serverPop(std::shared_ptr<Command> &command);
@@ -23,9 +27,9 @@ public:
 
 
 private:
-  Queue _queueToServer;
-  Queue _queueToBasicController;
-  Queue _queueToGameController;
+  std::shared_ptr<Queue> _queueToServer;
+  std::shared_ptr<Queue> _queueToBasicController;
+  std::shared_ptr<Queue> _queueToGameController;
 
   std::shared_ptr<CommandFactory> _commandFactory;
 };

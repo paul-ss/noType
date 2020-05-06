@@ -120,7 +120,10 @@ TARGET_LINK_LIBRARIES(tcpServerTests
 
 ADD_EXECUTABLE(queueTests
         mainTest.cpp
-        QueueManager/Tests/QueueTests.cpp)
+        QueueManager/Tests/QueueTests.cpp
+        QueueManager/Tests/QueueManagerTests.cpp)
+
+
 
 TARGET_LINK_LIBRARIES(queueTests
         ${GTEST_LIBRARIES}

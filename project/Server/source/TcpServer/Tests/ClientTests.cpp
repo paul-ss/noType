@@ -10,6 +10,8 @@
 
 #include <thread>
 
+using ::testing::Return;
+
 class MockClients : public ConnectedClients {
 public:
   MOCK_METHOD1(erase, bool(const std::string &));
@@ -182,7 +184,7 @@ TEST_F(ClientTest, write) {
 
 TEST(Client, run_call) {
   auto mc = std::make_shared<MockClients>();
-  EXPECT_CALL(*mc.get(), erase("uuid")).Times(1);
+  EXPECT_CALL(*mc.get(), erase("uuid")).WillOnce(Return(true));
 
   boost::asio::io_service service;
   auto qm = std::make_shared<FakeQueueManager>();
