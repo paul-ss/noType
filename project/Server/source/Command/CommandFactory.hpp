@@ -11,5 +11,3 @@ class CommandFactory {
  public:
     virtual std::shared_ptr<ClientCommand> createCommand(const std::string &data);
 };
-
-

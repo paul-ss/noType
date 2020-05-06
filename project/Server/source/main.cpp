@@ -6,11 +6,12 @@
 
 
 int main() {
-  std::shared_ptr<QueueManager> q(new QueueManager);
-  TcpServer s(q, "127.0.0.1", 8000, 10);
+  // std::shared_ptr<QueueManager> q(new QueueManager);
+  // TcpServer s(q, "127.0.0.1", 8000, 10);
 //  std::thread interface = std::thread([&] {
 //
 //  });
-  s.startServer();
+  // s.startServer();
+
   return 0;
 }

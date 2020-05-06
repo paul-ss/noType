@@ -6,7 +6,4 @@
 
 
 class GameController {
-
 };
-
-

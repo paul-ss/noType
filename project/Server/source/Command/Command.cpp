@@ -4,65 +4,167 @@
 //
 
 #include "Command.hpp"
+#define SUCCESS 0
+#define FAIL 1
 
-ClientCommand::ClientCommand() {}
-ClientCommand::ClientCommand(const std::string &clientUUID, const std::string &connectionUUID,
-        controllerType typeOfController):clientUUID(clientUUID), connectionUUID(connectionUUID),
-        typeOfController(typeOfController) {}
-void ClientCommand::parseFromJSON(std::string data) {}
+Command::Command(commandType typeOfCommand): typeOfCommand(typeOfCommand) {}
 
-InitRequest::InitRequest() {}
-void InitRequest::parseFromJSON(std::string data) {}
+commandType Command::getTypeOfCommand() {
+    return typeOfCommand;
+}
 
-ConnectRequest::ConnectRequest() {}
-void ConnectRequest::parseFromJSON(std::string data) {}
+ClientCommand::ClientCommand(const std::string &data, commandType typeOfCommand,
+        controllerType typeOfController):
+        Command(typeOfCommand), typeOfController(typeOfController) {ClientCommand::parseFromJSON(data);}
+std::string ClientCommand::getClientUUID() {
+    return clientUUID;
+}
+std::string ClientCommand::getConnectionUUID() {
+    return connectionUUID;
+}
+controllerType ClientCommand::getTypeOfController() {
+    return typeOfController;
+}
 
-StartGameSessionRequest::StartGameSessionRequest() {}
-void StartGameSessionRequest::parseFromJSON(std::string data) {}
+int ClientCommand::parseFromJSON(const std::string &data) {
+    rapidjson::Document doc;
+    doc.Parse(data.c_str());
+    assert(doc.HasMember("clientUUID"));
+    assert(doc["clientUUID"].IsString());
+    clientUUID = doc["clientUUID"].GetString();
+    assert(doc.HasMember("connectionUUID"));
+    assert(doc["connectionUUID"].IsString());
+    connectionUUID = doc["connectionUUID"].GetString();
+    return SUCCESS;
+}
 
-GetText::GetText() {}
-void GetText::parseFromJSON(std::string data) {}
+InitRequest::InitRequest(const std::string &data,
+                         controllerType typeOfController, commandType typeOfCommand):
+        ClientCommand(data, typeOfCommand, typeOfController) {InitRequest::parseFromJSON(data);}
+int InitRequest::parseFromJSON(const std::string &data) {
+    rapidjson::Document doc;
+    doc.Parse(data.c_str());
+    assert(doc.HasMember("name"));
+    assert(doc["name"].IsString());
+    name = doc["name"].GetString();
+    return SUCCESS;
+}
 
-GetRoomStatus::GetRoomStatus() {}
-void GetRoomStatus::parseFromJSON(std::string data) {}
+ConnectRequest::ConnectRequest(const std::string &data,
+                               controllerType typeOfController, commandType typeOfCommand):
+        ClientCommand(data, typeOfCommand, typeOfController) {ConnectRequest::parseFromJSON(data);}
+int ConnectRequest::parseFromJSON(const std::string &data) {
+    rapidjson::Document doc;
+    doc.Parse(data.c_str());
+    assert(doc.HasMember("key"));
+    assert(doc["key"].IsString());
+    key = doc["key"].GetString();
+    return SUCCESS;
+}
 
-SendWrittenText::SendWrittenText() {}
-void SendWrittenText::parseFromJSON(std::string data) {}
+StartGameSessionRequest::StartGameSessionRequest(const std::string &data, controllerType typeOfController,
+        commandType typeOfCommand): ClientCommand(data, typeOfCommand, typeOfController)
+        {StartGameSessionRequest::parseFromJSON(data);}
+int StartGameSessionRequest::parseFromJSON(const std::string &data) {
+    rapidjson::Document doc;
+    doc.Parse(data.c_str());
+    assert(doc.HasMember("key"));
+    assert(doc["key"].IsString());
+    key = doc["key"].GetString();
+    return SUCCESS;
+}
 
-ServerCommand::ServerCommand() {}
-ServerCommand::ServerCommand(const std::string &clientUUID, bool success, std::string errorMessage = ""):
-clientUUID(clientUUID), success(success) { errorMsg = errorMessage; }
-std::string ServerCommand::parseToJSON(std::string data) {
+GetText::GetText(const std::string &data, controllerType typeOfController, commandType typeOfCommand):
+        ClientCommand(data, typeOfCommand, typeOfController) {GetText::parseFromJSON(data);}
+int GetText::parseFromJSON(const std::string &data) {
+    rapidjson::Document doc;
+    doc.Parse(data.c_str());
+    assert(doc.HasMember("key"));
+    assert(doc["key"].IsString());
+    key = doc["key"].GetString();
+    return SUCCESS;
+}
+
+GetRoomStatus::GetRoomStatus(const std::string &data, controllerType typeOfController,
+        commandType typeOfCommand):
+        ClientCommand(data, typeOfCommand, typeOfController) {GetRoomStatus::parseFromJSON(data);}
+int GetRoomStatus::parseFromJSON(const std::string &data) {
+    rapidjson::Document doc;
+    doc.Parse(data.c_str());
+    assert(doc.HasMember("key"));
+    assert(doc["key"].IsString());
+    key = doc["key"].GetString();
+    return SUCCESS;
+}
+
+SendWrittenText::SendWrittenText(const std::string &data, controllerType typeOfController,
+        commandType typeOfCommand):
+        ClientCommand(data, typeOfCommand, typeOfController) {}
+int SendWrittenText::parseFromJSON(const std::string &data) {
+    rapidjson::Document doc;
+    doc.Parse(data.c_str());
+    assert(doc.HasMember("key"));
+    assert(doc["key"].IsString());
+    key = doc["key"].GetString();
+    assert(doc.HasMember("writtenText"));
+    assert(doc["writtenText"].IsString());
+    writtenText = doc["writtenText"].GetString();
+    return SUCCESS;
+}
+
+
+ServerCommand::ServerCommand(commandType typeOfCommand, const std::string &clientUUID, bool success,
+        const std::string &errorMessage): Command(typeOfCommand), clientUUID(clientUUID), success(success),
+        errorMsg(errorMessage) {}
+
+
+
+InitResponse::InitResponse(commandType typeOfCommand, const std::string &clientUUID, bool success,
+        const std::string &errorMessage, const std::string &keys):
+        ServerCommand(typeOfCommand, clientUUID, success, errorMessage), key(keys) {}
+std::string InitResponse::parseToJSON() {
+    std::string data;
     return data;
 }
 
-InitResponse::InitResponse(const std::string &key): key(key) {}
-std::string InitResponse::parseToJSON(std::string data) {
+ConnectResponse::ConnectResponse(commandType typeOfCommand, const std::string &clientUUID, bool success,
+        const std::string &errorMessage, const std::string &keys):
+        ServerCommand(typeOfCommand, clientUUID, success, errorMessage), key(keys) {}
+std::string ConnectResponse::parseToJSON() {
+    std::string data;
     return data;
 }
 
-ConnectResponse::ConnectResponse(const std::string &key): key(key) {}
-std::string ConnectResponse::parseToJSON(std::string data) {
+StartGameSessionResponse::StartGameSessionResponse(commandType typeOfCommand, const std::string &clientUUID,
+        bool success, const std::string &errorMessage, const std::string &keys):
+        ServerCommand(typeOfCommand, clientUUID, success, errorMessage), key(keys) {}
+std::string StartGameSessionResponse::parseToJSON() {
+    std::string data;
     return data;
 }
 
-StartGameSessionResponse::StartGameSessionResponse(const std::string &key): key(key) {}
-std::string StartGameSessionResponse::parseToJSON(std::string data) {
+SetText::SetText(commandType typeOfCommand, const std::string &clientUUID, bool success,
+        const std::string &errorMessage, const std::string &text):
+        ServerCommand(typeOfCommand, clientUUID, success, errorMessage), text(text) {}
+std::string SetText::parseToJSON() {
+    std::string data;
     return data;
 }
 
-SetText::SetText(const std::string &text):text(text) {}
-std::string SetText::parseToJSON(std::string data) {
+SendRoomStatus::SendRoomStatus(commandType typeOfCommand, const std::string &clientUUID, bool success,
+        const std::string &errorMessage, roomStatus statusOfRoom, double timeFromStart,
+        std::vector<Player> players):
+        ServerCommand(typeOfCommand, clientUUID, success, errorMessage),
+        statusOfRoom(statusOfRoom), timeFromStart(timeFromStart), players(players) {}
+std::string SendRoomStatus::parseToJSON() {
+    std::string data;
     return data;
 }
 
-SendRoomStatus::SendRoomStatus(roomStatus statusOfRoom, double timeFromStart, std::vector<Player> players):
-statusOfRoom(statusOfRoom), timeFromStart(timeFromStart), players(players) {}
-std::string SendRoomStatus::parseToJSON(std::string data) {
-    return data;
-}
-
-ValidateWrittenText::ValidateWrittenText(const size_t &right_count):right_count(right_count) {}
-std::string ValidateWrittenText::parseToJSON(std::string data) {
+ValidateWrittenText::ValidateWrittenText(commandType typeOfCommand, const std::string &clientUUID, bool success,
+        const std::string &errorMessage, const size_t &right_count):
+        ServerCommand(typeOfCommand, clientUUID, success, errorMessage), right_count(right_count) {}
+std::string ValidateWrittenText::parseToJSON() {
+    std::string data;
     return data;
 }

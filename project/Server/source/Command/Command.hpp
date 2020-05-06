@@ -7,11 +7,12 @@
 #include <iostream>
 #include <Room.hpp>
 #include <vector>
+#include <Parse.hpp>
 
 enum commandType {
     INIT_REQUEST, CONNECT_REQUEST,
     START_GAME_REQUEST, TEXT_REQUEST,
-    STATUS_REQUEST, WRITTEN_TEXT_REQUEST,
+    ROOM_STATUS_REQUEST, WRITTEN_TEXT_REQUEST,
     INIT_RESPONSE, CONNECT_RESPONSE,
     START_GAME_RESPONSE, TEXT_RESPONSE,
     STATUS_RESPONSE, WRITTEN_TEXT_RESPONSE};
@@ -22,32 +23,24 @@ enum roomStatus{WAIT, PLAY, END};
 
 class Command {
  public:
-  /*Command(const std::string &data, const std::string &connectionUUID):
-      connectionUUID(connectionUUID),
-      data(data) {}*/
-  Command() {}
-  virtual ~Command() {}
-  /*const std::string &parseToJSON () {
-    return data;
-  }
-  std::string connectionUUID;
-  std::string data;*/
+    explicit Command(commandType typeOfCommand);
+    virtual ~Command() {}
+
+    commandType getTypeOfCommand();
  protected:
     commandType typeOfCommand;
 };
 
-class parsableFromJSON{
- public:
-    virtual void parseFromJSON(std::string data) = 0;
-};
+
 
 class ClientCommand: public Command, public parsableFromJSON{
  public:
-    ClientCommand();
-    ClientCommand(const std::string &clientUUID, const std::string &connectionUUID,
-            controllerType typeOfController);
+    ClientCommand(const std::string &data, commandType typeOfCommand, controllerType typeOfController);
     virtual ~ClientCommand() {}
-    virtual void parseFromJSON(std::string data);
+    int parseFromJSON(const std::string &data) override;
+    std::string getClientUUID();
+    std::string getConnectionUUID();
+    controllerType getTypeOfController();
  protected:
     std::string clientUUID;
     std::string connectionUUID;
@@ -57,70 +50,72 @@ class ClientCommand: public Command, public parsableFromJSON{
 
 class InitRequest: public ClientCommand{
  public:
-    InitRequest();
+    InitRequest(const std::string &data,
+                controllerType typeOfController, commandType typeOfCommand);
     ~InitRequest() {}
-    virtual void parseFromJSON(std::string data);
-
+    int parseFromJSON(const std::string &data) override;
     std::string name;
 };
 
 class ConnectRequest: public ClientCommand{
  public:
-    ConnectRequest();
+    ConnectRequest(const std::string &data,
+                   controllerType typeOfController, commandType typeOfCommand);
     ~ConnectRequest() {}
-    virtual void parseFromJSON(std::string data);
+    int parseFromJSON(const std::string &data) override;
 
     std::string key;
 };
 
 class StartGameSessionRequest: public ClientCommand{
  public:
-    StartGameSessionRequest();
+    StartGameSessionRequest(const std::string &data,
+                            controllerType typeOfController, commandType typeOfCommand);
     ~StartGameSessionRequest() {}
-    virtual void parseFromJSON(std::string data);
+    int parseFromJSON(const std::string &data) override;
 
     std::string key;
 };
 
 class GetText: public ClientCommand{
  public:
-    GetText();
+    GetText(const std::string &data,
+            controllerType typeOfController, commandType typeOfCommand);
     ~GetText() {}
-    virtual void parseFromJSON(std::string data);
+    int parseFromJSON(const std::string &data) override;
 
     std::string key;
 };
 
 class GetRoomStatus: public ClientCommand{
  public:
-    GetRoomStatus();
+    GetRoomStatus(const std::string &data,
+                  controllerType typeOfController, commandType typeOfCommand);
     ~GetRoomStatus() {}
-    virtual void parseFromJSON(std::string data);
+    int parseFromJSON(const std::string &data) override;
 
     std::string key;
 };
 
 class SendWrittenText: public ClientCommand{
  public:
-    SendWrittenText();
+    SendWrittenText(const std::string &data,
+                    controllerType typeOfController, commandType typeOfCommand);
     ~SendWrittenText() {}
-    virtual void parseFromJSON(std::string data);
+    int parseFromJSON(const std::string &data) override;
 
     std::string key;
     std::string writtenText;
 };
 
-class parsableToJSON{
- public:
-    virtual std::string parseToJSON(std::string data) = 0;
-};
 
 class ServerCommand: public Command, public parsableToJSON{
  public:
-    ServerCommand();
-    ServerCommand(const std::string &clientUUID, bool success, const std::string errorMessage);
+    // ServerCommand(commandType typeOfCommand);
+    ServerCommand(commandType typeOfCommand, const std::string &clientUUID, bool success,
+            const std::string &errorMessage);
     virtual ~ServerCommand() {}
-    virtual std::string parseToJSON(std::string data);
+    std::string parseToJSON() override = 0;
  protected:
     std::string clientUUID;
     bool success;
@@ -130,45 +125,50 @@ class ServerCommand: public Command, public parsableToJSON{
 
 class InitResponse: public ServerCommand{
  public:
-    explicit InitResponse(const std::string &key);
+    explicit InitResponse(commandType typeOfCommand, const std::string &clientUUID, bool success,
+            const std::string &errorMessage, const std::string &keys);
     ~InitResponse() {}
-    virtual std::string parseToJSON(std::string data);
-
+    std::string parseToJSON() override;
     std::string key;
 };
 
 class ConnectResponse: public ServerCommand{
  public:
-    explicit ConnectResponse(const std::string &key);
+    explicit ConnectResponse(commandType typeOfCommand, const std::string &clientUUID, bool success,
+            const std::string &errorMessage, const std::string &keys);
     ~ConnectResponse() {}
-    virtual std::string parseToJSON(std::string data);
+    std::string parseToJSON() override;
 
     std::string key;
 };
 
 class StartGameSessionResponse: public ServerCommand{
  public:
-    explicit StartGameSessionResponse(const std::string &key);
+    explicit StartGameSessionResponse(commandType typeOfCommand, const std::string &clientUUID,
+            bool success, const std::string &errorMessage, const std::string &keys);
     ~StartGameSessionResponse() {}
-    virtual std::string parseToJSON(std::string data);
+    std::string parseToJSON() override;
 
     std::string key;
 };
 
 class SetText: public ServerCommand{
  public:
-    explicit SetText(const std::string &text);
+    explicit SetText(commandType typeOfCommand, const std::string &clientUUID, bool success,
+            const std::string &errorMessage, const std::string &text);
     ~SetText() {}
-    virtual std::string parseToJSON(std::string data);
+    std::string parseToJSON() override;
 
     std::string text;
 };
 
 class SendRoomStatus: public ServerCommand{
  public:
-    SendRoomStatus(roomStatus statusOfRoom, double timeFromStart, std::vector<Player> players);
+    SendRoomStatus(commandType typeOfCommand, const std::string &clientUUID, bool success,
+            const std::string &errorMessage, roomStatus statusOfRoom, double timeFromStart,
+            std::vector<Player> players);
     ~SendRoomStatus() {}
-    virtual std::string parseToJSON(std::string data);
+    std::string parseToJSON() override;
 
     roomStatus statusOfRoom;
     double timeFromStart;
@@ -177,9 +177,10 @@ class SendRoomStatus: public ServerCommand{
 
 class ValidateWrittenText: public ServerCommand{
  public:
-    explicit ValidateWrittenText(const size_t &right_count);
+    explicit ValidateWrittenText(commandType typeOfCommand, const std::string &clientUUID, bool success,
+            const std::string &errorMessage, const size_t &right_count);
     ~ValidateWrittenText() {}
-    virtual std::string parseToJSON(std::string data);
+    std::string parseToJSON() override;
 
     size_t right_count;
 };

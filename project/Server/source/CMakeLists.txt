@@ -3,6 +3,7 @@ INCLUDE_DIRECTORIES(
         QueueManager
         Room
         TcpServer
+        Parser
         Command)
 
 
@@ -38,8 +39,9 @@ ADD_EXECUTABLE(server
         Room/Room.hpp
         QueueManager/QueueManager.cpp
         QueueManager/QueueManager.hpp
+        Parser/Parse.cpp
         Command/Command.cpp
-        Command/Command.hpp Command/CommandFactory.cpp Command/CommandFactory.hpp)
+        Command/Command.hpp Command/CommandFactory.cpp Command/CommandFactory.hpp Parser/Parse.hpp Room/Player.hpp Room/Player.cpp)
 
 
 TARGET_LINK_LIBRARIES(server ${Boost_SYSTEM_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
@@ -64,3 +66,19 @@ TARGET_LINK_LIBRARIES(serverTests ${GTEST_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 #enable_testing()
 #add_test(tests "./tests")
 
+#ADD_EXECUTABLE(parsing testmain.cpp
+ #       Parser/Parse.cpp
+  #      Parser/Parse.hpp
+   #     Command/Command.cpp
+    #    Command/Command.hpp
+     #   Command/CommandFactory.cpp
+      #  Command/CommandFactory.hpp
+       # )
+ADD_EXECUTABLE(parsing testmain.cpp
+        Parser/Parse.cpp
+        Parser/Parse.hpp
+        Command/Command.hpp
+        Command/Command.cpp
+        Command/CommandFactory.hpp
+        Command/CommandFactory.cpp
+        )
