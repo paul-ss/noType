@@ -1,2 +1,2 @@
 # noType
-A very awesome game
+the most awesome game

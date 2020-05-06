@@ -1,7 +1,9 @@
-#include <game.hpp>
+#include "logger.hpp"
+#include "game.hpp"
 
 int main() {
-    Game& game = Game::getInstance();
-    game.run();
+    // init_logger();
+    Game game;
+    game.Run();
     return 0;
 }

@@ -24,8 +24,11 @@ void Window::setup(const std::string& title, const sf::Vector2u& size) {
     _isDone = false;
     _window.setFramerateLimit(FPS);
 
-    _eventManager.addCallback("Window_close", &Window::close, this);
-    _eventManager.addCallback("Fullscreen_toggle", &Window::toggleFullscreen, this);
+    auto lambdaClose = [this](EventDetails& details) { this->Close(); };
+    _eventManager.AddCallback(StateType(0), "Window_close", lambdaClose);
+
+    auto lambdaToggleFullscreen = [this](EventDetails& details) { this->ToggleFullscreen(); };
+    _eventManager.AddCallback(StateType(0), "Fullscreen_toggle", lambdaToggleFullscreen);
     create();
 }
 
@@ -38,45 +41,59 @@ void Window::destroy() {
     _window.close();
 }
 
-void Window::update() {
+void Window::Update() {
     sf::Event event;
     while (_window.pollEvent(event)) {
         if (event.type == sf::Event::LostFocus) {
             _isFocused = false;
-            _eventManager.setFocus(false);
+            _eventManager.SetFocus(false);
         } else if (event.type == sf::Event::GainedFocus){
             _isFocused = true;
-            _eventManager.setFocus(true);
+            _eventManager.SetFocus(true);
         }
-        _eventManager.handleEvent(event);
+        _eventManager.HandleEvent(event);
     }
-    _eventManager.update();
+    _eventManager.Update();
 }
 
-void Window::beginDraw() {
+void Window::ToggleFullscreen() {
+    _isFullScreen = !_isFullScreen;
+    Close();
+    create();
+}
+
+void Window::BeginDraw() {
     _window.clear(sf::Color::Black);
 }
 
-void Window::endDraw() {
+void Window::EndDraw() {
     _window.display();
 }
 
-bool Window::isDone() {
+bool Window::IsDone() {
     return _isDone;
 }
 
-bool Window::isFullScreen() {
+bool Window::IsFullScreen() {
     return _isFullScreen;
 }
 
-sf::Vector2u Window::getWindowSize() {
+sf::RenderWindow* Window::GetRenderWindow() {
+    return &_window;
+}
+
+sf::Vector2u Window::GetWindowSize() {
     return _windowSize;
 }
 
-void Window::draw(sf::Drawable&l_drawable) {
-    _window.draw(l_drawable);
+EventManager* Window::GetEventManager() {
+    return &_eventManager;
 }
 
-void Window::close() {
+void Window::Draw(sf::Drawable& drawable) {
+    _window.draw(drawable);
+}
+
+void Window::Close() {
     _isDone = true;
 }

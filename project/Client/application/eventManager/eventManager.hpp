@@ -2,8 +2,13 @@
 
 #include <functional>
 #include <unordered_map>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <memory>
 
-#include<SFML/Graphics.hpp>
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
 
 enum class EventType {
 KeyDown = sf::Event::KeyPressed,
@@ -26,7 +31,7 @@ struct EventInfo {
         _code = 0;
     }
 
-    EventInfo(int event) {
+    explicit EventInfo(int event) {
         _code = event;
     }
 
@@ -36,7 +41,7 @@ struct EventInfo {
 };
 
 struct EventDetails {
-    EventDetails(const std::string& bindName) : _name(bindName) {
+    explicit EventDetails(const std::string& bindName) : _name(bindName) {
         Clear();
     }
 
@@ -58,7 +63,7 @@ struct EventDetails {
 
 using Events = std::vector<std::pair<EventType, EventInfo> >;
 struct Binding {
-    Binding(const std::string& name) : _name(name),
+    explicit Binding(const std::string& name) : _name(name),
                                         _details(name),
                                         _count(0) {
     }
@@ -70,32 +75,43 @@ struct Binding {
     Events _events;
     std::string _name;
     EventDetails _details;
-    int _count;
+    size_t _count;
 };
 
-using Bindings = std::unordered_map<std::string, Binding*>;
-using Callbacks = std::unordered_map<std::string, std::function<void(EventDetails*)> >;
+using Bindings = std::unordered_map<std::string, std::shared_ptr<Binding> >;
+
+using CallbackContainer = std::unordered_map<std::string,
+        std::function<void(EventDetails&)> >;
+enum class StateType;
+using Callbacks = std::unordered_map<StateType, CallbackContainer>;
+
 class EventManager {
     public:
         EventManager();
-        ~EventManager();
+        ~EventManager() = default;
 
-        bool addBinding(Binding *binding);
-        bool removeBinding(std::string name);
-        void setFocus(const bool& focus);
-        void handleEvent(sf::Event& event);
-        void update();
-        template <class T>
-        bool addCallback(const std::string& name,
-                        const T& func);
-        void removeCallback(const std::string& name);
-        sf::Vector2i getMousePos(sf::RenderWindow* wind = nullptr);
+        bool AddBinding(std::shared_ptr<Binding> binding);
+        bool RemoveBinding(std::string name);
+
+        void SetCurrentState(StateType state);
+        void SetFocus(const bool& focus);
+
+        void HandleEvent(const sf::Event& event);
+        void Update();
+
+        bool AddCallback(StateType state,
+                        const std::string& name,
+                        const std::function<void(EventDetails&)>& func);
+        bool RemoveCallback(StateType state, const std::string& name);
+
+        sf::Vector2i GetMousePos(const sf::RenderWindow* wind = nullptr);
 
     private:
-        void loadBindings();
+        void LoadBindings();
 
     private:
         Bindings _bindings;
         Callbacks _callbacks;
+        StateType _currentState;
         bool _hasFocus;
 };
