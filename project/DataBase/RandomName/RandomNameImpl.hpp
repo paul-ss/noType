@@ -10,11 +10,15 @@ namespace Internal {
 class RandomNameGenerator : public IRandomNameGenerator {
 public:
   RandomNameGenerator();
+  RandomNameGenerator(const std::string& dataBaseName);
   std::unique_ptr<RandomName> GetRandomName();
 
 private:
-  std::unique_ptr<mongocxx::collection> _animalNamesCollection = nullptr;
-  std::unique_ptr<mongocxx::collection> _colorsCollection = nullptr;
+  std::string _dataBaseName;
+
+private:
+  std::string get_random_document_by_id_and_field(
+    const char* collectionName, const char* idField, const char* fieldName) const;
 
 private:
   static constexpr char _kAnimalNameField[] = "AnimalName";

@@ -8,6 +8,12 @@
 
 namespace DataBase {
 
+static void Instance() {
+  static mongocxx::instance ints{};
+}
+
+//mongocxx::instance inst{};  // NOTE(vendroid): Глобальная переменная
+
 static constexpr char kDataBaseName[] = "noTypeDataBase";
 
 namespace External {

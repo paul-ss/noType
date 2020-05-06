@@ -1,53 +1,51 @@
 #include "RandomNameImpl.hpp"
 
 #include <random>
+#include <iostream>
 
 namespace DataBase {
 namespace Internal {
 
-static std::string get_random_document_by_id_and_field(
-  const std::unique_ptr<mongocxx::collection>& collection, const char* idField, const char* FieldName);
+RandomNameGenerator::RandomNameGenerator() : RandomNameGenerator(kDataBaseName) {}
 
-RandomNameGenerator::RandomNameGenerator() {
-  // NOTE(vendroid): Возможно неиспользуемая переменная.
-  mongocxx::instance inst{};
-  mongocxx::client client{mongocxx::uri{}};
-
-  mongocxx::database db = client[kDataBaseName];
-  _colorsCollection = std::make_unique<mongocxx::collection>(db[kColorsCollectionName]);
-  _animalNamesCollection = std::make_unique<mongocxx::collection>(db[kAnimalsCollectionName]);
+RandomNameGenerator::RandomNameGenerator(const std::string& dataBaseName) : _dataBaseName(dataBaseName) {
+  Instance();
 }
 
 std::unique_ptr<RandomName> RandomNameGenerator::GetRandomName() {
   std::string firstName = get_random_document_by_id_and_field(
-    _colorsCollection, _kAnimalIdField, _kAnimalNameField);
+    kColorsCollectionName, _kColorIdField, _kColorNameField);
 
   std::string secondName = get_random_document_by_id_and_field(
-    _colorsCollection, _kColorIdField, _kColorNameField);
+    kAnimalsCollectionName, _kAnimalIdField, _kAnimalNameField);
 
-  return std::make_unique<RandomName>(firstName + secondName);
+  return std::make_unique<RandomName>(firstName + " " +  secondName);
 }
 
-static std::string get_random_document_by_id_and_field(
-  const std::unique_ptr<mongocxx::collection>& collection, const char* idField, const char* FieldName) {
-  size_t docCount = collection->count_documents({});
+std::string RandomNameGenerator::get_random_document_by_id_and_field(
+  const char* collectionName, const char* idField, const char* fieldName) const {
+  mongocxx::client client{mongocxx::uri{}};
+
+  mongocxx::database db = client[_dataBaseName];
+  auto collection = db[collectionName];
+
+  size_t docsCount = collection.count_documents({});
 
   std::random_device rd;
   std::mt19937 gen(rd());
-  std::uniform_int_distribution<> dis(1, docCount);
-
-  const std::int32_t kRandId = dis(gen);
-  auto maybe_result = collection->find_one(
+  std::uniform_int_distribution<> dis(1, docsCount);
+  const auto kRandId = dis(gen);
+  auto maybe_result = collection.find_one(
         bsoncxx::builder::stream::document{}
         << std::string(idField) << kRandId
-        <<  bsoncxx::builder::stream::finalize);
-
+        << bsoncxx::builder::stream::finalize);
+  
   if (!maybe_result) {
     // TODO(vendroid): Сделать обработку ошибки
   }
 
   auto docView = maybe_result->view();
-  return docView[FieldName].get_utf8().value.to_string();
+  return docView[fieldName].get_utf8().value.to_string();
 }
 
 }  // Internal

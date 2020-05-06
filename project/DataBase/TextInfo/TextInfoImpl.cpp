@@ -1,35 +1,38 @@
 #include "TextInfoImpl.hpp"
 
-#include <bsoncxx/builder/stream/document.hpp>
-#include <bsoncxx/json.hpp>
-
 #include <random>
 
 namespace DataBase {
 namespace External {
 
-TextInfoMapper::TextInfoMapper() {
-  // NOTE(vendroid): Возможно неиспользуемая переменная.
-  mongocxx::instance inst{};
-  mongocxx::client client{mongocxx::uri{}};
+TextInfoMapper::TextInfoMapper() : TextInfoMapper(kDataBaseName) {}
 
-  mongocxx::database db = client[kDataBaseName];
-  _collection = std::make_unique<mongocxx::collection>(db[kTextInfoCollectionName]);
+TextInfoMapper::TextInfoMapper(const std::string& dataBaseName) : _dataBaseName(dataBaseName) {
+  Instance();
 }
 
 std::unique_ptr<TextInfo> TextInfoMapper::GetRandomText() {
-  size_t docCount = _collection->count_documents({});
+  // NOTE(vendroid): Возможно неиспользуемая переменная.
+  // mongocxx::instance inst{};
+
+  mongocxx::client client{mongocxx::uri{}};
+
+  mongocxx::database db = client[_dataBaseName];
+  auto collection = db[kTextInfoCollectionName];
+  size_t docCount = collection.count_documents({});
 
   std::random_device rd;
   std::mt19937 gen(rd());
-  std::uniform_int_distribution<> dis(1, docCount);
+  std::uniform_int_distribution<int> dis(1, docCount);
 
-  const std::uint32_t kRandTextId = dis(gen);
-  auto maybe_result = _collection->find_one(
-        bsoncxx::builder::stream::document{} << _kTextIdField << kRandTextId <<  bsoncxx::builder::stream::finalize);
+  const auto kRandTextId = dis(gen);
+  auto maybe_result = collection.find_one(
+        bsoncxx::builder::stream::document{}
+        << _kTextIdField << kRandTextId <<
+        bsoncxx::builder::stream::finalize);
 
   if (!maybe_result) {
-    // TODO(vendroid): Сделать обработку ошибки
+    return nullptr;
   }
 
   auto docView = maybe_result->view();

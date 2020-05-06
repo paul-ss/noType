@@ -1,20 +1,22 @@
 #include "PlayerInfoImpl.hpp"
+#include "RandomNameImpl.hpp"
 
 namespace DataBase {
 namespace External {
 
+PlayerInfoMapper::PlayerInfoMapper() : PlayerInfoMapper(kDataBaseName) {}
 
-
-PlayerInfoMapper::PlayerInfoMapper() {
-  mongocxx::instance inst{};
-  mongocxx::client client{mongocxx::uri{}};
-
-  mongocxx::database db = client[kDataBaseName];
-  _playerInfoCollection = std::make_unique<mongocxx::collection>(db[kPlayerInfoCollectionName]);
+PlayerInfoMapper::PlayerInfoMapper(const std::string& dataBaseName) : _dataBaseName(dataBaseName) {
+  Instance();
 }
 
 std::unique_ptr<PlayerInfo> PlayerInfoMapper::FindByUuid(const std::string &uuid) {
-  auto maybe_result =  _playerInfoCollection->find_one(
+  mongocxx::client client{mongocxx::uri{}};
+
+  mongocxx::database db = client[kDataBaseName];
+  mongocxx::collection playerInfoCollection = db[kPlayerInfoCollectionName];
+
+  auto maybe_result =  playerInfoCollection.find_one(
     bsoncxx::builder::stream::document{}
     << _kUuidField << uuid
     <<  bsoncxx::builder::stream::finalize);
@@ -28,13 +30,26 @@ std::unique_ptr<PlayerInfo> PlayerInfoMapper::FindByUuid(const std::string &uuid
 }
 
 void PlayerInfoMapper::Insert(std::unique_ptr<PlayerInfo> playerInfo) {
-  auto maybe_result = _playerInfoCollection->insert_one(create_query_document(playerInfo));
+  mongocxx::client client{mongocxx::uri{}};
+
+  mongocxx::database db = client[kDataBaseName];
+  mongocxx::collection playerInfoCollection = db[kPlayerInfoCollectionName];
+
+  Internal::RandomNameGenerator randomNameGenerator(_dataBaseName);
+  playerInfo->name = std::move(randomNameGenerator.GetRandomName()->name);
+
+  auto maybe_result = playerInfoCollection.insert_one(create_query_document(playerInfo));
 }
 
 void PlayerInfoMapper::Update(std::unique_ptr<PlayerInfo> playerInfo) {
-  auto maybe_result = _playerInfoCollection->find_one_and_update(
+  mongocxx::client client{mongocxx::uri{}};
+
+  mongocxx::database db = client[kDataBaseName];
+  mongocxx::collection playerInfoCollection = db[kPlayerInfoCollectionName];
+
+  auto maybe_result = playerInfoCollection.find_one_and_update(
   bsoncxx::builder::stream::document{}
-  << _kUuidField      << playerInfo->uuid
+  << _kUuidField << playerInfo->uuid
   <<  bsoncxx::builder::stream::finalize,
   create_query_document(playerInfo));
 }
@@ -48,12 +63,12 @@ std::unique_ptr<PlayerInfo> PlayerInfoMapper::construct_player_info(const bsoncx
   return std::make_unique<PlayerInfo>(name, uuid, winsCount, points);
 }
 
-auto PlayerInfoMapper::create_query_document(const std::unique_ptr<PlayerInfo>& playerInfo) {
+bsoncxx::document::value PlayerInfoMapper::create_query_document(const std::unique_ptr<PlayerInfo>& playerInfo) {
   return bsoncxx::builder::stream::document{}
   << _kUuidField      << playerInfo->uuid
   << _kNameField      << playerInfo->name
-  << _kWinsCountField << playerInfo->winsCount
-  << _kPointsField    << playerInfo->points
+  << _kWinsCountField << static_cast<std::int64_t>(playerInfo->winsCount)
+  << _kPointsField    << static_cast<std::int64_t>(playerInfo->points)
   <<  bsoncxx::builder::stream::finalize;
 }
 

@@ -8,16 +8,17 @@ namespace External {
 class PlayerInfoMapper : public IPlayerInfoMapper {
 public:
   PlayerInfoMapper();
+  PlayerInfoMapper(const std::string& dataBaseName);
   std::unique_ptr<PlayerInfo> FindByUuid(const std::string &uuid);
   void Insert(std::unique_ptr<PlayerInfo> playerInfo);
   void Update(std::unique_ptr<PlayerInfo> playerInfo);
 
 private:
-  std::unique_ptr<mongocxx::collection> _playerInfoCollection = nullptr;
+  std::string _dataBaseName;
 
 private:
   std::unique_ptr<PlayerInfo> construct_player_info(const bsoncxx::document::view &docView);
-  auto create_query_document(const std::unique_ptr<PlayerInfo>& playerInfo);
+  bsoncxx::document::value create_query_document(const std::unique_ptr<PlayerInfo>& playerInfo);
 
 private:
   static constexpr char _kNameField[] = "Name";

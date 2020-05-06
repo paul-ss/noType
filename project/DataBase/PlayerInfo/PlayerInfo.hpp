@@ -6,8 +6,10 @@ namespace DataBase {
 namespace External {
 
 struct PlayerInfo {
-  std::string name;
+  PlayerInfo(const std::string& uuid, const std::string& name = {}, size_t winsCount = 0, size_t points = 0)
+   : uuid(uuid), name(name), winsCount(winsCount), points(points) {}
   std::string uuid;
+  std::string name;
   size_t winsCount;
   size_t points;
 };
@@ -17,6 +19,7 @@ public:
   virtual std::unique_ptr<PlayerInfo> FindByUuid(const std::string &uuid) = 0;
   virtual void Insert(std::unique_ptr<PlayerInfo> playerInfo) = 0;
   virtual void Update(std::unique_ptr<PlayerInfo> playerInfo) = 0;
+  virtual ~IPlayerInfoMapper() = default;
 };
 
 }  // External
