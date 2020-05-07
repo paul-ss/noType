@@ -27,7 +27,7 @@ enum ServerState {SERVER_RUN, SERVER_STOP};
 class TcpServer {
 public:
 
-  TcpServer(const std::shared_ptr<QueueManager> &queueManager, const ServerConfig &config);
+  TcpServer(const std::shared_ptr<QueueManager> &queueManager, const ServerConfig &config  = ServerConfig());
   ~TcpServer(); // join
   void startServer();
   void stopServer();

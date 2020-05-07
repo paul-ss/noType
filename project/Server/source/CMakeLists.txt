@@ -7,7 +7,8 @@ INCLUDE_DIRECTORIES(
         TcpServer
         Command
         Utils
-        Exceptions)
+        Exceptions
+        Setup)
 
 
 FIND_PACKAGE(GTest REQUIRED)
@@ -65,17 +66,23 @@ ADD_LIBRARY(Command SHARED
         Command/CommandFactory.cpp
         Command/CommandFactory.hpp)
 
-ADD_LIBRARY(Controller SHARED
-        Controller/BasicController.cpp
-        Controller/BasicController.hpp
-        Controller/GameController.cpp
-        Controller/GameController.hpp)
+#ADD_LIBRARY(Controller SHARED
+#        Controller/BasicController.cpp
+#        Controller/BasicController.hpp
+#        Controller/GameController.cpp
+#        Controller/GameController.hpp)
 
 
 
 ADD_EXECUTABLE(server
         main.cpp
-        Exceptions/Exceptions.hpp)
+        Controller/BasicController.cpp
+        Controller/BasicController.hpp
+        Controller/GameController.cpp
+        Controller/GameController.hpp
+        Exceptions/Exceptions.hpp
+        Setup/Setup.cpp
+        Setup/Setup.hpp)
 
 
 
@@ -86,7 +93,8 @@ TARGET_LINK_LIBRARIES(server
         Room
         Queue
         Command
-        Controller)
+#        Controller
+        )
 
 #SET(USED_LIBS ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARY})
 
