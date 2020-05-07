@@ -4,7 +4,6 @@
 const std::string kTestDataBaseName("noTypeTestDataBase");
 
 TEST(TextInfoImpl, GetRandomText) {
-  DataBase::Instance();
   std::unique_ptr<DataBase::External::ITextInfoMapper> TextMapper
    = std::make_unique<DataBase::External::TextInfoMapper>(kTestDataBaseName);
 

@@ -17,8 +17,8 @@ pkg_check_modules(LIBBSONCXX REQUIRED IMPORTED_TARGET libbsoncxx)
 message(STATUS PkgConfig::LIBMONGOCXX)
 
 set(DATA_BASE_CONFIG_INCLUDE_DIR "DataBaseConfig/")
+set(MONGOCXX_INIT_INCLUDE_DIR "MongoCxxInit/")
 
 add_subdirectory(TextInfo/)
-add_subdirectory(DataBaseInit/)
 add_subdirectory(RandomName/)
 add_subdirectory(PlayerInfo/)

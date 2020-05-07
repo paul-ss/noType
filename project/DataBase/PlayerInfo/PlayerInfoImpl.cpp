@@ -1,5 +1,8 @@
 #include "PlayerInfoImpl.hpp"
 #include "RandomNameImpl.hpp"
+#include "MongoCxxInit.hpp"
+
+#include <iostream>
 
 namespace DataBase {
 namespace External {
@@ -7,7 +10,7 @@ namespace External {
 PlayerInfoMapper::PlayerInfoMapper() : PlayerInfoMapper(kDataBaseName) {}
 
 PlayerInfoMapper::PlayerInfoMapper(const std::string& dataBaseName) : _dataBaseName(dataBaseName) {
-  Instance();
+  MongoCxxInit::Instance();
 }
 
 std::unique_ptr<PlayerInfo> PlayerInfoMapper::FindByUuid(const std::string &uuid) {
@@ -38,6 +41,8 @@ void PlayerInfoMapper::Insert(std::unique_ptr<PlayerInfo> playerInfo) {
   Internal::RandomNameGenerator randomNameGenerator(_dataBaseName);
   playerInfo->name = std::move(randomNameGenerator.GetRandomName()->name);
 
+  std::cout << "playerInfo->name: " << playerInfo->name << std::endl;
+
   auto maybe_result = playerInfoCollection.insert_one(create_query_document(playerInfo));
 }
 
@@ -55,20 +60,20 @@ void PlayerInfoMapper::Update(std::unique_ptr<PlayerInfo> playerInfo) {
 }
 
 std::unique_ptr<PlayerInfo> PlayerInfoMapper::construct_player_info(const bsoncxx::document::view &docView) {
-  std::string name = docView[_kNameField].get_utf8().value.to_string();
-  std::string uuid = docView[_kUuidField].get_utf8().value.to_string();
-  size_t winsCount = docView[_kWinsCountField].get_int32();
-  size_t points    = docView[_kPointsField].get_int32();
+  std::string  uuid      = docView[_kUuidField].get_utf8().value.to_string();
+  std::string  name      = docView[_kNameField].get_utf8().value.to_string();
+  std::int32_t winsCount = docView[_kWinsCountField].get_int32().value;
+  std::int32_t points    = docView[_kPointsField].get_int32().value;
 
-  return std::make_unique<PlayerInfo>(name, uuid, winsCount, points);
+  return std::make_unique<PlayerInfo>(uuid, name, winsCount, points);
 }
 
 bsoncxx::document::value PlayerInfoMapper::create_query_document(const std::unique_ptr<PlayerInfo>& playerInfo) {
   return bsoncxx::builder::stream::document{}
   << _kUuidField      << playerInfo->uuid
   << _kNameField      << playerInfo->name
-  << _kWinsCountField << static_cast<std::int64_t>(playerInfo->winsCount)
-  << _kPointsField    << static_cast<std::int64_t>(playerInfo->points)
+  << _kWinsCountField << playerInfo->winsCount
+  << _kPointsField    << playerInfo->points
   <<  bsoncxx::builder::stream::finalize;
 }
 

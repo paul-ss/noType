@@ -1,4 +1,5 @@
 #include "RandomNameImpl.hpp"
+#include "MongoCxxInit.hpp"
 
 #include <random>
 #include <iostream>
@@ -9,7 +10,7 @@ namespace Internal {
 RandomNameGenerator::RandomNameGenerator() : RandomNameGenerator(kDataBaseName) {}
 
 RandomNameGenerator::RandomNameGenerator(const std::string& dataBaseName) : _dataBaseName(dataBaseName) {
-  Instance();
+  MongoCxxInit::Instance();
 }
 
 std::unique_ptr<RandomName> RandomNameGenerator::GetRandomName() {
@@ -33,8 +34,8 @@ std::string RandomNameGenerator::get_random_document_by_id_and_field(
 
   std::random_device rd;
   std::mt19937 gen(rd());
-  std::uniform_int_distribution<> dis(1, docsCount);
-  const auto kRandId = dis(gen);
+  std::uniform_int_distribution<std::int32_t> dis(1, docsCount);
+  const std::int32_t kRandId = dis(gen);
   auto maybe_result = collection.find_one(
         bsoncxx::builder::stream::document{}
         << std::string(idField) << kRandId

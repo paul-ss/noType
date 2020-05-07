@@ -5,10 +5,12 @@ include_directories(${GTEST_INLCUDE_DIRS})
 
 # Тест test_TextInfoMapper.out
 add_executable(test_RandomNameImpl.out test_RandomNameImpl.cpp
-                                       RandomNameImpl.cpp)
+                                            RandomNameImpl.cpp
+              ../${MONGOCXX_INIT_INCLUDE_DIR}/MongoCxxInit.cpp)
 
 target_include_directories(test_RandomNameImpl.out PRIVATE
                                                            ../${DATA_BASE_CONFIG_INCLUDE_DIR}
+                                                           ../${MONGOCXX_INIT_INCLUDE_DIR}
                                                               ${CMAKE_CURRENT_SOURCE_DIR}
                                                               ${LIBMONGOCXX_INCLUDE_DIR}
                                                               ${LIBBSONCXX_INCLUDE_DIR})

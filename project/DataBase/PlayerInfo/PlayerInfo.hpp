@@ -6,12 +6,12 @@ namespace DataBase {
 namespace External {
 
 struct PlayerInfo {
-  PlayerInfo(const std::string& uuid, const std::string& name = {}, size_t winsCount = 0, size_t points = 0)
+  PlayerInfo(const std::string& uuid, const std::string& name = {}, std::int32_t winsCount = 0, std::int32_t points = 0)
    : uuid(uuid), name(name), winsCount(winsCount), points(points) {}
   std::string uuid;
   std::string name;
-  size_t winsCount;
-  size_t points;
+  std::int32_t winsCount;
+  std::int32_t points;
 };
 
 class IPlayerInfoMapper {

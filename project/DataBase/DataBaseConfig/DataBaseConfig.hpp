@@ -1,16 +1,12 @@
 #pragma once
 
 #include <mongocxx/client.hpp>
-#include <mongocxx/instance.hpp>
+// #include <mongocxx/instance.hpp>
 
 #include <bsoncxx/builder/stream/document.hpp>
 #include <bsoncxx/json.hpp>
 
 namespace DataBase {
-
-static void Instance() {
-  static mongocxx::instance ints{};
-}
 
 //mongocxx::instance inst{};  // NOTE(vendroid): Глобальная переменная
 

@@ -1,4 +1,5 @@
 #include "TextInfoImpl.hpp"
+#include "MongoCxxInit.hpp"
 
 #include <random>
 
@@ -8,7 +9,7 @@ namespace External {
 TextInfoMapper::TextInfoMapper() : TextInfoMapper(kDataBaseName) {}
 
 TextInfoMapper::TextInfoMapper(const std::string& dataBaseName) : _dataBaseName(dataBaseName) {
-  Instance();
+  MongoCxxInit::Instance();
 }
 
 std::unique_ptr<TextInfo> TextInfoMapper::GetRandomText() {
