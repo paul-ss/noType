@@ -16,11 +16,16 @@ void IntroState::OnCreate() {
 
     _introSprite.setPosition(windowSize.x / 2.0f, windowSize.y / 2.0f);
 
-    _text.setString(sf::String("Press SPACE to continue"));
-    _text.setCharacterSize(15);
     sf::FloatRect textRect = _text.getLocalBounds();
-    _text.setOrigin(textRect.left + textRect.width / 2.0f,textRect.top + textRect.height / 2.0f);
-    _text.setPosition(_introSprite.getPosition().x, _introSprite.getPosition().y + textureMgr->GetResource("Intro")->getSize().y / 1.5f);
+    FontManager* fontMgr = _stateMgr->GetContext()->_fontManager;
+
+    _text.setFont(*fontMgr->GetResource("Main"));
+    _text.setOrigin(textRect.left + textRect.width / 2.0f,
+        textRect.top + textRect.height / 2.0f);
+    _text.setPosition(windowSize.x / 2.0f, windowSize.y / 2.0f);
+    _text.setString({ "Press SPACE to continue" });
+    _text.setColor(sf::Color::Cyan);
+    _text.setCharacterSize(20);
 
     EventManager* evMgr = _stateMgr->GetContext()->_eventManager;
 
@@ -33,6 +38,9 @@ void IntroState::OnCreate() {
 void IntroState::OnDestroy() {
     TextureManager* textureMgr = _stateMgr->GetContext()->_textureManager;
     textureMgr->ReleaseResource("Intro");
+
+    FontManager* fontMgr = _stateMgr->GetContext()->_fontManager;
+    fontMgr->ReleaseResource("Main");
 
     EventManager* evMgr = _stateMgr->GetContext()->_eventManager;
     evMgr->RemoveCallback(StateType::Intro,"Intro_Continue");

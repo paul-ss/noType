@@ -254,7 +254,7 @@ bool GUI_Manager::AddInterface(const StateType& state,
 }
 
 bool GUI_Manager::LoadInterface(const StateType& state,
-    const std::string& interface, const std::string& name)
+    const std::string& interface, const std::string& l_name)
 {
     std::ifstream file;
     //file.open(utils::GetWorkingDirectory() + "assets/media/GUI_Interfaces/" + interface);
@@ -276,14 +276,14 @@ bool GUI_Manager::LoadInterface(const StateType& state,
         if (key == "Interface") {
             std::string style;
             keystream >> InterfaceName >> style;
-            if (!AddInterface(state, name)) {
-                BOOST_LOG_TRIVIAL(error) << "Failed adding interface: " << name;
+            if (!AddInterface(state, l_name)) {
+                BOOST_LOG_TRIVIAL(error) << "Failed adding interface: " << l_name;
                 return false;
             }
-            GUI_Interface* i = GetInterface(state, name);
+            GUI_Interface* i = GetInterface(state, l_name);
             keystream >> *i;
             if (!loadStyle(style, i)) {
-                BOOST_LOG_TRIVIAL(error) << "Failed adding interface: " << style << "for interface " << name;
+                BOOST_LOG_TRIVIAL(error) << "Failed adding interface: " << style << "for interface " << l_name;
             }
             i->SetContentSize(i->GetSize());
         } else if (key == "Element") {
@@ -299,16 +299,17 @@ bool GUI_Manager::LoadInterface(const StateType& state,
             std::cout << name << "\n";
             GUI_ElementType eType = stringToType(type);
             if (eType == GUI_ElementType::None) {
-                std::cout << "Unknown element('" << name << "') type: '" << type << "'" << std::endl;
-                BOOST_LOG_TRIVIAL(error) << "Unknown element('" << name << "') type: '" << type << "'";
+                std::cout << "Unknown element('" << l_name << "') type: '" << type << "'" << std::endl;
+                BOOST_LOG_TRIVIAL(error) << "Unknown element('" << l_name << "') type: '" << type << "'";
                 continue;
             }
 
-            GUI_Interface* i = GetInterface(state, name);
+            GUI_Interface* i = GetInterface(state, l_name);
             if (!i) {
                 continue;
             }
             if (!i->AddElement(eType, name)) {
+                std::cout << "add element false\n";
                 continue;
             }
             GUI_Element* e = i->GetElement(name);

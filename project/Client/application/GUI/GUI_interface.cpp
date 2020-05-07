@@ -58,6 +58,7 @@ GUI_Element* GUI_Interface::GetElement(const std::string& name) const {
     for (auto itr : _elements) {
         std::cout << itr.first << "\n";
     }
+    std::cout << name << "here \n";
     return (itr != _elements.end() ? itr->second : nullptr);
 }
 

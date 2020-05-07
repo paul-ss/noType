@@ -89,6 +89,7 @@ void StateManager::SwitchTo(const StateType& type) {
     std::cout << static_cast<int>(type) << "\n";
     _shared->_eventManager->SetCurrentState(type);
     _shared->_guiManager->SetCurrentState(type);
+    _shared->_soundManager->ChangeState(type);
     for (auto itr = _states.begin();
         itr != _states.end(); ++itr) {
         if (itr->first == type) {

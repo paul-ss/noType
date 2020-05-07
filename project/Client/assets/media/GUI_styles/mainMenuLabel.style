@@ -9,7 +9,7 @@ TextOriginCenter
 /State
 
 State Hover
-BgColor 255 100 0 255
+BgColor 0 255 255 255
 /State
 
 State Clicked

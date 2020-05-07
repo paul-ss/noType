@@ -23,4 +23,5 @@ class IntroState : public BaseState {
     private:
         sf::Sprite _introSprite;
         sf::Text _text;
+        sf::Font _font;
 };
