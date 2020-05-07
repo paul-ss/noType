@@ -30,6 +30,7 @@ SET(ALL_SOURCES
     ${SOURCE_DIR}/GUI/GUI_label.cpp
     ${SOURCE_DIR}/GUI/GUI_interface.cpp
     ${SOURCE_DIR}/GUI/GUI_manager.cpp
+    ${SOURCE_DIR}/logger/logger.cpp
     ${SOURCE_DIR}/soundManager/soundManager.cpp
     ${SOURCE_DIR}/stateManager/stateManager.cpp
     ${SOURCE_DIR}/states/introState.cpp
