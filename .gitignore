@@ -30,3 +30,13 @@
 *.exe
 *.out
 *.app
+
+#IDE
+.idea
+project/Server/cmake-build-debug/*
+.vscode
+
+#Local
+.DS_Store
+build
+
