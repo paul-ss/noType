@@ -16,7 +16,7 @@ PlayerInfoMapper::PlayerInfoMapper(const std::string& dataBaseName) : _dataBaseN
 std::unique_ptr<PlayerInfo> PlayerInfoMapper::FindByUuid(const std::string &uuid) {
   mongocxx::client client{mongocxx::uri{}};
 
-  mongocxx::database db = client[kDataBaseName];
+  mongocxx::database db = client[_dataBaseName];
   mongocxx::collection playerInfoCollection = db[kPlayerInfoCollectionName];
 
   auto maybe_result =  playerInfoCollection.find_one(
@@ -35,13 +35,11 @@ std::unique_ptr<PlayerInfo> PlayerInfoMapper::FindByUuid(const std::string &uuid
 void PlayerInfoMapper::Insert(std::unique_ptr<PlayerInfo> playerInfo) {
   mongocxx::client client{mongocxx::uri{}};
 
-  mongocxx::database db = client[kDataBaseName];
+  mongocxx::database db = client[_dataBaseName];
   mongocxx::collection playerInfoCollection = db[kPlayerInfoCollectionName];
 
   Internal::RandomNameGenerator randomNameGenerator(_dataBaseName);
   playerInfo->name = std::move(randomNameGenerator.GetRandomName()->name);
-
-  std::cout << "playerInfo->name: " << playerInfo->name << std::endl;
 
   auto maybe_result = playerInfoCollection.insert_one(create_query_document(playerInfo));
 }
@@ -49,7 +47,7 @@ void PlayerInfoMapper::Insert(std::unique_ptr<PlayerInfo> playerInfo) {
 void PlayerInfoMapper::Update(std::unique_ptr<PlayerInfo> playerInfo) {
   mongocxx::client client{mongocxx::uri{}};
 
-  mongocxx::database db = client[kDataBaseName];
+  mongocxx::database db = client[_dataBaseName];
   mongocxx::collection playerInfoCollection = db[kPlayerInfoCollectionName];
 
   auto maybe_result = playerInfoCollection.find_one_and_update(
@@ -64,6 +62,12 @@ std::unique_ptr<PlayerInfo> PlayerInfoMapper::construct_player_info(const bsoncx
   std::string  name      = docView[_kNameField].get_utf8().value.to_string();
   std::int32_t winsCount = docView[_kWinsCountField].get_int32().value;
   std::int32_t points    = docView[_kPointsField].get_int32().value;
+
+  std::cout << "uuid: "        << uuid
+            << ", name: "      << name
+            << ", winsCount: " << winsCount
+            << ", points: "    << points
+            << std::endl;
 
   return std::make_unique<PlayerInfo>(uuid, name, winsCount, points);
 }
