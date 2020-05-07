@@ -2,7 +2,6 @@
 #include "game.hpp"
 #include <iostream>
 #include <filesystem>
-#include "utils.hpp"
 
 int main() {
     init_logger();

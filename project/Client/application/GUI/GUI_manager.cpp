@@ -1,11 +1,10 @@
 #include <fstream>
 #include <filesystem>
 
-#include <boost/log/trivial.hpp>
-
 #include "GUI_manager.hpp"
 #include "GUI_textField.hpp"
 #include "GUI_label.hpp"
+#include "logger.hpp"
 
 GUI_Manager::GUI_Manager(EventManager* evMgr, SharedContext* shared)
     : _context(shared), _eventMgr(evMgr), _currentState(StateType(0)) {

@@ -1,10 +1,8 @@
 #include <filesystem>
 
-#include <boost/log/trivial.hpp>
-
 #include "eventManager.hpp"
 #include "exceptions.hpp"
-#include "utils.hpp"
+#include "logger.hpp"
 
 EventManager::EventManager():_currentState(StateType(0)), _hasFocus(true) {
     LoadBindings();

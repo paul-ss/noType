@@ -53,7 +53,6 @@ void Game::render(){
     _window.EndDraw();
 }
 
-
 void Game::lateUpdate() {
     _stateManager.ProcessRequests();
     restartClock();
