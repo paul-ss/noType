@@ -187,7 +187,7 @@ void EventManager::LoadBindings() {
     std::filesystem::path path = std::filesystem::absolute("assets/keys.cfg");
     bindings.open(path);
     if (!bindings.is_open()) {
-        BOOST_LOG_TRIVIAL(error) << "Failed to load keys file: " << path;
+        //BOOST_LOG_TRIVIAL(error) << "Failed to load keys file: " << path;
         return;
     }
     std::string line;
@@ -230,7 +230,7 @@ void EventManager::LoadBindings() {
         }
 
         if (!AddBinding(bind)) {
-            BOOST_LOG_TRIVIAL(error) << "Failed to add new Binding";
+            //BOOST_LOG_TRIVIAL(error) << "Failed to add new Binding";
             throw InvalidCmd();
         }
     }

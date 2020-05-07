@@ -258,7 +258,7 @@ bool GUI_Manager::LoadInterface(const StateType& state,
 {
     std::ifstream file;
     //file.open(utils::GetWorkingDirectory() + "assets/media/GUI_Interfaces/" + interface);
-    file.open(std::filesystem::absolute("assets/media/GUI_Interfaces/" + interface));
+    file.open(std::filesystem::absolute("assets/media/GUI_interfaces/" + interface));
     std::string InterfaceName;
 
     if (!file.is_open()) {
@@ -327,7 +327,7 @@ bool GUI_Manager::LoadInterface(const StateType& state,
 bool GUI_Manager::loadStyle(const std::string& path, GUI_Element* element) {
     std::ifstream file;
     //file.open(utils::GetWorkingDirectory() + "assets/media/GUI_Styles/" + path);
-    file.open(std::filesystem::absolute("assets/media/GUI_Interfaces/" + path));
+    file.open(std::filesystem::absolute("assets/media/GUI_styles/" + path));
 
     std::string currentState;
     GUI_Style ParentStyle;
