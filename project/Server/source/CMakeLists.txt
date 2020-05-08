@@ -28,13 +28,8 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 ADD_SUBDIRECTORY(DataBase/)
 
-ADD_LIBRARY(Queue SHARED
-        QueueManager/Queue.cpp
-        QueueManager/Queue.hpp
-        QueueManager/QueueManager.cpp
-        QueueManager/QueueManager.hpp)
 
-ADD_LIBRARY(Server SHARED
+ADD_LIBRARY(ServerLib STATIC
         TcpServer/Client.cpp
         TcpServer/Client.hpp
         TcpServer/ConnectedClients.cpp
@@ -43,10 +38,8 @@ ADD_LIBRARY(Server SHARED
         TcpServer/TcpServer.hpp
         TcpServer/ServerConfig.hpp)
 
-TARGET_LINK_LIBRARIES(Server Queue)
 
-
-ADD_LIBRARY(Room SHARED
+ADD_LIBRARY(Room STATIC
         Room/RoomManager.cpp
         Room/RoomManager.hpp
         Room/Player.hpp
@@ -63,16 +56,22 @@ ADD_LIBRARY(Room SHARED
         Utils/Expected.hpp
         Utils/Error.hpp)
 
-TARGET_LINK_LIBRARIES(Room Queue)
+
+ADD_LIBRARY(Queue STATIC
+        QueueManager/Queue.cpp
+        QueueManager/Queue.hpp
+        QueueManager/QueueManager.cpp
+        QueueManager/QueueManager.hpp)
 
 
-ADD_LIBRARY(Command SHARED
+
+ADD_LIBRARY(Command STATIC
         Command/Command.cpp
         Command/Command.hpp
         Command/CommandFactory.cpp
         Command/CommandFactory.hpp)
 
-#ADD_LIBRARY(Controller SHARED
+#ADD_LIBRARY(Controller STATIC
 #        Controller/BasicController.cpp
 #        Controller/BasicController.hpp
 #        Controller/GameController.cpp
@@ -96,10 +95,10 @@ TARGET_LINK_LIBRARIES(server
         ${Boost_SYSTEM_LIBRARY}
         ${CMAKE_THREAD_LIBS_INIT}
         DataBaseFacadeLib
+        ServerLib
+        Room
         Queue
         Command
-        Server
-        Room
 #        Controller
         )
 
@@ -128,7 +127,7 @@ TARGET_LINK_LIBRARIES(tcpServerTests
         ${GTEST_LIBRARIES}
         ${CMAKE_THREAD_LIBS_INIT}
         ${Boost_SYSTEM_LIBRARY}
-        Server
+        ServerLib
         Queue
         -lgmock)
 
