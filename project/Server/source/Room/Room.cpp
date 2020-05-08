@@ -3,6 +3,7 @@
 //
 
 #include "Room.hpp"
+#include "RoomManager.hpp"
 
 
 Room::Room(boost::asio::io_service &service,
@@ -17,9 +18,26 @@ Room::Room(boost::asio::io_service &service,
     _text(""),
     _numberOfFinishers(0),
     _roomUUID(randomUUID()) {
-  auto textInfo = _dataBaseFacade->GetRandomText();
-  _text = textInfo->text;
+  try {
+    auto textInfo = _dataBaseFacade->GetRandomText();
+    _text = textInfo->text;
+  } catch (...) {
+    _text = "Text default";
+  }
 }
+
+Room::Room(boost::asio::io_service &service,
+            const std::string &text,
+            const std::shared_ptr<RoomManager> &roomManager,
+            const RoomConfig &roomConfig) :
+    _timer(service),
+    _dataBaseFacade(std::make_shared<DataBaseFacade>()),
+    _roomManager(roomManager),
+    _roomConfig(roomConfig),
+    _roomStatus(std::make_shared<RoomWait>(_roomConfig)),
+    _text(text),
+    _numberOfFinishers(0),
+    _roomUUID(randomUUID()) {}
     
 
 
@@ -127,3 +145,51 @@ size_t Room::getTextPosition(const std::string &clientUUID) {
 }
 
 
+
+void Room::removeSelf() {
+  auto roomManagerShared = _roomManager.lock();
+  if (roomManagerShared) {
+    if (!roomManagerShared->deleteRoom(_roomUUID)) {
+      std::cout << "RemoveSelf error: can't erase room" << std::endl;
+    }
+
+  } else {
+    std::cout << "RemoveSelf error: can't make shared" << std::endl; //todo log
+  }
+}
+
+
+
+void Room::sendStatistic() {
+  for (auto &player : _players) {
+    if (player.second.state == PLAYER_WIN) {
+      updatePlayerInfo(player.second, 1, (int) player.second.textPosition / 3);
+    } else if (player.second.state == PLAYER_FINISH) {
+      updatePlayerInfo(player.second, 0, (int) player.second.textPosition / 4);
+    } else {
+      updatePlayerInfo(player.second, 0, (int) player.second.textPosition / 5);
+    }
+  }
+}
+
+
+void Room::updatePlayerInfo(const Player &player, int increaseWinsCount, int increasePoints) {
+  try {
+    auto findResult = _dataBaseFacade->FindPlayerInfoByUuid(player.clientUUID);
+
+    if (findResult) {
+      findResult->points += increasePoints;
+      findResult->winsCount += increaseWinsCount;
+      _dataBaseFacade->UpadatePlayerInfo(std::move(findResult));
+
+    } else {
+      auto playerInfo = std::make_unique<DataBase::External::PlayerInfo>(player.clientUUID, player.name);
+      playerInfo->points += increasePoints;
+      playerInfo->winsCount += increaseWinsCount;
+      _dataBaseFacade->InsertPlayerInfo(std::move(playerInfo));
+
+    }
+  } catch (...) {
+    std::cout << "Database exception" << std::endl;  // todo log
+  }
+}

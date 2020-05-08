@@ -33,6 +33,12 @@ public:
         const std::shared_ptr<RoomManager> &roomManager,
         const RoomConfig &roomConfig = RoomConfig());
 
+  // for tests
+  Room(boost::asio::io_service &service,
+       const std::string &text,
+       const std::shared_ptr<RoomManager> &roomManager,
+       const RoomConfig &roomConfig = RoomConfig());
+
   std::unordered_map<std::string, Player> getPlayers();
   ExpectedRoom<bool> addPlayer(const Player &player);
   ExpectedRoom<std::string> getText();
@@ -56,6 +62,9 @@ private:
   PlayerState getPlayerState(const std::string &clientUUID);
   void increaseTextPosition(const std::string &clientUUID, size_t increaseSize);
   size_t getTextPosition(const std::string &clientUUID);
+  void removeSelf();
+  void sendStatistic();
+  void updatePlayerInfo(const Player &player, int increaseWinsCount, int increasePoints);
 
 
 private:

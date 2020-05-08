@@ -48,7 +48,8 @@ void RoomEnd::deadlineHandler(std::shared_ptr<Room> room, const boost::system::e
 
   std::unique_lock<std::mutex> lock(room->_roomMutex);
 
-  // todo delete room, send statistic
+  room->sendStatistic();
+  room->removeSelf();
 }
 
 
