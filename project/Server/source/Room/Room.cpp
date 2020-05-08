@@ -5,15 +5,16 @@
 #include "Room.hpp"
 
 
-Room::  Room(boost::asio::io_service &service,
-             const std::string &text,
+Room::Room(boost::asio::io_service &service,
+             const std::shared_ptr<DataBaseFacade> &dataBaseFacade,
              const std::shared_ptr<RoomManager> &roomManager,
              const RoomConfig &roomConfig) :
     _timer(service),
+    _dataBaseFacade(dataBaseFacade),
     _roomManager(roomManager),
     _roomConfig(roomConfig),
     _roomStatus(std::make_shared<RoomWait>(_roomConfig)),
-    _text(text),
+    _text(_dataBaseFacade->GetRandomText()),
     _numberOfFinishers(0),
     _roomUUID(randomUUID()){}
     

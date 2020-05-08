@@ -51,9 +51,9 @@ void Setup::runInterface() {
 
 void Setup::setup() {
   parseConfig();
-  
+
+  _dataBaseFacade = std::make_shared<DataBaseFacade>();
   _queueManager = std::make_shared<QueueManager>();
-  // database
   _tcpServer = std::make_unique<TcpServer>(_queueManager);
   _gameController = std::make_unique<GameController>(_queueManager);
   _basicController = std::make_unique<BasicController>(/*_queueManager*/);

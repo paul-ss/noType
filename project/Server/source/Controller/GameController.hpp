@@ -6,6 +6,7 @@
 
 #include "QueueManager.hpp"
 #include "RoomManager.hpp"
+#include "DataBaseFacade/DataBaseFacade.hpp"
 
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
@@ -18,7 +19,8 @@ enum GameControllerState {GAME_CONTROLLER_RUN, GAME_CONTROLLER_STOP};
 class GameController {
 public:
 
-  GameController(const std::shared_ptr<QueueManager> &queueManager /*data : std::shared_ptr<Data>*/);
+  GameController(const std::shared_ptr<QueueManager> &queueManager,
+                  const std::shared_ptr<DataBaseFacade> &dataBaseFacade);
   ~GameController();
   void startController();
   void stopController();
@@ -37,7 +39,8 @@ private:
 
 private:
   std::shared_ptr<QueueManager> _queueManager ;
-  //std::shared_ptr<Data> _data;
+  std::shared_ptr<DataBaseFacade> _dataBaseFacade;
+
   RoomManager _roomManager;
   boost::asio::io_service _service;
   boost::asio::io_service::work _work;

@@ -24,7 +24,7 @@ public:
   ExpectedRoom<bool> addPlayer(const Player &player);
   bool addPlayerAndRoom(const Player &player,
                          boost::asio::io_service &service,
-                         const std::string &text,
+                         const std::shared_ptr<DataBaseFacade> &dataBaseFacade,
                          const RoomConfig &roomConfig = RoomConfig());
   std::shared_ptr<Room> getRoom(const std::string &clientUUID);
 

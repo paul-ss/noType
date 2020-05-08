@@ -5,9 +5,10 @@
 #include "GameController.hpp"
 
 
-GameController::GameController(const std::shared_ptr<QueueManager> &queueManager /*data : std::shared_ptr<Data>*/) :
+GameController::GameController(const std::shared_ptr<QueueManager> &queueManager,
+                                const std::shared_ptr<DataBaseFacade> &dataBaseFacade) :
     _queueManager(queueManager),
-    //std::shared_ptr<Data> _data;
+    _dataBaseFacade(dataBaseFacade),
     _work(_service),
     _state(GAME_CONTROLLER_STOP) {}
 

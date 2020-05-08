@@ -7,6 +7,7 @@
 #include "RoomWait.hpp"
 #include "RoomPlay.hpp"
 #include "RoomConfig.hpp"
+#include "DataBaseFacade.hpp"
 
 #include <memory>
 
@@ -28,7 +29,7 @@ enum RoomState {ROOM_WAIT, ROOM_PLAY, ROOM_END};
 class Room : public std::enable_shared_from_this<Room> {
 public:
   Room(boost::asio::io_service &service,
-        const std::string &text,
+       const std::shared_ptr<DataBaseFacade> &dataBaseFacade,
         const std::shared_ptr<RoomManager> &roomManager,
         const RoomConfig &roomConfig = RoomConfig());
 
@@ -59,7 +60,9 @@ private:
 
 private:
   boost::asio::steady_timer _timer;
+  std::shared_ptr<DataBaseFacade> _dataBaseFacade;
   std::weak_ptr<RoomManager> _roomManager;
+
   RoomConfig _roomConfig;
   std::shared_ptr<IRoomStatus> _roomStatus;
   std::unordered_map<std::string, Player> _players; // uuid, player

@@ -21,10 +21,7 @@ message(STATUS PkgConfig::LIBMONGOCXX)
 set(DATA_BASE_CONFIG_INCLUDE_DIR "DataBaseConfig/")
 set(MONGOCXX_INIT_INCLUDE_DIR "MongoCxxInit/")
 
-# (PavelS):
-include_directories(
-        DataBaseConfig
-        MongoCxxInit)
+
 
 # NOTE(vendroid): Директории с тестами
 # add_subdirectory(TextInfo/)

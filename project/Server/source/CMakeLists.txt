@@ -9,7 +9,15 @@ INCLUDE_DIRECTORIES(
         Utils
         Exceptions
         Setup
-        DataBase)
+        DataBase/DataBaseFacade
+        DataBase/DataBaseConfig
+        DataBase/DataBaseInit
+        DataBase/MongoCxxInit
+        DataBase/PlayerInfo
+        DataBase/RandomName
+        DataBase/TextInfo)
+
+message(find_path(Setup))
 
 
 FIND_PACKAGE(GTest REQUIRED)
@@ -27,7 +35,8 @@ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 ADD_SUBDIRECTORY(DataBase/)
-
+#MESSAGE(${PUBLIC})
+INCLUDE_DIRECTORIES(PUBLIC ${DATA_BASE_FACADE_INCLUDE_DIRS})
 
 ADD_LIBRARY(ServerLib STATIC
         TcpServer/Client.cpp
