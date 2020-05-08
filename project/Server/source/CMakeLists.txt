@@ -39,7 +39,7 @@ ADD_LIBRARY(ServerLib STATIC
         TcpServer/ServerConfig.hpp)
 
 
-ADD_LIBRARY(Room STATIC
+ADD_LIBRARY(RoomLib STATIC
         Room/RoomManager.cpp
         Room/RoomManager.hpp
         Room/Player.hpp
@@ -57,7 +57,7 @@ ADD_LIBRARY(Room STATIC
         Utils/Error.hpp)
 
 
-ADD_LIBRARY(Queue STATIC
+ADD_LIBRARY(QueueLib STATIC
         QueueManager/Queue.cpp
         QueueManager/Queue.hpp
         QueueManager/QueueManager.cpp
@@ -65,7 +65,7 @@ ADD_LIBRARY(Queue STATIC
 
 
 
-ADD_LIBRARY(Command STATIC
+ADD_LIBRARY(CommandLib STATIC
         Command/Command.cpp
         Command/Command.hpp
         Command/CommandFactory.cpp
@@ -96,9 +96,9 @@ TARGET_LINK_LIBRARIES(server
         ${CMAKE_THREAD_LIBS_INIT}
         DataBaseFacadeLib
         ServerLib
-        Room
-        Queue
-        Command
+        RoomLib
+        QueueLib
+        CommandLib
 #        Controller
         )
 
@@ -115,7 +115,7 @@ TARGET_LINK_LIBRARIES(roomTests
         ${GTEST_LIBRARIES}
         ${CMAKE_THREAD_LIBS_INIT}
         ${Boost_SYSTEM_LIBRARY}
-        Room)
+        RoomLib)
 
 
 ADD_EXECUTABLE(tcpServerTests
@@ -128,7 +128,7 @@ TARGET_LINK_LIBRARIES(tcpServerTests
         ${CMAKE_THREAD_LIBS_INIT}
         ${Boost_SYSTEM_LIBRARY}
         ServerLib
-        Queue
+        QueueLib
         -lgmock)
 
 
@@ -143,7 +143,7 @@ TARGET_LINK_LIBRARIES(queueTests
         ${GTEST_LIBRARIES}
         ${CMAKE_THREAD_LIBS_INIT}
         ${Boost_SYSTEM_LIBRARY}
-        Queue
+        QueueLib
         -lgmock)
 
 #add_executable(tst)

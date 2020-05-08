@@ -34,6 +34,7 @@
 #IDE
 .idea
 project/Server/cmake-build-debug/*
+project/Server/cmake-build-clang/*
 .vscode
 
 #Local
