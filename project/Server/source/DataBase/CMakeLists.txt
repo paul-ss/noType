@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.10)
-project(mongoTest)
+project(DataBase)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra --pedantic")
+# TODO(vendroid): выпилить этот участок в ближайшее время
+# set(CMAKE_CXX_STANDARD 17)
+# set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# set(CMAKE_CXX_FLAGS "-Wall -Wextra --pedantic")
 
 
 
@@ -11,7 +11,7 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra --pedantic")
 # find_package(libmongocxx REQUIRED)
 # find_package(libbsoncxx REQUIRED)
 
-find_package(PkgConfig REQUIRED) 
+find_package(PkgConfig REQUIRED)
 
 pkg_check_modules(LIBMONGOCXX REQUIRED IMPORTED_TARGET libmongocxx)
 pkg_check_modules(LIBBSONCXX REQUIRED IMPORTED_TARGET libbsoncxx)
