@@ -35,6 +35,9 @@ target_include_directories(DataBaseFacadeLib PUBLIC ${DATA_BASE_FACADE_INCLUDE_D
 target_link_libraries(DataBaseFacadeLib  PkgConfig::LIBMONGOCXX
                                          PkgConfig::LIBBSONCXX)
 
+#PavelS:
+#INCLUDE_DIRECTORIES(${DATA_BASE_FACADE_INCLUDE_DIRS})
+
 # Тест test_PlayerInfo.out
 add_executable(test_DataBaseFacade.out  test_DataBaseFacade.cpp ${DATA_BASE_FACADE_SOURCE})
 

@@ -6,7 +6,7 @@
 
 #include "QueueManager.hpp"
 #include "RoomManager.hpp"
-#include "DataBaseFacade/DataBaseFacade.hpp"
+#include "DataBaseFacade.hpp"
 
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>

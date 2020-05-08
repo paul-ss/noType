@@ -14,9 +14,12 @@ Room::Room(boost::asio::io_service &service,
     _roomManager(roomManager),
     _roomConfig(roomConfig),
     _roomStatus(std::make_shared<RoomWait>(_roomConfig)),
-    _text(_dataBaseFacade->GetRandomText()),
+    _text(""),
     _numberOfFinishers(0),
-    _roomUUID(randomUUID()){}
+    _roomUUID(randomUUID()) {
+  auto textInfo = _dataBaseFacade->GetRandomText();
+  _text = textInfo->text;
+}
     
 
 
