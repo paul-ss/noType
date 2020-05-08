@@ -6,25 +6,15 @@
 #include <unistd.h>
 
 namespace utils {
-    /*inline std::string GetWorkingDirectory() {
-        char cwd[1024];
-        if(getcwd(cwd, sizeof(cwd)) != nullptr) {
-            return std::string(cwd) + std::string("/");
-        }
-        return "";
-    }*/
-
-    inline void ReadQuotedString(std::stringstream& stream,
-        std::string& string) {
-        stream >> string;
-        if (string.at(0) == '"') {
-            while (string.at(string.length() - 1) != '"' || !stream.eof()) {
+    inline void ReadQuotedString(std::stringstream& l_stream, std::string& l_string) {
+        l_stream >> l_string;
+        if (l_string.at(0) == '"') {
+            while (l_string.at(l_string.length() - 1) != '"' || !l_stream.eof()) {
                 std::string str;
-                stream >> str;
-                string.append(" " + str);
+                l_stream >> str;
+                l_string.append(" " + str);
             }
         }
-        string.erase(std::remove(string.begin(), string.end(), '"'), string.end());
+        l_string.erase(std::remove(l_string.begin(), l_string.end(), '"'), l_string.end());
     }
-
 }  // namespace utils

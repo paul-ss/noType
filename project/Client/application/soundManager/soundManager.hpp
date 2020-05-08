@@ -22,30 +22,30 @@ using MusicContainer = std::unordered_map<StateType, std::pair<SoundInfo, sf::Mu
 
 class SoundManager {
     public:
-        explicit SoundManager(AudioManager* audioMgr) :
-                _numSounds(0), _elapsed(0.f), _audioManager(audioMgr) {};
+        explicit SoundManager(std::weak_ptr<AudioManager> l_audioMgr) :
+                _numSounds(0), _elapsed(0.f), _audioManager(l_audioMgr) {};
 
         ~SoundManager() = default;
 
-        void ChangeState(const StateType& state);
-        void RemoveState(const StateType& state);
+        void ChangeState(const StateType& l_state);
+        void RemoveState(const StateType& l_state);
         void Update(float l_dT);
-        bool PlayMusic(const std::string& musicId, float volume = 100.f, bool loop = false);
-        bool PlayMusic(const StateType& state);
-        bool StopMusic(const StateType& state);
-        bool PauseMusic(const StateType& state);
+        bool PlayMusic(const std::string& l_musicId, float l_volume = 100.f, bool l_loop = false);
+        bool PlayMusic(const StateType& l_state);
+        bool StopMusic(const StateType& l_state);
+        bool PauseMusic(const StateType& l_state);
 
         static const int Max_Sounds = 150;
         static const int Sound_Cache = 75;
 
     private:
-        void pauseAll(const StateType& state);
-        void unPauseAll(const StateType& state);
+        void pauseAll(const StateType& l_state);
+        void unPauseAll(const StateType& l_state);
 
     private:
         MusicContainer _music;
         StateType _currentState;
         unsigned int _numSounds;
         float _elapsed;
-        AudioManager* _audioManager;
+        std::weak_ptr<AudioManager> _audioManager;
 };

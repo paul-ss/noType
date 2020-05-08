@@ -1,14 +1,14 @@
 #include "introState.hpp"
 
-IntroState::IntroState(StateManager* stateManager)
-    : BaseState(stateManager) {}
+IntroState::IntroState(StateManager* l_stateManager)
+    : BaseState(l_stateManager) {}
 
 IntroState::~IntroState() {}
 
 void IntroState::OnCreate() {
     sf::Vector2u windowSize = _stateMgr->GetContext()->_window->GetRenderWindow()->getSize();
 
-    TextureManager* textureMgr = _stateMgr->GetContext()->_textureManager;
+    auto textureMgr = _stateMgr->GetContext()->_textureManager.lock();
     textureMgr->RequireResource("Intro");
     _introSprite.setTexture(*textureMgr->GetResource("Intro"));
     _introSprite.setOrigin(textureMgr->GetResource("Intro")->getSize().x / 2.0f,
@@ -17,7 +17,7 @@ void IntroState::OnCreate() {
     _introSprite.setPosition(windowSize.x / 2.0f, windowSize.y / 2.0f);
 
     sf::FloatRect textRect = _text.getLocalBounds();
-    FontManager* fontMgr = _stateMgr->GetContext()->_fontManager;
+    auto fontMgr = _stateMgr->GetContext()->_fontManager.lock();
 
     _text.setFont(*fontMgr->GetResource("Main"));
     _text.setOrigin(textRect.left + textRect.width / 2.0f,
@@ -36,13 +36,13 @@ void IntroState::OnCreate() {
 }
 
 void IntroState::OnDestroy() {
-    TextureManager* textureMgr = _stateMgr->GetContext()->_textureManager;
+    auto textureMgr = _stateMgr->GetContext()->_textureManager.lock();
     textureMgr->ReleaseResource("Intro");
 
-    FontManager* fontMgr = _stateMgr->GetContext()->_fontManager;
+    auto fontMgr = _stateMgr->GetContext()->_fontManager.lock();
     fontMgr->ReleaseResource("Main");
 
-    EventManager* evMgr = _stateMgr->GetContext()->_eventManager;
+    auto evMgr = _stateMgr->GetContext()->_eventManager.lock();
     evMgr->RemoveCallback(StateType::Intro,"Intro_Continue");
 }
 

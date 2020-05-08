@@ -6,7 +6,7 @@
 
 class AfterGameState : public BaseState {
     public:
-        explicit AfterGameState(StateManager* stateManager);
+        explicit AfterGameState(StateManager* l_stateManager);
         ~AfterGameState();
 
         void OnCreate() override;
@@ -15,10 +15,10 @@ class AfterGameState : public BaseState {
         void Activate() override;
         void Deactivate() override;
 
-        void Update(const sf::Time& time) override;
+        void Update(const sf::Time& l_time) override;
         void Draw() override;
 
-        void MainMenu(EventDetails* details);
+        void MainMenu(EventDetails* l_details);
 
     private:
         sf::Texture _texture;

@@ -4,35 +4,31 @@
 #include "GUI_label.hpp"
 #include "utils.hpp"
 
-GUI_Label::GUI_Label(const std::string& name, GUI_Interface* owner) :
-        GUI_Element(name, GUI_ElementType::Label, owner) {}
+GUI_Label::GUI_Label(const std::string& l_name, GUI_Interface* l_owner)
+    : GUI_Element(l_name, GUI_ElementType::Label, l_owner){}
+GUI_Label::~GUI_Label(){}
 
-GUI_Label::~GUI_Label() {}
-
-void GUI_Label::ReadIn(std::stringstream& stream) {
+void GUI_Label::ReadIn(std::stringstream& l_stream){
     std::string content;
-    utils::ReadQuotedString(stream, content);
+    utils::ReadQuotedString(l_stream, content);
     _visual._text.setString(content);
 }
 
-void GUI_Label::OnClick(const sf::Vector2f& mousePos) {
+void GUI_Label::OnClick(const sf::Vector2f& l_mousePos){
     SetState(GUI_ElementState::Clicked);
 }
-void GUI_Label::OnRelease() {
+void GUI_Label::OnRelease(){
     SetState(GUI_ElementState::Neutral);
 }
-void GUI_Label::OnHover(const sf::Vector2f& mousePos) {
+void GUI_Label::OnHover(const sf::Vector2f& l_mousePos){
     SetState(GUI_ElementState::Focused);
 }
-void GUI_Label::OnLeave() {
+void GUI_Label::OnLeave(){
     SetState(GUI_ElementState::Neutral);
 }
-void GUI_Label::Update(float dT) {}
-
-void GUI_Label::Draw(sf::RenderTarget* target) {
-    target->draw(_visual._backgroundSolid);
-    if (_style[_state]._glyph != "") {
-        target->draw(_visual._glyph);
-    }
-    target->draw(_visual._text);
+void GUI_Label::Update(float l_dT){}
+void GUI_Label::Draw(sf::RenderTarget* l_target){
+    l_target->draw(_visual._backgroundSolid);
+    if (_style[_state]._glyph != ""){ l_target->draw(_visual._glyph); }
+    l_target->draw(_visual._text);
 }

@@ -5,23 +5,15 @@
 #include "logger.hpp"
 
 EventManager::EventManager():_currentState(StateType(0)), _hasFocus(true) {
-    LoadBindings();
+    loadBindings();
 }
 
-void EventManager::SetFocus(const bool& focus) {
+void EventManager::SetFocus(bool focus) {
     _hasFocus = focus;
 }
 
 void EventManager::SetCurrentState(StateType state) {
     _currentState = state;
-}
-
-bool EventManager::AddCallback(StateType state,
-        const std::string& name,
-        const std::function<void(EventDetails&)>& func) {
-
-    auto itr = _callbacks.emplace(state, CallbackContainer()).first;
-    return itr->second.emplace(name, func).second;
 }
 
 bool EventManager::RemoveCallback(StateType state, const std::string& name) {
@@ -38,8 +30,8 @@ bool EventManager::RemoveCallback(StateType state, const std::string& name) {
     return true;
 }
 
-sf::Vector2i EventManager::GetMousePos(const sf::RenderWindow* wind) {
-    return (wind ? sf::Mouse::getPosition(*wind) : sf::Mouse::getPosition());
+sf::Vector2i EventManager::GetMousePos(std::weak_ptr<sf::RenderWindow> l_window) {
+    return (l_window.lock() ? sf::Mouse::getPosition(*l_window.lock()) : sf::Mouse::getPosition());
 }
 
 bool EventManager::AddBinding(std::shared_ptr<Binding> binding) {
@@ -58,16 +50,16 @@ bool EventManager::RemoveBinding(std::string name) {
     return true;
 }
 
-void EventManager::HandleEvent(const sf::Event& event) {
+void EventManager::HandleEvent(const sf::Event& l_event) {
     for (auto &b_itr : _bindings) {
         auto bind = b_itr.second;
         for (auto &e_itr : bind->_events) {
-            EventType sfmlEvent = (EventType)event.type;
+            EventType sfmlEvent = (EventType)l_event.type;
             if (e_itr.first != sfmlEvent) {
                 continue;
             }
             if (sfmlEvent == EventType::KeyDown || sfmlEvent == EventType::KeyUp) {
-                if (e_itr.second._code == event.key.code) {
+                if (e_itr.second._code == l_event.key.code) {
                     if (bind->_details._keyCode != -1) {
                         bind->_details._keyCode = e_itr.second._code;
                     }
@@ -75,9 +67,9 @@ void EventManager::HandleEvent(const sf::Event& event) {
                     break;
                 }
             } else if (sfmlEvent == EventType::MButtonDown || sfmlEvent == EventType::MButtonUp) {
-                if (e_itr.second._code == event.mouseButton.button) {
-                    bind->_details._mouse.x = event.mouseButton.x;
-                    bind->_details._mouse.y = event.mouseButton.y;
+                if (e_itr.second._code == l_event.mouseButton.button) {
+                    bind->_details._mouse.x = l_event.mouseButton.x;
+                    bind->_details._mouse.y = l_event.mouseButton.y;
                     if (bind->_details._keyCode != -1) {
                         bind->_details._keyCode = e_itr.second._code;
                     }
@@ -86,12 +78,12 @@ void EventManager::HandleEvent(const sf::Event& event) {
                 }
             } else {
                 if (sfmlEvent == EventType::MouseWheel) {
-                    bind->_details._mouseWheelDelta = event.mouseWheel.delta;
+                    bind->_details._mouseWheelDelta = l_event.mouseWheel.delta;
                 } else if (sfmlEvent == EventType::WindowResized) {
-                    bind->_details._size.x = event.size.width;
-                    bind->_details._size.y = event.size.height;
+                    bind->_details._size.x = l_event.size.width;
+                    bind->_details._size.y = l_event.size.height;
                 } else if (sfmlEvent == EventType::TextEntered) {
-                    bind->_details._textEntered = event.text.unicode;
+                    bind->_details._textEntered = l_event.text.unicode;
                 }
                 ++(bind->_count);
             }
@@ -99,7 +91,7 @@ void EventManager::HandleEvent(const sf::Event& event) {
     }
 }
 
-void EventManager::HandleEvent(const GUI_Event& event) {
+void EventManager::HandleEvent(const GUI_Event& l_event) {
     for (auto &b_itr : _bindings) {
         auto bind = b_itr.second;
         for (auto &e_itr : bind->_events) {
@@ -107,18 +99,18 @@ void EventManager::HandleEvent(const GUI_Event& event) {
                 e_itr.first != EventType::GUI_Hover && e_itr.first != EventType::GUI_Leave) {
                 continue;
             }
-            if ((e_itr.first == EventType::GUI_Click && event._type != GUI_EventType::Click) ||
-                (e_itr.first == EventType::GUI_Release && event._type != GUI_EventType::Release) ||
-                (e_itr.first == EventType::GUI_Hover && event._type != GUI_EventType::Hover) ||
-                (e_itr.first == EventType::GUI_Leave && event._type != GUI_EventType::Leave)) {
+            if ((e_itr.first == EventType::GUI_Click && l_event._type != GUI_EventType::Click) ||
+                (e_itr.first == EventType::GUI_Release && l_event._type != GUI_EventType::Release) ||
+                (e_itr.first == EventType::GUI_Hover && l_event._type != GUI_EventType::Hover) ||
+                (e_itr.first == EventType::GUI_Leave && l_event._type != GUI_EventType::Leave)) {
                     continue;
             }
-            if ((e_itr.second._gui._interface == event._interface) ||
-                (e_itr.second._gui._element == event._element)) {
+            if ((e_itr.second._gui._interface == l_event._interface) ||
+                (e_itr.second._gui._element == l_event._element)) {
                     continue;
             }
-            bind->_details._guiInterface = event._interface;
-            bind->_details._guiElement = event._element;
+            bind->_details._guiInterface = l_event._interface;
+            bind->_details._guiElement = l_event._element;
             ++(bind->_count);
         }
     }
@@ -179,7 +171,7 @@ void EventManager::Update() {
     }
 }
 
-void EventManager::LoadBindings() {
+void EventManager::loadBindings() {
     std::string delimiter = ":";
     std::ifstream bindings;
     std::filesystem::path path = std::filesystem::absolute("assets/keys.cfg");

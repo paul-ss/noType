@@ -62,10 +62,11 @@ public:
     void ToggleTitleBar();
 
     void Update(float dT);
-    void Draw(sf::RenderTarget* target);
+    void Draw(const sf::RenderTarget& target);
 
     void UpdateScrollHorizontal(unsigned int percent);
     void UpdateScrollVertical(unsigned int percent);
+
 private:
     void DefocusTextfields();
     Elements _elements;

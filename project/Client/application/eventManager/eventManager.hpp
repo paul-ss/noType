@@ -30,16 +30,10 @@ Keyboard = sf::Event::Count + 1, Mouse, Joystick,
 };
 
 struct EventInfo {
-    EventInfo() {
-        _code = 0;
-    }
-    EventInfo(int event) {
-        _code = event;
-    }
-    EventInfo(const GUI_Event& guiEvent) {
-        _gui = guiEvent;
-    }
-    EventInfo(const EventInfo& guiEvent) : _gui(guiEvent._gui) {}
+    EventInfo() : _code(0) {}
+    EventInfo(int l_event) : _code(l_event) {}
+    EventInfo(const GUI_Event& l_guiEvent) : _gui(l_guiEvent) {}
+    EventInfo(const EventInfo& l_eventInfo) : _gui(l_eventInfo._gui) {}
     ~EventInfo() {}
     union {
         int _code;
@@ -48,9 +42,10 @@ struct EventInfo {
 };
 
 struct EventDetails {
-    EventDetails(const std::string& bindName) : _name(bindName) {
-            Clear();
+    EventDetails(const std::string& l_bindName) : _name(l_bindName) {
+        Clear();
     }
+
     std::string _name;
 
     sf::Vector2i _size;
@@ -77,11 +72,11 @@ struct EventDetails {
 
 using Events = std::vector<std::pair<EventType, EventInfo> >;
 struct Binding {
-    Binding(const std::string& name): _name(name), _details(name), _count(0) {}
+    Binding(const std::string& l_name): _name(l_name), _details(l_name), _count(0) {}
     ~Binding() {}
 
-    void BindEvent(EventType type, EventInfo info = EventInfo()) {
-        _events.emplace_back(type, info);
+    void BindEvent(EventType l_type, EventInfo l_info = EventInfo()) {
+        _events.emplace_back(l_type, l_info);
     }
 
     Events _events;
@@ -99,33 +94,36 @@ enum class StateType;
 using Callbacks = std::unordered_map<StateType, CallbackContainer>;
 
 class EventManager {
-    public:
-        EventManager();
-        ~EventManager() = default;
+public:
+    EventManager();
+    ~EventManager();
 
-        bool AddBinding(std::shared_ptr<Binding> binding);
-        bool RemoveBinding(std::string name);
+    bool AddBinding(std::shared_ptr<Binding> binding);
+    bool RemoveBinding(std::string l_name);
 
-        void SetCurrentState(StateType state);
-        void SetFocus(const bool& focus);
+    void SetCurrentState(StateType l_state);
+    void SetFocus(bool l_focus);
 
-        void HandleEvent(const sf::Event& event);
-        void HandleEvent(const GUI_Event& event);
-        void Update();
+    bool AddCallback(StateType l_state,
+                    const std::string& l_name,
+                    const std::function<void(EventDetails&)>& l_func) {
+        auto itr = _callbacks.emplace(l_state, CallbackContainer()).first;
+        return itr->second.emplace(l_name, l_func).second;
+    }
+    bool RemoveCallback(StateType l_state, const std::string& l_name);
 
-        bool AddCallback(StateType state,
-                        const std::string& name,
-                        const std::function<void(EventDetails&)>& func);
-        bool RemoveCallback(StateType state, const std::string& name);
+    void HandleEvent(const sf::Event& l_event);
+    void HandleEvent(const GUI_Event& l_event);
+    void Update();
 
-        sf::Vector2i GetMousePos(const sf::RenderWindow* wind = nullptr);
+    sf::Vector2i GetMousePos(std::weak_ptr<sf::RenderWindow> l_window);
 
-    private:
-        void LoadBindings();
+private:
+    void loadBindings();
 
-    private:
-        Bindings _bindings;
-        Callbacks _callbacks;
-        StateType _currentState;
-        bool _hasFocus;
+private:
+    Bindings _bindings;
+    Callbacks _callbacks;
+    StateType _currentState;
+    bool _hasFocus;
 };

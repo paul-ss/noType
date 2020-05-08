@@ -7,34 +7,32 @@
 #include <sstream>
 #include <filesystem>
 
-#include <boost/log/trivial.hpp>
-
-#include "utils.hpp"
+#include "logger.hpp"
 
 template <typename Derived, typename T>
 class ResourceManager {
     public:
-        explicit ResourceManager(const std::string& pathsFile) {
-            loadPaths(pathsFile);
+        explicit ResourceManager(const std::string& l_pathsFile) {
+            loadPaths(l_pathsFile);
         }
 
         virtual ~ResourceManager() {
             PurgeResources();
         }
 
-        T* GetResource(const std::string& id);
-        std::string GetPath(const std::string& id);
-        bool RequireResource(const std::string& id);
-        bool ReleaseResource(const std::string& id);
+        T* GetResource(const std::string& l_id);
+        std::string GetPath(const std::string& l_id);
+        bool RequireResource(const std::string& l_id);
+        bool ReleaseResource(const std::string& l_id);
         void PurgeResources();
 
     protected:
-        T* load(const std::string& path);
+        T* load(const std::string& l_path);
 
     private:
-        std::pair<T*, unsigned int>* find(const std::string& id);
-        bool unload(const std::string& id);
-        void loadPaths(const std::string& pathFile);
+        std::pair<T*, unsigned int>* find(const std::string& l_id);
+        bool unload(const std::string& l_id);
+        void loadPaths(const std::string& l_pathFile);
 
     private:
         std::unordered_map<std::string,
@@ -43,25 +41,25 @@ class ResourceManager {
 };
 
 template <typename Derived, typename T>
-T* ResourceManager<Derived, T>::GetResource(const std::string& id) {
-    auto res = find(id);
+T* ResourceManager<Derived, T>::GetResource(const std::string& l_id) {
+    auto res = find(l_id);
     return(res ? res->first : nullptr);
 }
 
 template <typename Derived, typename T>
-std::string ResourceManager<Derived, T>::GetPath(const std::string& id) {
-    auto path = _paths.find(id);
+std::string ResourceManager<Derived, T>::GetPath(const std::string& l_id) {
+    auto path = _paths.find(l_id);
     return(path != _paths.end() ? path->second : "");
 }
 
 template <typename Derived, typename T>
-bool ResourceManager<Derived, T>::RequireResource(const std::string& id) {
-    auto res = find(id);
+bool ResourceManager<Derived, T>::RequireResource(const std::string& l_id) {
+    auto res = find(l_id);
     if(res) {
         ++res->second;
         return true;
     }
-    auto path = _paths.find(id);
+    auto path = _paths.find(l_id);
     if (path == _paths.end()) {
         return false;
     }
@@ -69,19 +67,19 @@ bool ResourceManager<Derived, T>::RequireResource(const std::string& id) {
     if (!resource) {
         return false;
     }
-    _resources.emplace(id, std::make_pair(resource, 1));
+    _resources.emplace(l_id, std::make_pair(resource, 1));
     return true;
 }
 
 template <typename Derived, typename T>
-bool ResourceManager<Derived, T>::ReleaseResource(const std::string& id) {
-    auto res = find(id);
+bool ResourceManager<Derived, T>::ReleaseResource(const std::string& l_id) {
+    auto res = find(l_id);
     if (!res) {
         return false;
     }
     --res->second;
     if (!res->second) {
-        unload(id);
+        unload(l_id);
     }
     return true;
 }
@@ -98,19 +96,19 @@ void ResourceManager<Derived, T>::PurgeResources() {
 }
 
 template <typename Derived, class T>
-T* ResourceManager<Derived, T>::load(const std::string& path) {
-    return static_cast<Derived*>(this)->load(path);
+T* ResourceManager<Derived, T>::load(const std::string& l_path) {
+    return static_cast<Derived*>(this)->load(l_path);
 }
 
 template <typename Derived, typename T>
-std::pair<T*, unsigned int>* ResourceManager<Derived, T>::find(const std::string& id) {
-    auto itr = _resources.find(id);
+std::pair<T*, unsigned int>* ResourceManager<Derived, T>::find(const std::string& l_id) {
+    auto itr = _resources.find(l_id);
     return (itr != _resources.end() ? &itr->second : nullptr);
 }
 
 template <typename Derived, typename T>
-bool ResourceManager<Derived, T>::unload(const std::string& id) {
-    auto itr = _resources.find(id);
+bool ResourceManager<Derived, T>::unload(const std::string& l_id) {
+    auto itr = _resources.find(l_id);
     if (itr == _resources.end()) {
         return false;
     }
@@ -120,9 +118,9 @@ bool ResourceManager<Derived, T>::unload(const std::string& id) {
 }
 
 template <typename Derived, typename T>
-void ResourceManager<Derived, T>::loadPaths(const std::string& pathFile) {
+void ResourceManager<Derived, T>::loadPaths(const std::string& l_pathFile) {
     std::ifstream paths;
-    paths.open(std::filesystem::absolute(pathFile));
+    paths.open(std::filesystem::absolute(l_pathFile));
     if(paths.is_open()) {
         std::string line;
         while(std::getline(paths, line)) {
@@ -136,5 +134,5 @@ void ResourceManager<Derived, T>::loadPaths(const std::string& pathFile) {
         paths.close();
         return;
     }
-    BOOST_LOG_TRIVIAL(error) << "Failed loading the path file: " << pathFile;
+    BOOST_LOG_TRIVIAL(error) << "Failed loading the path file: " << l_pathFile;
 }

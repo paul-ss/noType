@@ -6,8 +6,8 @@
 #include "utils.hpp"
 
 
-void SoundManager::RemoveState(const StateType& state) {
-    auto music = _music.find(state);
+void SoundManager::RemoveState(const StateType& l_state) {
+    auto music = _music.find(l_state);
     if (music == _music.end()) {
         return;
     }
@@ -16,11 +16,11 @@ void SoundManager::RemoveState(const StateType& state) {
         delete music->second.second;
         --_numSounds;
     }
-    _music.erase(state);
+    _music.erase(l_state);
 }
 
-void SoundManager::pauseAll(const StateType& state) {
-    auto music = _music.find(state);
+void SoundManager::pauseAll(const StateType& l_state) {
+    auto music = _music.find(l_state);
     if (music == _music.end()) {
         return;
     }
@@ -30,7 +30,7 @@ void SoundManager::pauseAll(const StateType& state) {
     music->second.second->pause();
 }
 
-void SoundManager::unPauseAll(const StateType& state) {
+void SoundManager::unPauseAll(const StateType& l_state) {
     auto music = _music.find(state);
     if (music == _music.end()) {
         return;

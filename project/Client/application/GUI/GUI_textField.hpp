@@ -4,14 +4,14 @@
 
 class GUI_Textfield : public GUI_Element{
 public:
-    explicit GUI_Textfield(const std::string& name, GUI_Interface* owner);
+    GUI_Textfield(const std::string& l_name, GUI_Interface* l_owner);
     ~GUI_Textfield();
 
-    void ReadIn(std::stringstream& stream);
-    void OnClick(const sf::Vector2f& mousePos);
+    void ReadIn(std::stringstream& l_stream);
+    void OnClick(const sf::Vector2f& l_mousePos);
     void OnRelease();
-    void OnHover(const sf::Vector2f& mousePos);
+    void OnHover(const sf::Vector2f& l_mousePos);
     void OnLeave();
-    void Update(float dT);
-    void Draw(sf::RenderTarget* target);
+    void Update(float l_dT);
+    void Draw(sf::RenderTarget* l_target);
 };

@@ -11,8 +11,11 @@
 enum class GUI_ElementState{ Neutral, Focused, Clicked };
 
 struct GUI_Style {
-    explicit GUI_Style(): _backgroundImageColor(255,255,255,255),
-            _textSize(12), _textCenterOrigin(false) {
+    explicit GUI_Style():
+            _backgroundImageColor(255,255,255,255),
+            _textSize(12),
+            _textCenterOrigin(false) {
+
         sf::Color none = sf::Color(0, 0, 0, 0);
         _backgroundColor = none;
         _elementColor = none;

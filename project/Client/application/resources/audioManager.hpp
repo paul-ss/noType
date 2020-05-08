@@ -6,15 +6,17 @@
 
 #include "resourceManager.hpp"
 
+#define AUDIO_FILE_PATH "assets/audio.cfg"
+
 class AudioManager : public ResourceManager<AudioManager, sf::SoundBuffer> {
 public:
-    AudioManager() : ResourceManager("assets/audio.cfg") {}
-    sf::SoundBuffer* load(const std::string& path) {
+    AudioManager() : ResourceManager(AUDIO_FILE_PATH) {}
+    sf::SoundBuffer* load(const std::string& l_path) {
         sf::SoundBuffer* sound = new sf::SoundBuffer();
-        if (!sound->loadFromFile(std::filesystem::absolute(path))) {
+        if (!sound->loadFromFile(std::filesystem::absolute(l_path))) {
             delete sound;
             sound = nullptr;
-            BOOST_LOG_TRIVIAL(error) << "Failed to load audio file: " << path;
+            BOOST_LOG_TRIVIAL(error) << "Failed to load audio file: " << l_path;
         }
         return sound;
     }

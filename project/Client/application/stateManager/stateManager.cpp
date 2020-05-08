@@ -1,6 +1,6 @@
 #include "stateManager.hpp"
 
-StateManager::StateManager(SharedContext* shared) : _shared(shared) {
+StateManager::StateManager(std::weak_ptr<SharedContext> shared) : _shared(shared) {
     registerState<IntroState>(StateType::Intro);
     registerState<MainMenuState>(StateType::MainMenu);
 }
@@ -57,7 +57,7 @@ void StateManager::Update(const sf::Time& time) {
     }
 }
 
-SharedContext* StateManager::GetContext() {
+std::weak_ptr<SharedContext> StateManager::GetContext() {
     return _shared;
 }
 
@@ -87,9 +87,9 @@ void StateManager::ProcessRequests() {
 
 void StateManager::SwitchTo(const StateType& type) {
     std::cout << static_cast<int>(type) << "\n";
-    _shared->_eventManager->SetCurrentState(type);
-    _shared->_guiManager->SetCurrentState(type);
-    _shared->_soundManager->ChangeState(type);
+    _shared.lock()->_eventManager.lock()->SetCurrentState(type);
+    _shared.lock()->_guiManager.lock()->SetCurrentState(type);
+    _shared.lock()->_soundManager.lock()->ChangeState(type);
     for (auto itr = _states.begin();
         itr != _states.end(); ++itr) {
         if (itr->first == type) {
@@ -122,15 +122,14 @@ void StateManager::createState(const StateType& type) {
     state->OnCreate();
 }
 
-void StateManager::removeState(const StateType& type){
+void StateManager::removeState(const StateType& type) {
     for (auto itr = _states.begin();
-        itr != _states.end(); ++itr)
-    {
+        itr != _states.end(); ++itr) {
         if (itr->first == type){
             itr->second->OnDestroy();
             delete itr->second;
             _states.erase(itr);
-            _shared->_soundManager->RemoveState(type);
+            _shared.lock()->_soundManager.lock()->RemoveState(type);
             return;
         }
     }

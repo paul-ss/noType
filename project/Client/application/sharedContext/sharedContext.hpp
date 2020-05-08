@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "window.hpp"
 #include "eventManager.hpp"
 #include "GUI_manager.hpp"
@@ -9,20 +11,11 @@
 #include "soundManager.hpp"
 
 struct SharedContext {
-    SharedContext():
-            _window(nullptr),
-            _eventManager(nullptr),
-            _audioManager(nullptr),
-            _soundManager(nullptr),
-            _textureManager(nullptr),
-            _fontManager(nullptr),
-            _guiManager(nullptr) {}
-
-    Window* _window;
-    EventManager* _eventManager;
-    AudioManager* _audioManager;
-    SoundManager* _soundManager;
-    TextureManager* _textureManager;
-    FontManager* _fontManager;
-    GUI_Manager* _guiManager;
+    std::weak_ptr<Window> _window;
+    std::weak_ptr<EventManager> _eventManager;
+    std::weak_ptr<AudioManager> _audioManager;
+    std::weak_ptr<SoundManager> _soundManager;
+    std::weak_ptr<TextureManager> _textureManager;
+    std::weak_ptr<FontManager> _fontManager;
+    std::weak_ptr<GUI_Manager> _guiManager;
 };
