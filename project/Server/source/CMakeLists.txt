@@ -27,7 +27,7 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 ADD_SUBDIRECTORY(DataBase/)
 
-ADD_LIBRARY(Server STATIC
+ADD_LIBRARY(ServerLib STATIC
         TcpServer/Client.cpp
         TcpServer/Client.hpp
         TcpServer/ConnectedClients.cpp
@@ -91,7 +91,7 @@ TARGET_LINK_LIBRARIES(server
         ${Boost_SYSTEM_LIBRARY}
         ${CMAKE_THREAD_LIBS_INIT}
         DataBaseFacadeLib
-        Server
+        ServerLib
         Room
         Queue
         Command
@@ -123,7 +123,7 @@ TARGET_LINK_LIBRARIES(tcpServerTests
         ${GTEST_LIBRARIES}
         ${CMAKE_THREAD_LIBS_INIT}
         ${Boost_SYSTEM_LIBRARY}
-        Server
+        ServerLib
         Queue
         -lgmock)
 
