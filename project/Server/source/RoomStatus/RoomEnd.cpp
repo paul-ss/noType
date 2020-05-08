@@ -46,9 +46,11 @@ void RoomEnd::deadlineHandler(std::shared_ptr<Room> room, const boost::system::e
   }
   std::cout << "End handler" << std::endl;
 
-  std::unique_lock<std::mutex> lock(room->_roomMutex);
+  {
+    std::unique_lock<std::mutex> lock(room->_roomMutex);
+    room->sendStatistic();
+  }
 
-  room->sendStatistic();
   room->removeSelf();
 }
 

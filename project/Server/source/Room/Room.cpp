@@ -152,7 +152,7 @@ void Room::removeSelf() {
     if (!roomManagerShared->deleteRoom(_roomUUID)) {
       std::cout << "RemoveSelf error: can't erase room" << std::endl;
     }
-
+    std::cout << "Room removed" << std::endl;
   } else {
     std::cout << "RemoveSelf error: can't make shared" << std::endl; //todo log
   }
