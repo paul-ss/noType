@@ -41,6 +41,4 @@ add_executable(test_DataBaseFacade.out  test_DataBaseFacade.cpp ${DATA_BASE_FACA
 target_link_libraries(test_DataBaseFacade.out
                                           DataBaseFacadeLib
                                           ${GTEST_LIBRARIES}
-                                          PkgConfig::LIBMONGOCXX 
-                                          PkgConfig::LIBBSONCXX
                                           pthread)
