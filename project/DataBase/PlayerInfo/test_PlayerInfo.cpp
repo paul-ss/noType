@@ -15,7 +15,27 @@ TEST(PlayerInfoImpl, InsertAndFind) {
 
   auto extractedPlayerData = playerInfoMapper->FindByUuid(kUuid);
 
-  EXPECT_EQ(extractedPlayerData->uuid, insertedPlayerData->uuid);
+  EXPECT_EQ(extractedPlayerData->uuid, kUuid);
+}
+
+TEST(PlayerInfoImpl, Update) {
+  std::unique_ptr<DataBase::External::IPlayerInfoMapper> playerInfoMapper
+   = std::make_unique<DataBase::External::PlayerInfoMapper>(kTestDataBaseName);
+
+  auto updatablePlayerData = playerInfoMapper->FindByUuid(kUuid);
+
+  const std::int32_t kUpdatablePoints = 200;
+  const std::int32_t kUpdatableWinsCount = 1;
+  updatablePlayerData->points = kUpdatablePoints;
+  updatablePlayerData->winsCount = kUpdatableWinsCount;
+
+  playerInfoMapper->Update(std::move(updatablePlayerData));
+
+  auto extractedPlayerData = playerInfoMapper->FindByUuid(kUuid);
+
+  EXPECT_EQ(extractedPlayerData->uuid, kUuid);
+  EXPECT_EQ(extractedPlayerData->points, kUpdatablePoints);
+  EXPECT_EQ(extractedPlayerData->winsCount, kUpdatableWinsCount);
 }
 
 int main(int argc, char *argv[]) {

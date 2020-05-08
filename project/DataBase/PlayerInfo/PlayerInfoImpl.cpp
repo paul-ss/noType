@@ -63,12 +63,6 @@ std::unique_ptr<PlayerInfo> PlayerInfoMapper::construct_player_info(const bsoncx
   std::int32_t winsCount = docView[_kWinsCountField].get_int32().value;
   std::int32_t points    = docView[_kPointsField].get_int32().value;
 
-  std::cout << "uuid: "        << uuid
-            << ", name: "      << name
-            << ", winsCount: " << winsCount
-            << ", points: "    << points
-            << std::endl;
-
   return std::make_unique<PlayerInfo>(uuid, name, winsCount, points);
 }
 
