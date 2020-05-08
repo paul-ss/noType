@@ -90,12 +90,13 @@ int main(int argc, char *argv[]) {
     mongocxx::client client{mongocxx::uri{}};
 
     std::string dataBaseName;
-    std::string root;
+    const std::string root("source/DataBase/DataBaseInit/");
+    std::string dir;
     if (argc == 1) {
-        root = "DataBaseInit/Data/";
+        dir = root + "Data/";
         dataBaseName = "noTypeDataBase";
     } else if (argc == 2 && (std::string(argv[1]) == testArg)) {
-        root = "DataBaseInit/TestData/";
+        dir = root + "TestData/";
         dataBaseName = "noTypeTestDataBase";
     } else {
         return EXIT_FAILURE;
@@ -103,13 +104,13 @@ int main(int argc, char *argv[]) {
 
     mongocxx::database db = client[dataBaseName];
 
-    auto animalDocuments = loadAnimalsNames(root);
+    auto animalDocuments = loadAnimalsNames(dir);
     insertCollectionToDataBase(db, "Animals", animalDocuments);
 
-    auto colorsDocuments = loadColorNames(root);
+    auto colorsDocuments = loadColorNames(dir);
     insertCollectionToDataBase(db, "Colors", colorsDocuments);
 
-    auto textsDosuments  = loadTexts(root);
+    auto textsDosuments  = loadTexts(dir);
     insertCollectionToDataBase(db, "Texts", textsDosuments);
 
     return EXIT_SUCCESS;

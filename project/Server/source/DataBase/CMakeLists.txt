@@ -27,7 +27,8 @@ set(MONGOCXX_INIT_INCLUDE_DIR "MongoCxxInit/")
 
 
 # NOTE(vendroid): Директории с тестами
-# add_subdirectory(TextInfo/)
-# add_subdirectory(RandomName/)
-# add_subdirectory(PlayerInfo/)
+add_subdirectory(TextInfo/)
+add_subdirectory(RandomName/)
+add_subdirectory(PlayerInfo/)
+add_subdirectory(DataBaseInit/)
 add_subdirectory(DataBaseFacade/)
