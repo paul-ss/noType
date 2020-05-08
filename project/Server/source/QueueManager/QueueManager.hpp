@@ -25,6 +25,8 @@ public:
   bool basicControllerPop(std::shared_ptr<Command> &command);
   bool gameControllerPop(std::shared_ptr<Command> &command);
   void serverNotify();
+  void gameControllerNotify();
+  void basicControllerNotify();
 
 
 private:

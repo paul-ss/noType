@@ -49,3 +49,11 @@ bool QueueManager::gameControllerPop(std::shared_ptr<Command> &command) {
 void QueueManager::serverNotify() {
   _queueToServer->notify();
 }
+
+void QueueManager::gameControllerNotify() {
+  _queueToGameController->notify();
+}
+
+void QueueManager::basicControllerNotify() {
+  _queueToBasicController->notify();
+}

@@ -14,7 +14,7 @@ Setup::~Setup() {
 
 
 void Setup::parseConfig() {
-
+ // todo imlement it
 }
 
 
@@ -50,8 +50,9 @@ void Setup::runInterface() {
 
 
 void Setup::setup() {
-  // parse config
-  _queueManager = std::make_unique<QueueManager>();
+  parseConfig();
+  
+  _queueManager = std::make_shared<QueueManager>();
   // database
   _tcpServer = std::make_unique<TcpServer>(_queueManager);
   _gameController = std::make_unique<GameController>(_queueManager);

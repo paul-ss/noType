@@ -37,7 +37,7 @@ void GameController::stopController() {
   std::unique_lock<std::mutex> lock(_gameControllerMutex);
   _service.stop();
   _state = GAME_CONTROLLER_STOP;
-  //  todo notify
+  _queueManager->gameControllerNotify();
 }
 
 
@@ -85,9 +85,11 @@ void GameController::runQueueWorker() {
     }
 
     std::shared_ptr<Command> command;
-    if (_queueManager->serverPop(command)) {
+    if (_queueManager->gameControllerPop(command)) {
       commandDistributor(command);
     }
   }
+
+  std::cout << "QueueWorker (GC) stopped" << std::endl;
 }
 
