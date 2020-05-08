@@ -15,6 +15,7 @@ class Queue {
 public:
   Queue() :
       _notified(false) {}
+  virtual ~Queue() = default;
   virtual void push(const std::shared_ptr<Command> &command);
   virtual bool pop(std::shared_ptr<Command> &command);
   virtual void notify();

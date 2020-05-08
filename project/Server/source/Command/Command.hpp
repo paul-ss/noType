@@ -11,7 +11,8 @@ public:
       connectionUUID(connectionUUID),
       data(data) {}
 
-  Command() {}
+  Command() = default;
+  virtual ~Command() = default;
 
   virtual std::string parseToJSON () {
     return data;

@@ -10,6 +10,7 @@ struct ErrorMsg {
   ErrorMsg() = default;
   explicit ErrorMsg(const std::string &s) : _msg(s) {}
   explicit ErrorMsg(std::string &&s) : _msg(std::move(s)) {}
+  virtual ~ErrorMsg() = default;
   virtual  std::string what() = 0;
 
 protected:

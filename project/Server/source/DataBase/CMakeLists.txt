@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "-Wall -Wextra --pedantic")
 
+
+
 # NOTE: Не работает такой способ
 # find_package(libmongocxx REQUIRED)
 # find_package(libbsoncxx REQUIRED)
@@ -18,6 +20,11 @@ message(STATUS PkgConfig::LIBMONGOCXX)
 
 set(DATA_BASE_CONFIG_INCLUDE_DIR "DataBaseConfig/")
 set(MONGOCXX_INIT_INCLUDE_DIR "MongoCxxInit/")
+
+# (PavelS):
+include_directories(
+        DataBaseConfig
+        MongoCxxInit)
 
 # NOTE(vendroid): Директории с тестами
 # add_subdirectory(TextInfo/)

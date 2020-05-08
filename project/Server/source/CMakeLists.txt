@@ -8,7 +8,8 @@ INCLUDE_DIRECTORIES(
         Command
         Utils
         Exceptions
-        Setup)
+        Setup
+        DataBase)
 
 
 FIND_PACKAGE(GTest REQUIRED)
@@ -27,6 +28,12 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 ADD_SUBDIRECTORY(DataBase)
 
+ADD_LIBRARY(Queue SHARED
+        QueueManager/Queue.cpp
+        QueueManager/Queue.hpp
+        QueueManager/QueueManager.cpp
+        QueueManager/QueueManager.hpp)
+
 ADD_LIBRARY(Server SHARED
         TcpServer/Client.cpp
         TcpServer/Client.hpp
@@ -35,6 +42,9 @@ ADD_LIBRARY(Server SHARED
         TcpServer/TcpServer.cpp
         TcpServer/TcpServer.hpp
         TcpServer/ServerConfig.hpp)
+
+TARGET_LINK_LIBRARIES(Server Queue)
+
 
 ADD_LIBRARY(Room SHARED
         Room/RoomManager.cpp
@@ -53,12 +63,7 @@ ADD_LIBRARY(Room SHARED
         Utils/Expected.hpp
         Utils/Error.hpp)
 
-
-ADD_LIBRARY(Queue SHARED
-        QueueManager/Queue.cpp
-        QueueManager/Queue.hpp
-        QueueManager/QueueManager.cpp
-        QueueManager/QueueManager.hpp)
+TARGET_LINK_LIBRARIES(Room Queue)
 
 
 ADD_LIBRARY(Command SHARED
@@ -91,10 +96,10 @@ TARGET_LINK_LIBRARIES(server
         ${Boost_SYSTEM_LIBRARY}
         ${CMAKE_THREAD_LIBS_INIT}
         DataBaseFacadeLib
-        Server
-        Room
         Queue
         Command
+        Server
+        Room
 #        Controller
         )
 

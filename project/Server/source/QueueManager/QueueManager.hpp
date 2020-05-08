@@ -18,6 +18,7 @@ public:
   QueueManager(const std::shared_ptr<Queue> &qToServer,
                const std::shared_ptr<Queue> &qToBasic,
                const std::shared_ptr<Queue> &qToGame);
+  virtual ~QueueManager() = default;
   virtual void serverPush(const std::string &data, const std::string &connectionUUID);
   void controllerPush(const std::shared_ptr<Command> &command);
   virtual bool serverPop(std::shared_ptr<Command> &command);

@@ -16,6 +16,7 @@ class Client;
 
 class ConnectedClients {
 public:
+  virtual ~ConnectedClients() = default;
   virtual bool insert(const std::shared_ptr<Client> &client);
   virtual bool erase(const std::string &clientUUID);
   virtual std::shared_ptr<Client> getClient(const std::string &clientUUID);
