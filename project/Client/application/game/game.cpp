@@ -1,41 +1,49 @@
 #include "game.hpp"
 
-Game::Game() : _window("noType", sf::Vector2u(800,600)) {
-}
+Game::Game() : _window("noType", sf::Vector2u(800,600)), _context{},
+        _stateManager(&_context), _audioManager{}, _soundManager(&_audioManager) {
 
-Game& Game::getInstance() {
-    static Game rValue;
-    return rValue;
-}
+    _clock.restart();
+    srand(time(nullptr));
 
-void Game::update() {
-    _window.update();
-    //game logic
-}
+    _context._window = &_window;
+    _context._eventManager = _window.GetEventManager();
+    _context._audioManager = &_audioManager;
+    _context._soundManager = &_soundManager;
 
-void Game::render() {
-    _window.beginDraw();
-    //_window.draw();
-    _window.endDraw();
+    _stateManager.SwitchTo(StateType::Intro);
 }
 
 sf::Time Game::getElapsed() {
-    return _elapsed;
+    return _clock.getElapsedTime();
 }
 
 void Game::restartClock() {
-    _elapsed += _clock.restart();
+    _elapsed = _clock.restart();
 }
 
-bool Game::run() {
-    float frametime = 1.0f / 60.0f;
-    while (!_window.isDone()) {
-        if(_elapsed.asSeconds() >= frametime) {
-            handleInput();
-            update();
-            render();
-            _elapsed -= sf::seconds(frametime);
-        }
-        restartClock();
+void Game::update() {
+    _window.Update();
+    _stateManager.Update(_elapsed);
+    _soundManager.Update(_elapsed.asSeconds());
+}
+
+void Game::render() {
+    _window.BeginDraw();
+    _stateManager.Draw();
+    _window.EndDraw();
+}
+
+void Game::lateUpdate() {
+    _stateManager.ProcessRequests();
+    restartClock();
+}
+
+void Game::Run() {
+    while (!_window.IsDone()) {
+        update();
+        render();
+        lateUpdate();
+        //sf::sleep(sf::seconds(0.2));
     }
 }
