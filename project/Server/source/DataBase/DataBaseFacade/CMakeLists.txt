@@ -1,0 +1,29 @@
+project(DataBaseFacade)
+
+find_package(GTest REQUIRED)
+include_directories(${GTEST_INLCUDE_DIRS})
+
+set(DATA_BASE_FACADE_HEADERS  ../TextInfo/TextInfo.hpp
+                              ../TextInfo/TextInfoImpl.hpp
+                              ../PlayerInfo/PlayerInfo.hpp
+                              ../PlayerInfo/PlayerInfoImpl.hpp
+                              ../RandomName/RandomName.hpp
+                              ../RandomName/RandomNameImpl.hpp
+                              ../MongoCxxInit/MongoCxxInit.hpp)
+
+set(DATA_BASE_FACADE_SOURCE   ../TextInfo/TextInfoImpl.cpp
+                              ../PlayerInfo/PlayerInfoImpl.cpp
+                              ../RandomName/RandomNameImpl.cpp
+                              ../MongoCxxInit/MongoCxxInit.cpp)
+
+add_library(DataBaseFacadeLib STATIC ${DATA_BASE_FACADE_HEADERS} ${DATA_BASE_FACADE_SOURCE})
+
+# Тест test_PlayerInfo.out
+add_executable(test_DataBaseFacade.out  test_DataBaseFacade.cpp)
+
+target_link_libraries(test_DataBaseFacade.out
+                                          DataBaseFacadeLib
+                                          ${GTEST_LIBRARIES}
+                                          PkgConfig::LIBMONGOCXX 
+                                          PkgConfig::LIBBSONCXX
+                                          pthread)

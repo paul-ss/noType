@@ -19,7 +19,8 @@ message(STATUS PkgConfig::LIBMONGOCXX)
 set(DATA_BASE_CONFIG_INCLUDE_DIR "DataBaseConfig/")
 set(MONGOCXX_INIT_INCLUDE_DIR "MongoCxxInit/")
 
-add_subdirectory(TextInfo/)
-add_subdirectory(RandomName/)
-add_subdirectory(PlayerInfo/)
+# NOTE(vendroid): Директории с тестами
+# add_subdirectory(TextInfo/)
+# add_subdirectory(RandomName/)
+# add_subdirectory(PlayerInfo/)
 add_subdirectory(DataBaseFacade/)

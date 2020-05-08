@@ -25,6 +25,7 @@ FIND_PACKAGE(Boost 1.42.0 REQUIRED COMPONENTS system thread regex)
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
+ADD_SUBDIRECTORY(DataBase)
 
 ADD_LIBRARY(Server SHARED
         TcpServer/Client.cpp
@@ -89,6 +90,7 @@ ADD_EXECUTABLE(server
 TARGET_LINK_LIBRARIES(server
         ${Boost_SYSTEM_LIBRARY}
         ${CMAKE_THREAD_LIBS_INIT}
+        DataBaseFacadeLib
         Server
         Room
         Queue
@@ -139,7 +141,6 @@ TARGET_LINK_LIBRARIES(queueTests
         ${Boost_SYSTEM_LIBRARY}
         Queue
         -lgmock)
-
 
 #add_executable(tst)
 #target_link_libraries (tst ${CMAKE_THREAD_LIBS_INIT}
