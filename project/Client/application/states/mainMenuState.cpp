@@ -9,12 +9,12 @@ void MainMenuState::OnCreate() {
         std::shared_ptr<StateManager> stateMgr(_stateMgr);
         std::shared_ptr<SharedContext> context(stateMgr->GetContext());
         std::shared_ptr<GUI_Manager> gui(context->_guiManager);
-
         gui->LoadInterface(StateType::MainMenu, "mainMenu.interface", "MainMenu");
-        gui->GetInterface(StateType::MainMenu, "MainMenu")->SetPosition(sf::Vector2f(250.f, 168.f));
+
+        std::shared_ptr<GUI_Interface>interface(gui->GetInterface(StateType::MainMenu, "MainMenu"));
+        interface->SetPosition(sf::Vector2f(250.f, 168.f));
 
         std::shared_ptr<EventManager> eMgr(context->_eventManager);
-
         auto lambdaPlay = [this](EventDetails& details) { this->Play(details); };
         eMgr->AddCallback(StateType::MainMenu, "MainMenu_Play", lambdaPlay);
         auto lambdaQuit = [this](EventDetails& details) { this->Quit(details); };
@@ -22,7 +22,7 @@ void MainMenuState::OnCreate() {
 
     } catch (const std::bad_weak_ptr &e) {
         // TODO(vendroid): исключение тоже в лог?
-        BOOST_LOG_TRIVIAL(error) << "Not valid gui manager [menu - oncreate]";
+        BOOST_LOG_TRIVIAL(error) << "[menu - oncreate] " << e.what();
         return;
     }
 }

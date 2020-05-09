@@ -12,7 +12,7 @@ enum class GUI_ElementState{ Neutral, Focused, Clicked };
 
 struct GUI_Style {
     explicit GUI_Style():
-            _backgroundImageColor(255,255,255,255),
+            _backgroundImageColor(255, 255, 255, 255),
             _textSize(12),
             _textCenterOrigin(false) {
 

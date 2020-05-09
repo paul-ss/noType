@@ -11,7 +11,7 @@
 #include "GUI_style.hpp"
 #include "logger.hpp"
 
-enum class GUI_ElementType{ None = -1, Window, Label, Button, TextField };
+enum class GUI_ElementType { None = -1, Window, Label, Button, TextField };
 
 using ElementStyles = std::unordered_map<GUI_ElementState, GUI_Style>;
 
@@ -21,7 +21,10 @@ class GUI_Element {
     friend class GUI_Interface;
 
 public:
-    GUI_Element(const std::string& l_name, const GUI_ElementType& l_type, GUI_Interface* l_owner);
+    GUI_Element(const std::string& l_name,
+            const GUI_ElementType& l_type,
+            std::shared_ptr<GUI_Interface> l_owner);
+
     virtual ~GUI_Element();
 
     virtual void ReadIn(std::stringstream& l_stream) = 0;
@@ -46,8 +49,8 @@ public:
     void SetState(const GUI_ElementState& l_state);
     void SetRedraw(const bool& l_redraw);
     bool NeedsRedraw() const;
-    void SetOwner(GUI_Interface* l_owner);
-    GUI_Interface* GetOwner() const;
+    void SetOwner(std::shared_ptr<GUI_Interface> l_owner);
+    std::weak_ptr<GUI_Interface> GetOwner() const;
     bool HasOwner() const;
     bool IsActive() const;
     void SetActive(const bool& l_active);
@@ -82,7 +85,7 @@ protected:
     GUI_Visual _visual;
     GUI_ElementType _type;
     GUI_ElementState _state;
-    GUI_Interface* _owner;
+    std::shared_ptr<GUI_Interface> _owner;
 
     bool _needsRedraw;
     bool _active;

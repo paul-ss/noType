@@ -1,12 +1,13 @@
 #include <algorithm>
 #include <string>
+#include <memory>
 
 #include "GUI_textField.hpp"
 #include "utils.hpp"
 #include "logger.hpp"
 
-GUI_TextField::GUI_TextField(const std::string& l_name, GUI_Interface* l_owner)
-    : GUI_Element(l_name, GUI_ElementType::Textfield , l_owner) {}
+GUI_TextField::GUI_TextField(const std::string& l_name, std::shared_ptr<GUI_Interface> l_owner)
+    : GUI_Element(l_name, GUI_ElementType::TextField , l_owner) {}
 
 GUI_TextField::~GUI_TextField() {}
 
@@ -32,14 +33,10 @@ void GUI_TextField::OnLeave() {
 
 void GUI_TextField::Update(float l_dT) {}
 
-void GUI_TextField::Draw(std::weak_ptr<sf::RenderTarget> l_target) {
-    auto target = l_target.lock();
-    if (!target) {
-        BOOST_LOG_TRIVIAL(error) << "Cannot render TextField";
-    }
-    target->draw(_visual._backgroundSolid);
+void GUI_TextField::Draw(std::shared_ptr<sf::RenderTarget> l_target) {
+    l_target->draw(_visual._backgroundSolid);
     if (!_style[_state]._glyph.empty()) {
-        target->draw(_visual._glyph);
+        l_target->draw(_visual._glyph);
     }
-    target->draw(_visual._text);
+    l_target->draw(_visual._text);
 }

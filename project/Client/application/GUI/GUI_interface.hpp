@@ -8,15 +8,15 @@
 
 #include "GUI_element.hpp"
 
-using Elements = std::unordered_map<std::string,GUI_Element*>;
+using Elements = std::unordered_map<std::string, std::shared_ptr<GUI_Element>>;
 
 class GUI_Manager;
 
-class GUI_Interface : public GUI_Element{
+class GUI_Interface : public GUI_Element, public std::enable_shared_from_this<GUI_Interface> {
     friend class GUI_Element;
     friend class GUI_Manager;
 public:
-    explicit GUI_Interface(const std::string& name, GUI_Manager* guiManager);
+    explicit GUI_Interface(const std::string& name, std::weak_ptr<GUI_Manager> guiManager);
     ~GUI_Interface();
 
     void SetPosition(const sf::Vector2f& pos);
@@ -72,10 +72,10 @@ private:
     Elements _elements;
     sf::Vector2f _elementPadding;
 
-    GUI_Interface* _parent;
-    GUI_Manager* _guiManager;
+    std::weak_ptr<GUI_Interface> _parent;
+    std::weak_ptr<GUI_Manager> _guiManager;
 
-    sf::RenderTexture* _backdropTexture;
+    std::shared_ptr<sf::RenderTexture> _backdropTexture;
     sf::Sprite _backdrop;
 
     // Movement.
@@ -87,9 +87,9 @@ private:
     bool _focused;
 
     // Variable size.
-    void AdjustContentSize(const GUI_Element* reference = nullptr);
+    void AdjustContentSize(std::shared_ptr<GUI_Element> reference = nullptr);
     void SetContentSize(const sf::Vector2f& vec);
-    sf::RenderTexture> _contentTexture;
+    std::shared_ptr<sf::RenderTexture> _contentTexture;
     sf::Sprite _content;
     sf::Vector2f _contentSize;
     int _scrollHorizontal;
@@ -97,7 +97,7 @@ private:
     bool _contentRedraw;
 
     // Control layer.
-    sf::RenderTexture* _controlTexture;
+    std::shared_ptr<sf::RenderTexture> _controlTexture;
     sf::Sprite _control;
     bool _controlRedraw;
 };

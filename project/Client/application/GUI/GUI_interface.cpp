@@ -7,11 +7,19 @@
 #define LAST_INTRESTING_ASCII_CODE 126
 #define ASCII_BACKSLASH 8
 
-GUI_Interface::GUI_Interface(const std::string& name, GUI_Manager* guiManager)
-    : GUI_Element(name, GUI_ElementType::Window, this), _parent(nullptr), _guiManager(guiManager),
-    _showTitleBar(false), _movable(false), _beingMoved(false), _focused(false), _scrollHorizontal(0),
-    _scrollVertical(0), _contentRedraw(true), _controlRedraw(true)
-{
+GUI_Interface::GUI_Interface(const std::string& name, std::weak_ptr<GUI_Manager> guiManager) :
+        GUI_Element(name, GUI_ElementType::Window, this),
+        _parent(nullptr),
+        _guiManager(guiManager),
+        _showTitleBar(false),
+        _movable(false),
+        _beingMoved(false),
+        _focused(false),
+        _scrollHorizontal(0),
+        _scrollVertical(0),
+        _contentRedraw(true),
+        _controlRedraw(true) {
+
     _backdropTexture = new sf::RenderTexture();
     _contentTexture = new sf::RenderTexture();
     _controlTexture = new sf::RenderTexture();
@@ -399,7 +407,7 @@ void GUI_Interface::ToggleTitleBar() {
     _showTitleBar = !_showTitleBar;
 }
 
-void GUI_Interface::AdjustContentSize(const GUI_Element* reference) {
+void GUI_Interface::AdjustContentSize(std::shared_ptr<GUI_Element> reference) {
     if (reference) {
         sf::Vector2f bottomRight = reference->GetPosition() + reference->GetSize();
         if (bottomRight.x > _contentSize.x) {

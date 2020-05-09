@@ -4,7 +4,7 @@
 
 class GUI_TextField : public GUI_Element{
 public:
-    GUI_TextField(const std::string& l_name, GUI_Interface* l_owner);
+    GUI_TextField(const std::string& l_name, std::shared_ptr<GUI_Interface> l_owner);
     ~GUI_TextField();
 
     void ReadIn(std::stringstream& l_stream);
@@ -13,5 +13,5 @@ public:
     void OnHover(const sf::Vector2f& l_mousePos);
     void OnLeave();
     void Update(float l_dT);
-    void Draw(std::weak_ptr<sf::RenderTarget> l_target);
+    void Draw(std::shared_ptr<sf::RenderTarget> l_target);
 };

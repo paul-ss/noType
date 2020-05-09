@@ -45,7 +45,7 @@ private:
     template<class T>
     void registerState(const StateType& type) {
         _stateFactory[type] = [this]()->std::shared_ptr<BaseState> {
-            return std::make_shared<T>(this);
+            return std::make_shared<T>(this->shared_from_this());
         };
     }
 
