@@ -47,7 +47,7 @@ ExpectedRoom<AddPlayerResp> RoomManager::addPlayer(const Player &player) {
 
 ExpectedRoom<AddPlayerResp> RoomManager::addPlayerAndRoom(const Player &player,
                                                           boost::asio::io_service &service,
-                                                          const std::shared_ptr<DataBaseFacade> &dataBaseFacade,
+                                                          const std::shared_ptr<IDataBaseFacade> &dataBaseFacade,
                                                           const RoomConfig &roomConfig) {
   std::unique_lock<std::mutex> lock(_roomManagerMutex);
 

@@ -6,20 +6,22 @@
 #include "gtest/gtest.h"
 #include "Room.hpp"
 #include "RoomManager.hpp"
+#include "FakeDataBase.hpp"
 
 TEST(room_manager, add_room_and_player) {
   RoomConfig rc(200, 5, 1000, 2000, 700, 0);
   boost::asio::io_service service;
   auto rm = std::make_shared<RoomManager>();
+  auto db = std::make_shared<FakeDataBase>("text");
   
   ASSERT_FALSE(rm->addPlayer(Player("uuid", "name")));
   ASSERT_THROW(rm->addPlayer(Player("", "name")), RoomManagerException);
 
-  ASSERT_THROW(rm->addPlayerAndRoom(Player("", "name"), service, "text", rc), RoomManagerException);
-  ASSERT_THROW(rm->addPlayerAndRoom(Player("uuid", ""), service, "text", rc), RoomException);
+  ASSERT_THROW(rm->addPlayerAndRoom(Player("", "name"), service, db, rc), RoomManagerException);
+  ASSERT_THROW(rm->addPlayerAndRoom(Player("uuid", ""), service, db, rc), RoomException);
 
-  ASSERT_TRUE(rm->addPlayerAndRoom( Player("uuid0", "name"), service, "text", rc));
-  ASSERT_THROW(rm->addPlayerAndRoom(Player("uuid0", ""), service, "text", rc), RoomManagerException);
+  ASSERT_TRUE(rm->addPlayerAndRoom( Player("uuid0", "name"), service, db, rc));
+  ASSERT_THROW(rm->addPlayerAndRoom(Player("uuid0", ""), service, db, rc), RoomManagerException);
   ASSERT_THROW(rm->addPlayer(Player("uuid0", "name")), RoomManagerException);
 
   for (int i = 1; i < 5; i++) {
@@ -34,9 +36,10 @@ TEST(room_manager, delete_get_room) {
   RoomConfig rc(200, 5, 1000, 2000, 700, 0);
   boost::asio::io_service service;
   auto rm = std::make_shared<RoomManager>();
+  auto db = std::make_shared<FakeDataBase>("text");
 
   for (int i = 0; i < 27; i++) {
-    ASSERT_TRUE(rm->addPlayerAndRoom(Player("uuid" + std::to_string(i), "name"), service, "text", rc));
+    ASSERT_TRUE(rm->addPlayerAndRoom(Player("uuid" + std::to_string(i), "name"), service, db, rc));
   }
 
   for (int i = 0; i < 27; i++) {

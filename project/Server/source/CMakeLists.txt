@@ -110,7 +110,7 @@ ADD_EXECUTABLE(roomTests
         Room/Tests/RoomTests.cpp
         Room/Tests/RoomManagerTests.cpp
         Room/Tests/RoomWaitTest.cpp
-        Room/Tests/RoomPlayTest.cpp)
+        Room/Tests/RoomPlayTest.cpp Room/Tests/FakeDataBase.hpp Room/Tests/FakeDataBase.cpp)
 
 TARGET_LINK_LIBRARIES(roomTests
         ${GTEST_LIBRARIES}

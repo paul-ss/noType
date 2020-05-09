@@ -20,7 +20,7 @@ class BasicController {
 public:
 
   BasicController(const std::shared_ptr<QueueManager> &queueManager,
-                 const std::shared_ptr<DataBaseFacade> &dataBaseFacade);
+                 const std::shared_ptr<IDataBaseFacade> &dataBaseFacade);
   BasicController() = default;
   ~BasicController() = default;
   void startController();
@@ -40,7 +40,7 @@ private:
 
 private:
   std::shared_ptr<QueueManager> _queueManager ;
-  std::shared_ptr<DataBaseFacade> _dataBaseFacade;
+  std::shared_ptr<IDataBaseFacade> _dataBaseFacade;
 
 
 //  boost::asio::io_service _service;

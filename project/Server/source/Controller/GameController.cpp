@@ -6,7 +6,7 @@
 
 
 GameController::GameController(const std::shared_ptr<QueueManager> &queueManager,
-                                const std::shared_ptr<DataBaseFacade> &dataBaseFacade) :
+                                const std::shared_ptr<IDataBaseFacade> &dataBaseFacade) :
     _queueManager(queueManager),
     _dataBaseFacade(dataBaseFacade),
     _work(_service),

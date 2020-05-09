@@ -5,6 +5,7 @@
 #include "gtest/gtest.h"
 #include "Room.hpp"
 #include "RoomManager.hpp"
+#include "FakeDataBase.hpp"
 
 #include <thread>
 
@@ -18,7 +19,8 @@ protected:
            "examples, updated to use only C++11 library and language facilities."
            "These examples do not make direct use of Boost C++ libraries."
            "C++17 Examples: Selected examples illustrating C++17 usage in conjunction with Technical Specifications.";
-    room = std::make_shared<Room>(service, text, rm, rc);
+    db = std::make_shared<FakeDataBase>(text);
+    room = std::make_shared<Room>(service, db, rm, rc);
 
     for (int i = 0; i < 5; i++) {
       Player player("uuid" + std::to_string(i), "name" + std::to_string(i));
@@ -37,6 +39,7 @@ protected:
   RoomConfig rc;
   boost::asio::io_service service;
   std::shared_ptr<RoomManager> rm;
+  std::shared_ptr<IDataBaseFacade> db;
   std::string text;
   std::shared_ptr<Room> room;
 };

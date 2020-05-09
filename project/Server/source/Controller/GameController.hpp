@@ -20,7 +20,7 @@ class GameController {
 public:
 
   GameController(const std::shared_ptr<QueueManager> &queueManager,
-                  const std::shared_ptr<DataBaseFacade> &dataBaseFacade);
+                  const std::shared_ptr<IDataBaseFacade> &dataBaseFacade);
   ~GameController();
   void startController();
   void stopController();
@@ -39,7 +39,7 @@ private:
 
 private:
   std::shared_ptr<QueueManager> _queueManager ;
-  std::shared_ptr<DataBaseFacade> _dataBaseFacade;
+  std::shared_ptr<IDataBaseFacade> _dataBaseFacade;
 
   RoomManager _roomManager;
   boost::asio::io_service _service;
