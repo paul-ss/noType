@@ -2,6 +2,7 @@
 
 #include "DataBaseFacadeInterface.hpp"
 #include <thread>
+#include <mutex>
 
 class DataBaseFacade : public IDataBaseFacade {
 public:
