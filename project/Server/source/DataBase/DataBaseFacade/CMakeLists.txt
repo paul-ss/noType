@@ -11,7 +11,8 @@ set(DATA_BASE_FACADE_HEADERS  ../DataBaseConfig/DataBaseConfig.hpp
                               ../RandomName/RandomName.hpp
                               ../RandomName/RandomNameImpl.hpp
                               ../MongoCxxInit/MongoCxxInit.hpp
-                              ../DataBaseFacade/DataBaseFacade.hpp)
+                              ../DataBaseFacade/DataBaseFacade.hpp
+                              ../DataBaseFacade/DataBaseFacadeInterface.hpp)
 
 
 set(DATA_BASE_FACADE_INCLUDE_DIRS   ../DataBaseConfig/
