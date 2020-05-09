@@ -1,9 +1,10 @@
 #pragma once
 
-#include "TextInfoImpl.hpp"
-#include "PlayerInfoImpl.hpp"
+#include "DataBaseFacadeInterface.hpp"
+#include <thread>
+#include <mutex>
 
-class DataBaseFacade {
+class DataBaseFacade : public IDataBaseFacade {
 public:
   DataBaseFacade();
   DataBaseFacade(const std::string& dataBaseName);
@@ -18,6 +19,7 @@ public:
   std::unique_ptr<DataBase::External::TextInfo> GetRandomText();
 
 private:
+  std::mutex _mtx;
   std::string _dataBaseName;
   DataBase::External::PlayerInfoMapper _playerInfoMapper;
   DataBase::External::TextInfoMapper _textInfoMapper;
