@@ -72,6 +72,14 @@ ExpectedRoom<size_t> RoomPlay::validateWrittenText(std::shared_ptr<Room> room,
 }
 
 
+
+GetRoomStatusResp RoomPlay::getRoomStatus(std::shared_ptr<Room> room) {
+  std::unique_lock<std::mutex> lock(room->_roomMutex);  // ??
+  return GetRoomStatusResp(room->_players, ROOM_PLAY);
+}
+
+
+
 void RoomPlay::startAsyncEvent(std::shared_ptr<Room> room) {
   if (std::chrono::steady_clock::now() + std::chrono::milliseconds(_roomConfig._playHandlerInterval) < _endGame) {
     room->_timer.expires_from_now(std::chrono::milliseconds(_roomConfig._playHandlerInterval));

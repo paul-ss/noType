@@ -17,13 +17,24 @@
 
 
 class Room;
+enum RoomState {ROOM_WAIT, ROOM_PLAY, ROOM_END};
+
 template<class T> using ExpectedRoom = Expected<T, RoomError>;
+
 
 struct AddPlayerResp {
   AddPlayerResp(const std::string &playerID, unsigned int waitTime) :
       playerID(playerID), waitTime(waitTime) {}
   std::string playerID;
   unsigned int waitTime;
+};
+
+
+struct GetRoomStatusResp {
+  GetRoomStatusResp(const std::unordered_map<std::string, Player> &players, RoomState state) :
+      players(players), state(state) {}
+  std::unordered_map<std::string, Player> players;
+  RoomState state;
 };
 
 
@@ -35,6 +46,7 @@ public:
   virtual ExpectedRoom<AddPlayerResp> addPlayer(std::shared_ptr<Room> room, const Player &player) = 0;
   virtual ExpectedRoom<std::string> getText(std::shared_ptr<Room> room) = 0;
   virtual ExpectedRoom<size_t> validateWrittenText(std::shared_ptr<Room> room, const std::string &text, const std::string &clientUUID) = 0;
+  virtual GetRoomStatusResp getRoomStatus(std::shared_ptr<Room> room) = 0;
   virtual void startAsyncEvent(std::shared_ptr<Room> room) = 0; // doesn't catch mutex
   virtual void deadlineHandler(std::shared_ptr<Room> room, const boost::system::error_code& ec) = 0;
 

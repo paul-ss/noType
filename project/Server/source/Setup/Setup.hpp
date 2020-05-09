@@ -26,7 +26,7 @@ private:
   void runInterface();
 
 private:
-  std::shared_ptr<DataBaseFacade> _dataBaseFacade;
+  std::shared_ptr<IDataBaseFacade> _dataBaseFacade;
   std::shared_ptr<QueueManager> _queueManager;
   std::unique_ptr<BasicController> _basicController;
   std::unique_ptr<GameController> _gameController;

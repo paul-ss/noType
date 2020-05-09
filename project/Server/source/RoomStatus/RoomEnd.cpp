@@ -33,6 +33,14 @@ ExpectedRoom<size_t> RoomEnd::validateWrittenText(std::shared_ptr<Room> room,
 }
 
 
+
+GetRoomStatusResp RoomEnd::getRoomStatus(std::shared_ptr<Room> room) {
+  std::unique_lock<std::mutex> lock(room->_roomMutex);  // ??
+  return GetRoomStatusResp(room->_players, ROOM_END);
+}
+
+
+
 void RoomEnd::startAsyncEvent(std::shared_ptr<Room> room) {
   room->_timer.expires_from_now(std::chrono::milliseconds(_roomConfig._endDuration));
   room->_timer.async_wait(boost::bind(&RoomEnd::deadlineHandler, shared_from_this(), room, _1));

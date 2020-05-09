@@ -66,6 +66,11 @@ ExpectedRoom<size_t> Room::validateWrittenText(const std::string &text, const st
 }
 
 
+GetRoomStatusResp Room::getRoomStatus() {
+  return _roomStatus->getRoomStatus(shared_from_this());
+}
+
+
 void Room::startAsyncEvent() {
   _roomStatus->startAsyncEvent(shared_from_this());
 }

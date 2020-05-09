@@ -24,7 +24,6 @@
 template<class T> using ExpectedRoom = Expected<T, RoomError>;
 class RoomManager;
 
-enum RoomState {ROOM_WAIT, ROOM_PLAY, ROOM_END};
 
 class Room : public std::enable_shared_from_this<Room> {
 public:
@@ -43,6 +42,7 @@ public:
   ExpectedRoom<AddPlayerResp> addPlayer(const Player &player);
   ExpectedRoom<std::string> getText();
   ExpectedRoom<size_t> validateWrittenText(const std::string &text, const std::string &clientUUID);
+  GetRoomStatusResp getRoomStatus();
   void startAsyncEvent();
 
 
@@ -62,6 +62,7 @@ private:
   PlayerState getPlayerState(const std::string &clientUUID);
   void increaseTextPosition(const std::string &clientUUID, size_t increaseSize);
   size_t getTextPosition(const std::string &clientUUID);
+
   void removeSelf();
   void sendStatistic();
   void updatePlayerInfo(const Player &player, int increaseWinsCount, int increasePoints);
