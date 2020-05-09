@@ -5,33 +5,26 @@ MainMenuState::MainMenuState(std::weak_ptr<StateManager> stateManager)
     : BaseState(stateManager) {}
 
 void MainMenuState::OnCreate() {
-    auto stateMgr = _stateMgr.lock();
-    if (!stateMgr) {
-        BOOST_LOG_TRIVIAL(error) << "Not valid state manager [menu - oncreate]";
-        return;
-    }
-    auto context = stateMgr->GetContext().lock();
-    if (!context) {
-        BOOST_LOG_TRIVIAL(error) << "Not valid shared context [menu - oncreate]";
-        return;
-    }
-    auto gui = context->_guiManager.lock();
-    if (!gui) {
+    try {
+        std::shared_ptr<StateManager> stateMgr(_stateMgr);
+        std::shared_ptr<SharedContext> context(stateMgr->GetContext());
+        std::shared_ptr<GUI_Manager> gui(context->_guiManager);
+
+        gui->LoadInterface(StateType::MainMenu, "mainMenu.interface", "MainMenu");
+        gui->GetInterface(StateType::MainMenu, "MainMenu")->SetPosition(sf::Vector2f(250.f, 168.f));
+
+        std::shared_ptr<EventManager> eMgr(context->_eventManager);
+
+        auto lambdaPlay = [this](EventDetails& details) { this->Play(details); };
+        eMgr->AddCallback(StateType::MainMenu, "MainMenu_Play", lambdaPlay);
+        auto lambdaQuit = [this](EventDetails& details) { this->Quit(details); };
+        eMgr->AddCallback(StateType::MainMenu, "MainMenu_Quit", lambdaQuit);
+
+    } catch (const std::bad_weak_ptr &e) {
+        // TODO(vendroid): исключение тоже в лог?
         BOOST_LOG_TRIVIAL(error) << "Not valid gui manager [menu - oncreate]";
         return;
     }
-    gui->LoadInterface(StateType::MainMenu, "mainMenu.interface", "MainMenu");
-    gui->GetInterface(StateType::MainMenu, "MainMenu")->SetPosition(sf::Vector2f(250.f, 168.f));
-
-    auto eMgr = context->_eventManager.lock();
-    if (!eMgr) {
-        BOOST_LOG_TRIVIAL(error) << "Not valid event manager [menu - oncreate]";
-        return;
-    }
-    auto lambdaPlay = [this](EventDetails& details) { this->Play(details); };
-    eMgr->AddCallback(StateType::MainMenu, "MainMenu_Play", lambdaPlay);
-    auto lambdaQuit = [this](EventDetails& details) { this->Quit(details); };
-    eMgr->AddCallback(StateType::MainMenu, "MainMenu_Quit", lambdaQuit);
 }
 
 void MainMenuState::OnDestroy() {
