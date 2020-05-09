@@ -214,8 +214,8 @@ void GUI_Interface::SetPadding(const sf::Vector2f& l_padding) {
 
 void GUI_Interface::Update(float l_dT) {
     sf::Vector2f mousePos = sf::Vector2f(
-        _guiManager->GetContext()->_eventManager->GetMousePos(
-        _guiManager->GetContext()->_window->GetRenderWindow()));
+        _guiManager->GetContext()->_eventManager.lock()->GetMousePos(
+        _guiManager->GetContext()->_window.lock()->GetRenderWindow()));
 
     if (_beingMoved && _moveMouseLast != mousePos) {
         sf::Vector2f difference = mousePos - _moveMouseLast;
@@ -258,7 +258,7 @@ void GUI_Interface::Update(float l_dT) {
     }
 }
 
-void GUI_Interface::Draw(const sf::RenderWindow& l_target) {
+void GUI_Interface::Draw(std::weak_ptr<sf::RenderWindow> l_target) {
     l_target.draw(_backdrop);
     l_target.draw(_content);
     l_target.draw(_control);

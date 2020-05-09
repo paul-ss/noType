@@ -3,13 +3,15 @@
 #include <string>
 #include <sstream>
 #include <unordered_map>
+#include <memory>
 
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 
 #include "GUI_style.hpp"
+#include "logger.hpp"
 
-enum class GUI_ElementType{ None = -1, Window, Label, Button, Textfield };
+enum class GUI_ElementType{ None = -1, Window, Label, Button, TextField };
 
 using ElementStyles = std::unordered_map<GUI_ElementState, GUI_Style>;
 
@@ -28,7 +30,7 @@ public:
     virtual void OnHover(const sf::Vector2f& l_mousePos) = 0;
     virtual void OnLeave() = 0;
     virtual void Update(float l_dT) = 0;
-    virtual void Draw(sf::RenderTarget* l_target) = 0;
+    virtual void Draw(std::weak_ptr<sf::RenderTarget> l_target) = 0;
 
     virtual void UpdateStyle(const GUI_ElementState& l_state, const GUI_Style& l_style);
     virtual void ApplyStyle();

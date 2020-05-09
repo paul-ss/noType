@@ -1,12 +1,25 @@
 #include "introState.hpp"
 
-IntroState::IntroState(StateManager* l_stateManager)
+IntroState::IntroState(std::weak_ptr<StateManager> l_stateManager)
     : BaseState(l_stateManager) {}
 
-IntroState::~IntroState() {}
-
 void IntroState::OnCreate() {
-    sf::Vector2u windowSize = _stateMgr->GetContext()->_window->GetRenderWindow()->getSize();
+    auto stateMgr = _stateMgr.lock();
+    if (!stateMgr) {
+        BOOST_LOG_TRIVIAL(error) << "Not valid state manager [menu - quit]";
+        return;
+    }
+    auto context = stateMgr->GetContext().lock();
+    if (!context) {
+        BOOST_LOG_TRIVIAL(error) << "Not valid shared context [menu - oncreate]";
+        return;
+    }
+    auto window = context->_window.lock();
+    if (!window) {
+        BOOST_LOG_TRIVIAL(error) << "Not valid shared context [menu - oncreate]";
+        return;
+    }
+    sf::Vector2u windowSize = stateMgr->GetContext()->_window->GetRenderWindow()->getSize();
 
     auto textureMgr = _stateMgr->GetContext()->_textureManager.lock();
     textureMgr->RequireResource("Intro");
@@ -47,15 +60,25 @@ void IntroState::OnDestroy() {
 }
 
 void IntroState::Draw() {
-    sf::RenderWindow* window = _stateMgr->GetContext()->_window->GetRenderWindow();
+    auto stateMgr = _stateMgr.lock();
+    if (!stateMgr) {
+        BOOST_LOG_TRIVIAL(error) << "Not valid state manager [intro - continue]";
+        return;
+    }
+    sf::RenderWindow* window = stateMgr->GetContext()->_window->GetRenderWindow();
 
     window->draw(_introSprite);
     window->draw(_text);
 }
 
-void IntroState::Continue(EventDetails* details) {
-    _stateMgr->SwitchTo(StateType::MainMenu);
-    _stateMgr->Remove(StateType::Intro);
+void IntroState::Continue(EventDetails& details) {
+    auto stateMgr = _stateMgr.lock();
+    if (!stateMgr) {
+        BOOST_LOG_TRIVIAL(error) << "Not valid state manager [intro - continue]";
+        return;
+    }
+    stateMgr->SwitchTo(StateType::MainMenu);
+    stateMgr->Remove(StateType::Intro);
 }
 
 void IntroState::Update(const sf::Time& time) {}

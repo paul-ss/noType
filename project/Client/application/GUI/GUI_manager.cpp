@@ -9,15 +9,15 @@
 #define INTERFACE_FILE_PATH "assets/media/GUI_interfaces/"
 #define STYLE_FILE_PATH "assets/media/GUI_styles/"
 
-GUI_Manager::GUI_Manager(EventManager* l_evMgr, SharedContext* l_shared) :
-        _context(l_shared), _eventMgr(l_evMgr), _currentState(StateType(0)) {
+GUI_Manager::GUI_Manager(std::weak_ptr<EventManager> l_eMgr, std::weak_ptr<SharedContext> l_shared) :
+        _context(l_shared), _eventMgr(l_eMgr), _currentState(StateType(0)) {
 
     registerElement<GUI_Label>(GUI_ElementType::Label);
-    registerElement<GUI_Textfield>(GUI_ElementType::Textfield);
+    registerElement<GUI_TextField>(GUI_ElementType::TextField);
 
     _elemTypes.emplace("Label", GUI_ElementType::Label);
     _elemTypes.emplace("Button", GUI_ElementType::Button);
-    _elemTypes.emplace("TextField", GUI_ElementType::Textfield);
+    _elemTypes.emplace("TextField", GUI_ElementType::TextField);
     _elemTypes.emplace("Interface", GUI_ElementType::Window);
 
     auto lambdaClick = [this](EventDetails& l_details) {
@@ -210,7 +210,7 @@ void GUI_Manager::Render(std::weak_ptr<sf::RenderWindow> l_window) {
         if (i->NeedsControlRedraw()) {
             i->RedrawControls();
         }
-        i->Draw(l_window.lock());
+        i->Draw(l_window);
     }
 }
 
@@ -266,7 +266,7 @@ bool GUI_Manager::LoadInterface(const StateType& l_state,
             }
             i->SetContentSize(i->GetSize());
         } else if (key == "Element") {
-            if (InterfaceName == "") {
+            if (InterfaceName.empty()) {
                 BOOST_LOG_TRIVIAL(error) << "Error: 'Element' outside or before declaration of 'Interface'!";
                 continue;
             }

@@ -10,7 +10,7 @@ class BaseState {
     friend class StateManager;
 
 public:
-    explicit BaseState(StateManager* l_stateManager) :
+    explicit BaseState(std::weak_ptr<StateManager> l_stateManager) :
             _stateMgr(l_stateManager),
             _transparent(false),
             _transcendent(false) {}
@@ -42,12 +42,12 @@ public:
         return _transcendent;
     }
 
-    StateManager* GetStateManager() {
+    std::weak_ptr<StateManager> GetStateManager() {
         return _stateMgr;
     }
 
 protected:
-    StateManager* _stateMgr;
+    std::weak_ptr<StateManager> _stateMgr;
     bool _transparent;
     bool _transcendent;
 };

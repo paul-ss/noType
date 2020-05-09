@@ -11,10 +11,11 @@
 class AudioManager : public ResourceManager<AudioManager, sf::SoundBuffer> {
 public:
     AudioManager() : ResourceManager(AUDIO_FILE_PATH) {}
-    sf::SoundBuffer* load(const std::string& l_path) {
-        sf::SoundBuffer* sound = new sf::SoundBuffer();
+
+    std::shared_ptr<sf::SoundBuffer> load(const std::string& l_path) {
+        auto sound = std::make_shared<sf::SoundBuffer>();
         if (!sound->loadFromFile(std::filesystem::absolute(l_path))) {
-            delete sound;
+            sound.reset();
             sound = nullptr;
             BOOST_LOG_TRIVIAL(error) << "Failed to load audio file: " << l_path;
         }

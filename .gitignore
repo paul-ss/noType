@@ -40,3 +40,5 @@ project/Server/cmake-build-debug/*
 .DS_Store
 build
 notype
+*.log
+Dockerfile

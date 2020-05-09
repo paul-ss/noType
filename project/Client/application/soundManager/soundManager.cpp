@@ -7,21 +7,20 @@
 
 
 void SoundManager::RemoveState(const StateType& l_state) {
-    auto music = _music.find(l_state);
-    if (music == _music.end()) {
+    auto music = _musicContainer.find(l_state);
+    if (music == _musicContainer.end()) {
         return;
     }
 
     if (music->second.second){
-        delete music->second.second;
         --_numSounds;
     }
-    _music.erase(l_state);
+    _musicContainer.erase(l_state);
 }
 
 void SoundManager::pauseAll(const StateType& l_state) {
-    auto music = _music.find(l_state);
-    if (music == _music.end()) {
+    auto music = _musicContainer.find(l_state);
+    if (music == _musicContainer.end()) {
         return;
     }
     if (!music->second.second) {
@@ -31,8 +30,8 @@ void SoundManager::pauseAll(const StateType& l_state) {
 }
 
 void SoundManager::unPauseAll(const StateType& l_state) {
-    auto music = _music.find(state);
-    if (music == _music.end()) {
+    auto music = _musicContainer.find(l_state);
+    if (music == _musicContainer.end()) {
         return;
     }
 
@@ -47,17 +46,17 @@ void SoundManager::ChangeState(const StateType& state) {
     unPauseAll(state);
     _currentState = state;
     
-    if (_music.find(_currentState) != _music.end()) {
+    if (_musicContainer.find(_currentState) != _musicContainer.end()) {
         return;
     }
-    SoundInfo info("");
-    sf::Music* music = nullptr;
-    _music.emplace(_currentState, std::make_pair(info, music));
+    auto info = std::make_shared<SoundInfo>();
+    std::shared_ptr<sf::Music> music = nullptr;
+    _musicContainer.emplace(_currentState, std::make_pair(info, music));
 }
 
 bool SoundManager::PlayMusic(const StateType& state){
-    auto music = _music.find(_currentState);
-    if (music == _music.end()) {
+    auto music = _musicContainer.find(_currentState);
+    if (music == _musicContainer.end()) {
         return false;
     }
     if (!music->second.second){
@@ -69,23 +68,23 @@ bool SoundManager::PlayMusic(const StateType& state){
 }
 
 bool SoundManager::StopMusic(const StateType& state) {
-    auto music = _music.find(_currentState);
-    if (music == _music.end()) {
+    auto music = _musicContainer.find(_currentState);
+    if (music == _musicContainer.end()) {
         return false;
     }
     if (!music->second.second) {
         return false;
     }
     music->second.second->stop();
-    delete music->second.second;
+    music->second.second.reset();
     music->second.second = nullptr;
     --_numSounds;
     return true;
 }
 
 bool SoundManager::PauseMusic(const StateType& state) {
-    auto music = _music.find(_currentState);
-    if (music == _music.end()) {
+    auto music = _musicContainer.find(_currentState);
+    if (music == _musicContainer.end()) {
         return false;
     }
     if (!music->second.second) {
@@ -97,27 +96,34 @@ bool SoundManager::PauseMusic(const StateType& state) {
 }
 
 bool SoundManager::PlayMusic(const std::string& musicId, float volume, bool loop) {
-    auto s = _music.find(_currentState);
-    if (s == _music.end()) {
+    auto currStateMusic = _musicContainer.find(_currentState);
+    if (currStateMusic == _musicContainer.end()) {
+        BOOST_LOG_TRIVIAL(error) << "Failed to play music: " << musicId;
         return false;
     }
 
-    std::string path = _audioManager->GetPath(musicId);
-    if (path == "") {
+    auto audioManager = _audioManager.lock();
+    if (!audioManager) {
+        BOOST_LOG_TRIVIAL(error) << "AudioManager is expired";
+        return false;
+    }
+    std::string path = audioManager->GetPath(musicId);
+    if (path.empty()) {
+        BOOST_LOG_TRIVIAL(error) << "Wrong path to music file: " << path;
         return false;
     }
 
-    if (!s->second.second) {
-        s->second.second = new sf::Music();
+    if (!currStateMusic->second.second) {
+        currStateMusic->second.second = std::make_shared<sf::Music>();
         ++_numSounds;
     }
 
-    sf::Music* music = s->second.second;
+    auto&& music = currStateMusic->second.second;
     if (!music->openFromFile(std::filesystem::absolute(path))) {
-        delete music;
+        music.reset();
         --_numSounds;
-        s->second.second = nullptr;
-        std::cerr << "[SoundManager] Failed to load music from file: " << musicId << std::endl;
+        music = nullptr;
+        BOOST_LOG_TRIVIAL(error) << "Failed to load music from file: " << musicId;
         return false;
     }
 
@@ -125,7 +131,7 @@ bool SoundManager::PlayMusic(const std::string& musicId, float volume, bool loop
     music->setVolume(volume);
     music->setRelativeToListener(true);
     music->play();
-    s->second.first._name = musicId;
+    currStateMusic->second.first._name = musicId;
     return true;
 }
 
@@ -138,8 +144,8 @@ void SoundManager::Update(float dT) {
 
     _elapsed = 0;
 
-    auto music = _music.find(_currentState);
-    if (music == _music.end()) {
+    auto music = _musicContainer.find(_currentState);
+    if (music == _musicContainer.end()) {
         return;
     }
     if (!music->second.second) {
@@ -148,7 +154,7 @@ void SoundManager::Update(float dT) {
     if (music->second.second->getStatus()) {
         return;
     }
-    delete music->second.second;
+    music->second.second.reset();
     music->second.second = nullptr;
     --_numSounds;
 }

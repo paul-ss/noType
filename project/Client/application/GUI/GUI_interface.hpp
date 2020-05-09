@@ -62,7 +62,7 @@ public:
     void ToggleTitleBar();
 
     void Update(float dT);
-    void Draw(const sf::RenderTarget& target);
+    void Draw(std::weak_ptr<sf::RenderTarget> target);
 
     void UpdateScrollHorizontal(unsigned int percent);
     void UpdateScrollVertical(unsigned int percent);
@@ -89,7 +89,7 @@ private:
     // Variable size.
     void AdjustContentSize(const GUI_Element* reference = nullptr);
     void SetContentSize(const sf::Vector2f& vec);
-    sf::RenderTexture* _contentTexture;
+    sf::RenderTexture> _contentTexture;
     sf::Sprite _content;
     sf::Vector2f _contentSize;
     int _scrollHorizontal;

@@ -35,10 +35,6 @@ Game::Game() {
     _stateManager->SwitchTo(StateType::Intro);
 }
 
-Game::~Game() {
-    _fontManager->ReleaseResource("Main");
-}
-
 sf::Time Game::getElapsed() {
     return _clock.getElapsedTime();
 }

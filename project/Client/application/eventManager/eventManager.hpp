@@ -72,7 +72,7 @@ struct EventDetails {
 
 using Events = std::vector<std::pair<EventType, EventInfo> >;
 struct Binding {
-    Binding(const std::string& l_name): _name(l_name), _details(l_name), _count(0) {}
+    Binding(const std::string& l_name): _name(l_name), _count(0), _details(l_name) {}
     ~Binding() {}
 
     void BindEvent(EventType l_type, EventInfo l_info = EventInfo()) {

@@ -21,10 +21,10 @@ class GUI_Manager {
     friend class GUI_Interface;
 
 public:
-    GUI_Manager(std::weak_ptr<EventManager> l_evMgr, std::weak_ptr<SharedContext> l_shared);
+    GUI_Manager(std::weak_ptr<EventManager> l_eMgr, std::weak_ptr<SharedContext> l_shared);
     ~GUI_Manager();
 
-    bool AddInterface(const StateType& l_state, 
+    bool AddInterface(const StateType& l_state,
         const std::string& l_name);
     GUI_Interface* GetInterface(const StateType& l_state,
         const std::string& l_name);
@@ -48,7 +48,7 @@ public:
     bool PollEvent(GUI_Event& l_event);
 
     void Update(float l_dT);
-    void Render(sf::RenderWindow* l_wind);
+    void Render(std::weak_ptr<sf::RenderWindow> l_window);
 
 private:
     GUI_Element* createElement(const GUI_ElementType& l_id, GUI_Interface* l_owner);

@@ -8,7 +8,7 @@ StateManager::StateManager(std::weak_ptr<SharedContext> shared) : _shared(shared
 StateManager::~StateManager() {
     for (auto &itr : _states) {
         itr.second->OnDestroy();
-        delete itr.second;
+        itr.second.reset();
     }
 }
 
@@ -80,13 +80,12 @@ void StateManager::Remove(const StateType& type) {
 
 void StateManager::ProcessRequests() {
     while (_toRemove.begin() != _toRemove.end()) {
-        removeState(*_toRemove.begin());
+        removeState(_toRemove.front());
         _toRemove.erase(_toRemove.begin());
     }
 }
 
 void StateManager::SwitchTo(const StateType& type) {
-    std::cout << static_cast<int>(type) << "\n";
     _shared.lock()->_eventManager.lock()->SetCurrentState(type);
     _shared.lock()->_guiManager.lock()->SetCurrentState(type);
     _shared.lock()->_soundManager.lock()->ChangeState(type);
@@ -95,7 +94,7 @@ void StateManager::SwitchTo(const StateType& type) {
         if (itr->first == type) {
             _states.back().second->Deactivate();
             StateType tmp_type = itr->first;
-            BaseState* tmp_state = itr->second;
+            auto tmp_state = itr->second;
             _states.erase(itr);
             _states.emplace_back(tmp_type, tmp_state);
             tmp_state->Activate();
@@ -114,10 +113,11 @@ void StateManager::SwitchTo(const StateType& type) {
 void StateManager::createState(const StateType& type) {
     auto newState = _stateFactory.find(type);
     if (newState == _stateFactory.end()) {
+        BOOST_LOG_TRIVIAL(error) << "Not register state";
         return;
     }
 
-    auto* state = newState->second();
+    auto state = newState->second();
     _states.emplace_back(type, state);
     state->OnCreate();
 }
@@ -127,7 +127,7 @@ void StateManager::removeState(const StateType& type) {
         itr != _states.end(); ++itr) {
         if (itr->first == type){
             itr->second->OnDestroy();
-            delete itr->second;
+            itr->second.reset();
             _states.erase(itr);
             _shared.lock()->_soundManager.lock()->RemoveState(type);
             return;

@@ -52,9 +52,9 @@ void GUI_Element::ApplyStyle() {
 void GUI_Element::applyTextStyle() {
     FontManager* fonts = _owner->GetManager()->GetContext()->_fontManager;
     const GUI_Style& CurrentStyle = _style[_state];
-    if (CurrentStyle._textFont != "") {
+    if (!CurrentStyle._textFont.empty()) {
         _visual._text.setFont(*fonts->GetResource(CurrentStyle._textFont));
-        _visual._text.setColor(CurrentStyle._textColor);
+        _visual._text.setFillColor(CurrentStyle._textColor);
         _visual._text.setCharacterSize(CurrentStyle._textSize);
         if (CurrentStyle._textCenterOrigin) {
             sf::FloatRect rect = _visual._text.getLocalBounds();

@@ -15,14 +15,14 @@ enum class StateType{
 };
 
 using StateContainer =
-        std::vector< std::pair<StateType, BaseState*>>;
+        std::vector<std::pair<StateType, std::shared_ptr<BaseState>>>;
 
 using TypeContainer = std::vector<StateType>;
 
 using StateFactory = std::unordered_map< StateType,
-        std::function<BaseState*(void)>>;
+        std::function<std::shared_ptr<BaseState>(void)>>;
 
-class StateManager{
+class StateManager : public std::enable_shared_from_this<StateManager> {
 public:
     explicit StateManager(std::weak_ptr<SharedContext> shared);
     ~StateManager();
@@ -44,8 +44,8 @@ private:
 
     template<class T>
     void registerState(const StateType& type) {
-        _stateFactory[type] = [this]()->BaseState* {
-            return new T(this);
+        _stateFactory[type] = [this]()->std::shared_ptr<BaseState> {
+            return std::make_shared<T>(this);
         };
     }
 
