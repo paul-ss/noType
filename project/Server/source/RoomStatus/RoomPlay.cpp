@@ -14,7 +14,7 @@ RoomPlay::RoomPlay(const RoomConfig &roomConfig) :
     _lastTimePlayersChecked(std::chrono::steady_clock::now()) {}
 
 
-ExpectedRoom<bool> RoomPlay::addPlayer(std::shared_ptr<Room> room, const Player &player) {
+ExpectedRoom<AddPlayerResp> RoomPlay::addPlayer(std::shared_ptr<Room> room, const Player &player) {
   std::unique_lock<std::mutex> lock(room->_roomMutex);
   std::cout << "PLayer " << player.clientUUID << " was not added" << std::endl;
   return RoomError("Room status is 'PLAY'. Can't add player with UUID " + player.clientUUID);

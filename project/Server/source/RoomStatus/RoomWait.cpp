@@ -12,17 +12,21 @@ RoomWait::RoomWait(const RoomConfig &roomConfig) :
     IRoomStatus(roomConfig) {}
 
 
-ExpectedRoom<bool> RoomWait::addPlayer(std::shared_ptr<Room> room, const Player &player) {
+ExpectedRoom<AddPlayerResp> RoomWait::addPlayer(std::shared_ptr<Room> room, const Player &player) {
   std::unique_lock<std::mutex> lock(room->_roomMutex);
-
-  if (room->_players.size() >= _roomConfig._maxPlayersCount) {
-    throw RoomException("addPlayer (WAIT) : Attempt to add player "
-                        + player.clientUUID + " to filled room " + room->_roomUUID);
-  }
 
   if (player.clientUUID.empty() || player.name.empty()) {
     throw RoomException("addPlayer (WAIT) : Invalid Player UUID or name at room " + room->_roomUUID);
   }
+  
+  
+  if (room->_players.size() >= _roomConfig._maxPlayersCount) {
+//    throw RoomException("addPlayer (WAIT) : Attempt to add player "
+//                        + player.clientUUID + " to filled room " + room->_roomUUID);
+    return RoomError("addPlayer (WAIT) : Attempt to add player "
+                      + player.clientUUID + " to filled room " + room->_roomUUID);
+  }
+  
 
   // TODO check insertion return value
   if (!room->_players.emplace(player.clientUUID, player).second) {
@@ -35,17 +39,17 @@ ExpectedRoom<bool> RoomWait::addPlayer(std::shared_ptr<Room> room, const Player 
     room->startAsyncEvent();
   }
 
-  if (room->_players.size() == _roomConfig._maxPlayersCount) {
-    if (room->_timer.cancel() > 0) {
-      room->_roomStatus = std::shared_ptr<IRoomStatus>(std::make_shared<RoomPlay>(_roomConfig));
-      room->startAsyncEvent();
-    } else {
-      //throw RoomException("addPlayer (WAIT) : No one async wait canceled. Maybe, that shouldn't be an exception.");
-      std::cout << "addPlayer (WAIT) : No one async wait canceled in room " + room->_roomUUID << std::endl;
-    }
-  }
+//  if (room->_players.size() == _roomConfig._maxPlayersCount) {
+//    if (room->_timer.cancel() > 0) {
+//      room->_roomStatus = std::shared_ptr<IRoomStatus>(std::make_shared<RoomPlay>(_roomConfig));
+//      room->startAsyncEvent();
+//    } else {
+//      //throw RoomException("addPlayer (WAIT) : No one async wait canceled. Maybe, that shouldn't be an exception.");
+//      std::cout << "addPlayer (WAIT) : No one async wait canceled in room " + room->_roomUUID << std::endl;
+//    }
+//  }
 
-  return true;
+  return AddPlayerResp(player.playerID, getWaitTime());
 }
 
 
@@ -67,6 +71,7 @@ ExpectedRoom<size_t> RoomWait::validateWrittenText(std::shared_ptr<Room> room,
 void RoomWait::startAsyncEvent(std::shared_ptr<Room> room) {
   room->_timer.expires_from_now(std::chrono::milliseconds(_roomConfig._waitDuration));
   room->_timer.async_wait(boost::bind(&RoomWait::deadlineHandler, shared_from_this(), room, _1));
+  _endWait = std::chrono::steady_clock::now() + std::chrono::milliseconds(_roomConfig._waitDuration);
 }
 
 
@@ -90,3 +95,12 @@ std::shared_ptr<RoomWait> RoomWait::shared_from_this() {
 }
 
 
+unsigned int RoomWait::getWaitTime() {
+  TimePoint now = std::chrono::steady_clock::now();
+  if (now < _endWait) {
+    std::chrono::duration<double, std::milli> waitTime = _endWait - now;
+    return waitTime.count();
+  }
+
+  return 0;
+}

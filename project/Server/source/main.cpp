@@ -35,14 +35,14 @@ int main() {
   std::cout << rm->addPlayer(p4) << std::endl;
   Player p5("uuid5", "name1");
   std::cout << rm->addPlayer(p5) << std::endl;
-  Player p1("uuid1", "name1");
-  std::cout << rm->addPlayer(p1) << std::endl;
+//  Player p1("uuid1", "name1");
+//  std::cout << rm->addPlayer(p1) << std::endl;
 
 //  Player p6("uuid6", "name1");
 //  std::cout << rm->addPlayerAndRoom(service, "text", p6) << std::endl;
   Player p7("uuid7", "name1");
   if(auto res = rm->addPlayer(p7)) {
-    std::cout << res.value() << std::endl;
+    std::cout << res.value().playerID << "  " << res.value().waitTime  << std::endl;
   } else {
     std::cout << res.error().what() << std::endl;
   }

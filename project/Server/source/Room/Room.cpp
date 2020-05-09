@@ -51,7 +51,7 @@ std::unordered_map<std::string, Player> Room::getPlayers() {
 
 
 
-ExpectedRoom<bool> Room::addPlayer(const Player &player) {
+ExpectedRoom<AddPlayerResp> Room::addPlayer(const Player &player) {
   return _roomStatus->addPlayer(shared_from_this(), player);
 }
 

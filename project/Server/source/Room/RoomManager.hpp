@@ -21,17 +21,17 @@ public:
  // void addPlayer(const Player &player, boost::asio::io_service &service);
 
   bool deleteRoom(const std::string &roomUUID);
-  ExpectedRoom<bool> addPlayer(const Player &player);
-  bool addPlayerAndRoom(const Player &player,
-                         boost::asio::io_service &service,
-                         const std::shared_ptr<DataBaseFacade> &dataBaseFacade,
-                         const RoomConfig &roomConfig = RoomConfig());
+  ExpectedRoom<AddPlayerResp> addPlayer(const Player &player);
+  ExpectedRoom<AddPlayerResp> addPlayerAndRoom(const Player &player,
+                                               boost::asio::io_service &service,
+                                               const std::shared_ptr<DataBaseFacade> &dataBaseFacade,
+                                               const RoomConfig &roomConfig = RoomConfig());
   std::shared_ptr<Room> getRoom(const std::string &clientUUID);
 
 
 
 private:
-  ExpectedRoom<bool> addPlayerInternal(const Player &player); // doesn't catch mutex!
+  ExpectedRoom<AddPlayerResp> addPlayerInternal(const Player &player); // doesn't catch mutex!
   bool deletePlayer(const std::string &playerUUID); // doesn't catch mutex!
   std::string randomUUID();
 

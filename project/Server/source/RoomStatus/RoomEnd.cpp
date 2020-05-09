@@ -12,7 +12,7 @@ RoomEnd::RoomEnd(const RoomConfig &roomConfig) :
     IRoomStatus(roomConfig) {}
 
 
-ExpectedRoom<bool> RoomEnd::addPlayer(std::shared_ptr<Room> room, const Player &player) {
+ExpectedRoom<AddPlayerResp> RoomEnd::addPlayer(std::shared_ptr<Room> room, const Player &player) {
   std::unique_lock<std::mutex> lock(room->_roomMutex);
   return RoomError("addPlayer (END) : can't add player " + player.clientUUID);
 }

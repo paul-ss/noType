@@ -14,7 +14,7 @@
 class RoomEnd : public IRoomStatus {
 public:
   explicit RoomEnd(const RoomConfig &roomConfig);
-  ExpectedRoom<bool> addPlayer(std::shared_ptr<Room> room, const Player &player) override;
+  ExpectedRoom<AddPlayerResp> addPlayer(std::shared_ptr<Room> room, const Player &player) override;
   ExpectedRoom<std::string> getText(std::shared_ptr<Room> room) override;
   ExpectedRoom<size_t> validateWrittenText(std::shared_ptr<Room> room, const std::string &text, const std::string &clientUUID) override;
   void startAsyncEvent(std::shared_ptr<Room> room) override; // doesn't catch mutex!!

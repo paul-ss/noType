@@ -40,7 +40,7 @@ public:
        const RoomConfig &roomConfig = RoomConfig());
 
   std::unordered_map<std::string, Player> getPlayers();
-  ExpectedRoom<bool> addPlayer(const Player &player);
+  ExpectedRoom<AddPlayerResp> addPlayer(const Player &player);
   ExpectedRoom<std::string> getText();
   ExpectedRoom<size_t> validateWrittenText(const std::string &text, const std::string &clientUUID);
   void startAsyncEvent();

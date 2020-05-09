@@ -19,6 +19,12 @@
 class Room;
 template<class T> using ExpectedRoom = Expected<T, RoomError>;
 
+struct AddPlayerResp {
+  AddPlayerResp(const std::string &playerID, unsigned int waitTime) :
+      playerID(playerID), waitTime(waitTime) {}
+  std::string playerID;
+  unsigned int waitTime;
+};
 
 
 class IRoomStatus : public std::enable_shared_from_this<IRoomStatus> {
@@ -26,7 +32,7 @@ public:
   explicit IRoomStatus(const RoomConfig &roomConfig) :
       _roomConfig(roomConfig) {}
   virtual ~IRoomStatus() = default;
-  virtual ExpectedRoom<bool> addPlayer(std::shared_ptr<Room> room, const Player &player) = 0;
+  virtual ExpectedRoom<AddPlayerResp> addPlayer(std::shared_ptr<Room> room, const Player &player) = 0;
   virtual ExpectedRoom<std::string> getText(std::shared_ptr<Room> room) = 0;
   virtual ExpectedRoom<size_t> validateWrittenText(std::shared_ptr<Room> room, const std::string &text, const std::string &clientUUID) = 0;
   virtual void startAsyncEvent(std::shared_ptr<Room> room) = 0; // doesn't catch mutex
