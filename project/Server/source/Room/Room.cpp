@@ -20,7 +20,13 @@ Room::Room(boost::asio::io_service &service,
     _roomUUID(randomUUID()) {
   try {
     auto textInfo = _dataBaseFacade->GetRandomText();
-    _text = textInfo->text;
+
+    if (textInfo != nullptr) {
+      _text = textInfo->text;
+    } else {
+      _text = "Text default";
+    }
+
   } catch (...) {
     _text = "Text default";
   }

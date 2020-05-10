@@ -110,13 +110,29 @@ ADD_EXECUTABLE(roomTests
         Room/Tests/RoomTests.cpp
         Room/Tests/RoomManagerTests.cpp
         Room/Tests/RoomWaitTest.cpp
-        Room/Tests/RoomPlayTest.cpp Room/Tests/FakeDataBase.hpp Room/Tests/FakeDataBase.cpp)
+        Room/Tests/RoomPlayTest.cpp
+        Room/Tests/FakeDataBase.hpp
+        Room/Tests/FakeDataBase.cpp
+        Room/Tests/InteractionTest.cpp)
 
 TARGET_LINK_LIBRARIES(roomTests
         ${GTEST_LIBRARIES}
         ${CMAKE_THREAD_LIBS_INIT}
         ${Boost_SYSTEM_LIBRARY}
-        RoomLib)
+        RoomLib
+        -lgmock)
+
+#ADD_EXECUTABLE(roomTestIteraction
+#        mainTest.cpp
+#        Room/Tests/InteractionTest.cpp)
+#
+#TARGET_LINK_LIBRARIES(roomTestIteraction
+#        ${GTEST_LIBRARIES}
+#        ${CMAKE_THREAD_LIBS_INIT}
+#        ${Boost_SYSTEM_LIBRARY}
+#        RoomLib
+#        -lgmock)
+
 
 
 ADD_EXECUTABLE(tcpServerTests

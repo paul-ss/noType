@@ -9,6 +9,7 @@
 
 #include <thread>
 
+void playersEQ(const Player &l, const Player &r);
 
 class RoomPlayTest : public ::testing::Test {
 protected:
@@ -29,6 +30,7 @@ protected:
         std::cout << res.error().what() << std::endl;
       }
       ASSERT_TRUE(res);
+      pls.emplace_back(player);
     }
 
     room->setRoomStatus(std::make_shared<RoomPlay>(RoomPlay(rc)));
@@ -42,6 +44,7 @@ protected:
   std::shared_ptr<IDataBaseFacade> db;
   std::string text;
   std::shared_ptr<Room> room;
+  std::vector<Player> pls;
 };
 
 
@@ -115,8 +118,22 @@ TEST_F(RoomPlayTest, add_player) {
   ASSERT_FALSE(room->addPlayer(Player("", "")));
 }
 
+
 TEST_F(RoomPlayTest, get_text) {
   auto recvt = room->getText();
   ASSERT_TRUE(recvt);
   ASSERT_EQ(text, recvt.value());
+}
+
+
+TEST_F(RoomPlayTest, get_room_status) {
+  auto res = room->getRoomStatus();
+  ASSERT_TRUE(res.state == ROOM_PLAY);
+
+  ASSERT_EQ(res.players.size(), 5);
+
+  for (int i = 0; i < 5; i++) {
+    ASSERT_EQ(res.players.count("uuid" + std::to_string(i)), 1);
+    playersEQ(res.players.at("uuid" + std::to_string(i)), pls[i]);
+  }
 }

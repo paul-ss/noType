@@ -51,7 +51,6 @@ void playersEQ(const Player &l, const Player &r) {
 }
 
 
-
 TEST_F(RoomTest, get_players) {
   auto players = room->getPlayers();
   ASSERT_EQ(players.size(), 5);
