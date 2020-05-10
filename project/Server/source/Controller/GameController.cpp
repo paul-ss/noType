@@ -46,27 +46,27 @@ void GameController::stopController() {
 
 
 void GameController::commandDistributor(const std::shared_ptr<Command> &command) {
-  command->data.size();
+  command->getTypeOfCommand();
 }
 
 
 void GameController::startGameSessionHandler(const std::shared_ptr<Command> &command) {
-  command->data.size();
+  command->getTypeOfCommand();
 }
 
 
 void GameController::getTextHandler(const std::shared_ptr<Command> &command) {
-  command->data.size();
+  command->getTypeOfCommand();
 }
 
 
 void GameController::getRoomStatusHandler(const std::shared_ptr<Command> &command) {
-  command->data.size();
+  command->getTypeOfCommand();
 }
 
 
 void GameController::sendWrittenTextHandler(const std::shared_ptr<Command> &command) {
-  command->data.size();
+  command->getTypeOfCommand();
 }
 
 

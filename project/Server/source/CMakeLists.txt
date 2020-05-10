@@ -8,8 +8,8 @@ INCLUDE_DIRECTORIES(
         Command
         Utils
         Exceptions
-        Setup)
-
+        Setup
+        Parser)
 
 
 FIND_PACKAGE(GTest REQUIRED)
@@ -27,7 +27,7 @@ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 ADD_SUBDIRECTORY(DataBase/)
-
+#ADD_SUBDIRECTORY(TcpServer/)
 
 ADD_LIBRARY(ServerLib STATIC
         TcpServer/Client.cpp
@@ -67,16 +67,15 @@ ADD_LIBRARY(QueueLib STATIC
 
 
 ADD_LIBRARY(CommandLib STATIC
+        Parser/Parse.hpp
+        Parser/Parse.cpp
         Command/Command.cpp
         Command/Command.hpp
         Command/CommandFactory.cpp
-        Command/CommandFactory.hpp)
+        Command/CommandFactory.hpp
+        Room/Player.hpp
+        Room/Player.cpp)
 
-#ADD_LIBRARY(Controller STATIC
-#        Controller/BasicController.cpp
-#        Controller/BasicController.hpp
-#        Controller/GameController.cpp
-#        Controller/GameController.hpp)
 
 
 
@@ -92,6 +91,7 @@ ADD_EXECUTABLE(server
 
 
 
+
 TARGET_LINK_LIBRARIES(server
         ${Boost_SYSTEM_LIBRARY}
         ${CMAKE_THREAD_LIBS_INIT}
@@ -99,9 +99,7 @@ TARGET_LINK_LIBRARIES(server
         ServerLib
         RoomLib
         QueueLib
-        CommandLib
-#        Controller
-        )
+        CommandLib)
 
 #SET(USED_LIBS ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARY})
 
@@ -175,3 +173,21 @@ TARGET_LINK_LIBRARIES(queueTests
 #enable_testing()
 #add_test(tests "./tests")
 
+# TODO (PavelS) : make Gtests
+ADD_EXECUTABLE(parsingfrom Parser/Test/testparsefrom.cpp
+        Parser/Parse.cpp
+        Parser/Parse.hpp
+        Command/Command.hpp
+        Command/Command.cpp
+        Command/CommandFactory.hpp
+        Command/CommandFactory.cpp
+        )
+
+ADD_EXECUTABLE(parsingto Parser/Test/testparseto.cpp
+        Parser/Parse.cpp
+        Parser/Parse.hpp
+        Command/Command.hpp
+        Command/Command.cpp
+        Command/CommandFactory.hpp
+        Command/CommandFactory.cpp
+        )

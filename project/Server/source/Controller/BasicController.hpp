@@ -49,5 +49,3 @@ private:
   BasicControllerState _state;
   std::vector<std::thread> _threads;
 };
-
-

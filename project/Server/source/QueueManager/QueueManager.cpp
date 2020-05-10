@@ -20,10 +20,8 @@ QueueManager::QueueManager(const std::shared_ptr<Queue> &qToServer,
 void QueueManager::serverPush(const std::string &data, const std::string &connectionUUID) {
   // command.factory ...
   // choose queue to push
-
-  // todo remove
-  auto command = std::make_shared<Command>(data, connectionUUID);
-  _queueToServer->push(command);
+  data.size();
+  connectionUUID.size();
 }
 
 

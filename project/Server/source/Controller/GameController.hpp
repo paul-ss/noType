@@ -48,5 +48,3 @@ private:
   GameControllerState _state;
   std::vector<std::thread> _threads;
 };
-
-

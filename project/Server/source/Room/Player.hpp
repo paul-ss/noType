@@ -9,12 +9,15 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/random_generator.hpp>
 
+#include <Parse.hpp>
+
 
 enum PlayerState {PLAYER_PLAY, PLAYER_FINISH, PLAYER_WIN};
 
 struct Player {
-
+public:
   Player(const std::string &clientUUID, const std::string &name);
+  rapidjson::Document toJSON();
 
 public:
   const std::string clientUUID;
@@ -26,8 +29,8 @@ public:
   size_t lastTextPosition;
   double currentSpeed;
 
+
 private:
   std::string randomUUID();
 };
-
 

@@ -102,8 +102,16 @@ void TcpServer::runQueueWorker() {
     std::shared_ptr<Command> command;
     if (_queueManager->serverPop(command)) {
       try {
-        auto client = _clients->getClient(command->connectionUUID);
-        client->putDataToSend(command->parseToJSON());
+        auto serverCmd = std::dynamic_pointer_cast<ServerCommand>(command);
+
+        if (serverCmd) {
+          auto client = _clients->getClient(serverCmd->clientUUID);
+          client->putDataToSend(serverCmd->parseToJSON());
+
+        } else {
+          // TODO throw bad cast
+          std::cout << "Bad cast" << std::endl;
+        }
 
       } catch(const std::out_of_range& exc) {
         // todo log

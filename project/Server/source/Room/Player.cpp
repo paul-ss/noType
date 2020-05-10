@@ -20,3 +20,17 @@ std::string Player::randomUUID() {
   boost::uuids::uuid uuid = gen();
   return to_string(uuid);
 }
+
+rapidjson::Document Player::toJSON() {
+    rapidjson::Document doc;
+    auto& allocator = doc.GetAllocator();
+    doc.SetObject();
+    rapidjson::Value jsonVal;
+    jsonVal.SetString(clientUUID.c_str(), allocator);
+    jsonVal.AddMember("clientUUID", jsonVal, allocator);
+    jsonVal.SetString(name.c_str(), allocator);
+    jsonVal.AddMember("name", jsonVal, allocator);
+    jsonVal.SetUint64(textPosition);
+    jsonVal.AddMember("textPosition", jsonVal, allocator);
+    return doc;
+}
