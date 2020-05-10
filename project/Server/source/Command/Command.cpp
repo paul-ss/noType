@@ -7,18 +7,17 @@
 #define SUCCESS 0
 #define FAIL 1
 
-Command::Command(commandType typeOfCommand): typeOfCommand(typeOfCommand) {}
+Command::Command(const commandType &typeOfCommand): typeOfCommand(typeOfCommand) {}
 
 commandType Command::getTypeOfCommand() {
     return typeOfCommand;
 }
 
-ClientCommand::ClientCommand(const std::string &data, commandType typeOfCommand,
-        controllerType typeOfController):
-        Command(typeOfCommand), typeOfController(typeOfController) {ClientCommand::parseFromJSON(data);}
-std::string ClientCommand::getClientUUID() {
-    return clientUUID;
-}
+ClientCommand::ClientCommand(const std::string &data, const commandType &typeOfCommand,
+                             const controllerType &typeOfController):
+                             Command(typeOfCommand), typeOfController(typeOfController)
+                             {ClientCommand::parseFromJSON(data);}
+
 std::string ClientCommand::getConnectionUUID() {
     return connectionUUID;
 }
@@ -29,9 +28,6 @@ controllerType ClientCommand::getTypeOfController() {
 int ClientCommand::parseFromJSON(const std::string &data) {
     rapidjson::Document doc;
     doc.Parse(data.c_str());
-    assert(doc.HasMember("clientUUID"));
-    assert(doc["clientUUID"].IsString());
-    clientUUID = doc["clientUUID"].GetString();
     assert(doc.HasMember("connectionUUID"));
     assert(doc["connectionUUID"].IsString());
     connectionUUID = doc["connectionUUID"].GetString();
@@ -39,7 +35,8 @@ int ClientCommand::parseFromJSON(const std::string &data) {
 }
 
 InitRequest::InitRequest(const std::string &data,
-                         controllerType typeOfController, commandType typeOfCommand):
+                         const commandType &typeOfCommand,
+                         const controllerType &typeOfController):
         ClientCommand(data, typeOfCommand, typeOfController) {InitRequest::parseFromJSON(data);}
 int InitRequest::parseFromJSON(const std::string &data) {
     rapidjson::Document doc;
@@ -51,7 +48,8 @@ int InitRequest::parseFromJSON(const std::string &data) {
 }
 
 ConnectRequest::ConnectRequest(const std::string &data,
-                               controllerType typeOfController, commandType typeOfCommand):
+                               const commandType &typeOfCommand,
+                               const controllerType &typeOfController):
         ClientCommand(data, typeOfCommand, typeOfController) {ConnectRequest::parseFromJSON(data);}
 int ConnectRequest::parseFromJSON(const std::string &data) {
     rapidjson::Document doc;
@@ -62,9 +60,10 @@ int ConnectRequest::parseFromJSON(const std::string &data) {
     return SUCCESS;
 }
 
-StartGameSessionRequest::StartGameSessionRequest(const std::string &data, controllerType typeOfController,
-        commandType typeOfCommand): ClientCommand(data, typeOfCommand, typeOfController)
-        {StartGameSessionRequest::parseFromJSON(data);}
+StartGameSessionRequest::StartGameSessionRequest(const std::string &data, const commandType &typeOfCommand,
+                                                 const controllerType &typeOfController):
+                                                 ClientCommand(data, typeOfCommand, typeOfController)
+                                                 {StartGameSessionRequest::parseFromJSON(data);}
 int StartGameSessionRequest::parseFromJSON(const std::string &data) {
     rapidjson::Document doc;
     doc.Parse(data.c_str());
@@ -74,9 +73,11 @@ int StartGameSessionRequest::parseFromJSON(const std::string &data) {
     return SUCCESS;
 }
 
-GetText::GetText(const std::string &data, controllerType typeOfController, commandType typeOfCommand):
-        ClientCommand(data, typeOfCommand, typeOfController) {GetText::parseFromJSON(data);}
-int GetText::parseFromJSON(const std::string &data) {
+GetTextRequest::GetTextRequest(const std::string &data, const commandType &typeOfCommand,
+                               const controllerType &typeOfController):
+                               ClientCommand(data, typeOfCommand, typeOfController)
+                               {GetTextRequest::parseFromJSON(data);}
+int GetTextRequest::parseFromJSON(const std::string &data) {
     rapidjson::Document doc;
     doc.Parse(data.c_str());
     assert(doc.HasMember("key"));
@@ -85,10 +86,11 @@ int GetText::parseFromJSON(const std::string &data) {
     return SUCCESS;
 }
 
-GetRoomStatus::GetRoomStatus(const std::string &data, controllerType typeOfController,
-        commandType typeOfCommand):
-        ClientCommand(data, typeOfCommand, typeOfController) {GetRoomStatus::parseFromJSON(data);}
-int GetRoomStatus::parseFromJSON(const std::string &data) {
+RoomStatusRequest::RoomStatusRequest(const std::string &data, const commandType &typeOfCommand,
+                                     const controllerType &typeOfController):
+                                     ClientCommand(data, typeOfCommand, typeOfController)
+                                     {RoomStatusRequest::parseFromJSON(data);}
+int RoomStatusRequest::parseFromJSON(const std::string &data) {
     rapidjson::Document doc;
     doc.Parse(data.c_str());
     assert(doc.HasMember("key"));
@@ -97,10 +99,12 @@ int GetRoomStatus::parseFromJSON(const std::string &data) {
     return SUCCESS;
 }
 
-SendWrittenText::SendWrittenText(const std::string &data, controllerType typeOfController,
-        commandType typeOfCommand):
-        ClientCommand(data, typeOfCommand, typeOfController) {}
-int SendWrittenText::parseFromJSON(const std::string &data) {
+ValidateWrittenTextRequest::ValidateWrittenTextRequest(const std::string &data,
+                                                        const commandType &typeOfCommand,
+                                                       const controllerType &typeOfController):
+                                                       ClientCommand(data, typeOfCommand, typeOfController)
+                                                       {}
+int ValidateWrittenTextRequest::parseFromJSON(const std::string &data) {
     rapidjson::Document doc;
     doc.Parse(data.c_str());
     assert(doc.HasMember("key"));
@@ -113,58 +117,188 @@ int SendWrittenText::parseFromJSON(const std::string &data) {
 }
 
 
-ServerCommand::ServerCommand(commandType typeOfCommand, const std::string &clientUUID, bool success,
-        const std::string &errorMessage): Command(typeOfCommand), clientUUID(clientUUID), success(success),
+ServerCommand::ServerCommand(commandType typeOfCommand, const std::string &clientUUID, status state,
+        const std::string &errorMessage): Command(typeOfCommand), clientUUID(clientUUID), state(state),
         errorMsg(errorMessage) {}
 
+std::string ServerCommand::parseToJSON() {
+    rapidjson::Value json_val;
+    rapidjson::Document doc;
+    auto& allocator = doc.GetAllocator();
+    doc.SetObject();
+    json_val.SetInt64(typeOfCommand);
+    doc.AddMember("commandType", json_val, allocator);
+
+    json_val.SetString(clientUUID.c_str(), allocator);
+    doc.AddMember("clientUUID", json_val, allocator);
+
+    json_val.SetString(errorMsg.c_str(), allocator);
+    doc.AddMember("errorMessage", json_val, allocator);
+
+    json_val.SetInt64(state);
+    doc.AddMember("status", json_val, allocator);
+    rapidjson::StringBuffer buffer;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+    doc.Accept(writer);
+    std::string data = buffer.GetString();
+    return data;
+}
 
 
-InitResponse::InitResponse(commandType typeOfCommand, const std::string &clientUUID, bool success,
-        const std::string &errorMessage, const std::string &keys):
-        ServerCommand(typeOfCommand, clientUUID, success, errorMessage), key(keys) {}
+InitResponse::InitResponse(const std::string &clientUUID, const std::string &keys):
+            ServerCommand(INIT_RESPONSE, clientUUID, success, ""), key(keys) {}
+InitResponse::InitResponse(const std::string &clientUUID, status state, const std::string &errorMessage):
+            ServerCommand(INIT_RESPONSE, clientUUID, state, errorMessage), key("") {}
 std::string InitResponse::parseToJSON() {
-    std::string data;
-    return data;
+    rapidjson::Value json_val;
+    rapidjson::Document doc;
+    auto& allocator = doc.GetAllocator();
+    doc.SetObject();
+
+    json_val.SetString(key.c_str(), allocator);
+    doc.AddMember("key", json_val, allocator);
+
+    rapidjson::StringBuffer buffer;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+    doc.Accept(writer);
+    std::string data = buffer.GetString();
+    std::string dataFrom = ServerCommand::parseToJSON();
+    dataFrom.erase(dataFrom.find('}'), 1);
+    data.replace(data.find('{'),1,",");
+    std::string result = dataFrom + data;
+    return result;
 }
 
-ConnectResponse::ConnectResponse(commandType typeOfCommand, const std::string &clientUUID, bool success,
-        const std::string &errorMessage, const std::string &keys):
-        ServerCommand(typeOfCommand, clientUUID, success, errorMessage), key(keys) {}
-std::string ConnectResponse::parseToJSON() {
-    std::string data;
-    return data;
-}
 
-StartGameSessionResponse::StartGameSessionResponse(commandType typeOfCommand, const std::string &clientUUID,
-        bool success, const std::string &errorMessage, const std::string &keys):
-        ServerCommand(typeOfCommand, clientUUID, success, errorMessage), key(keys) {}
+ConnectResponse::ConnectResponse(const std::string &clientUUID):
+                ServerCommand(CONNECT_RESPONSE, clientUUID, success, "") {}
+ConnectResponse::ConnectResponse(const std::string &clientUUID, status state,
+                const std::string &errorMessage):
+                ServerCommand(CONNECT_RESPONSE, clientUUID, state, errorMessage) {}
+
+
+StartGameSessionResponse::StartGameSessionResponse(const std::string &clientUUID,
+                        const std::string &playID, double waitTime):
+                        ServerCommand(START_GAME_SESSION_RESPONSE, clientUUID, success, ""),
+                        playerID(playID), waitTime(waitTime) {}
+StartGameSessionResponse::StartGameSessionResponse(const std::string &clientUUID,
+                         status state, const std::string &errorMessage):
+                        ServerCommand(START_GAME_SESSION_RESPONSE, clientUUID, state, errorMessage),
+                        playerID(""), waitTime(0.0) {}
 std::string StartGameSessionResponse::parseToJSON() {
-    std::string data;
-    return data;
+    rapidjson::Value json_val;
+    rapidjson::Document doc;
+    auto& allocator = doc.GetAllocator();
+    doc.SetObject();
+
+    json_val.SetString(playerID.c_str(), allocator);
+    doc.AddMember("playerID", json_val, allocator);
+
+    json_val.SetDouble(waitTime);
+    doc.AddMember("waitTime", json_val, allocator);
+
+    rapidjson::StringBuffer buffer;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+    doc.Accept(writer);
+    std::string data = buffer.GetString();
+    std::string dataFrom = ServerCommand::parseToJSON();
+    dataFrom.erase(dataFrom.find('}'), 1);
+    data.replace(data.find('{'),1,",");
+    std::string result = dataFrom + data;
+    return result;
 }
 
-SetText::SetText(commandType typeOfCommand, const std::string &clientUUID, bool success,
-        const std::string &errorMessage, const std::string &text):
-        ServerCommand(typeOfCommand, clientUUID, success, errorMessage), text(text) {}
-std::string SetText::parseToJSON() {
-    std::string data;
-    return data;
+GetTextResponse::GetTextResponse(const std::string &clientUUID, const std::string &text):
+        ServerCommand(GET_TEXT_RESPONSE, clientUUID, success, ""), text(text) {}
+GetTextResponse::GetTextResponse(const std::string &clientUUID, status state,
+                const std::string &errorMessage):
+        ServerCommand(GET_TEXT_RESPONSE, clientUUID, state, errorMessage), text("") {}
+std::string GetTextResponse::parseToJSON() {
+    rapidjson::Value json_val;
+    rapidjson::Document doc;
+    auto& allocator = doc.GetAllocator();
+    doc.SetObject();
+
+    json_val.SetString(text.c_str(), allocator);
+    doc.AddMember("text", json_val, allocator);
+
+    rapidjson::StringBuffer buffer;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+    doc.Accept(writer);
+    std::string data = buffer.GetString();
+    std::string dataFrom = ServerCommand::parseToJSON();
+    dataFrom.erase(dataFrom.find('}'), 1);
+    data.replace(data.find('{'),1,",");
+    std::string result = dataFrom + data;
+    return result;
 }
 
-SendRoomStatus::SendRoomStatus(commandType typeOfCommand, const std::string &clientUUID, bool success,
-        const std::string &errorMessage, roomStatus statusOfRoom, double timeFromStart,
-        std::vector<Player> players):
-        ServerCommand(typeOfCommand, clientUUID, success, errorMessage),
+
+RoomStatusResponse::RoomStatusResponse(const std::string &clientUUID,
+                   const roomStatus &statusOfRoom, double timeFromStart,
+                   std::map<std::string, Player> &players):
+        ServerCommand(ROOM_STATUS_RESPONSE, clientUUID, success, ""),
         statusOfRoom(statusOfRoom), timeFromStart(timeFromStart), players(players) {}
-std::string SendRoomStatus::parseToJSON() {
-    std::string data;
-    return data;
+RoomStatusResponse::RoomStatusResponse(const std::string &clientUUID, status state,
+                   const std::string &errorMessage):
+        ServerCommand(ROOM_STATUS_RESPONSE, clientUUID, state, errorMessage),
+        timeFromStart(0.0) {}
+std::string RoomStatusResponse::parseToJSON() {
+    rapidjson::Value json_val;
+    rapidjson::Document doc;
+    auto& allocator = doc.GetAllocator();
+    doc.SetObject();
+    json_val.SetDouble(timeFromStart);
+    doc.AddMember("timeFromStart", json_val, allocator);
+    rapidjson::Value obj_player;
+    obj_player.SetObject();
+
+    /*const std::string clientUUID;
+    const size_t playerID;
+    const std::string name;
+    size_t textPosition;
+    PlayerState state;
+
+    size_t lastTextPosition;
+    double currentSpeed;*/
+
+    rapidjson::StringBuffer buffer;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+    doc.Accept(writer);
+    std::string data = buffer.GetString();
+    std::string dataFrom = ServerCommand::parseToJSON();
+    // dataFrom.erase(dataFrom.find('}'), 1);
+    // data.replace(data.find('{'),1,",");
+    std::string result = dataFrom + data;
+    return result;
 }
 
-ValidateWrittenText::ValidateWrittenText(commandType typeOfCommand, const std::string &clientUUID, bool success,
-        const std::string &errorMessage, const size_t &right_count):
-        ServerCommand(typeOfCommand, clientUUID, success, errorMessage), right_count(right_count) {}
-std::string ValidateWrittenText::parseToJSON() {
-    std::string data;
-    return data;
+ValidateWrittenTextResponse::ValidateWrittenTextResponse(const std::string &clientUUID,
+        const size_t &right_count):
+        ServerCommand(VALIDATE_WRITTEN_TEXT_RESPONSE, clientUUID, success, ""),
+        right_count(right_count) {}
+ValidateWrittenTextResponse::ValidateWrittenTextResponse(const std::string &clientUUID,
+                            status state, const std::string &errorMessage):
+        ServerCommand(VALIDATE_WRITTEN_TEXT_RESPONSE, clientUUID, state, errorMessage), right_count(0) {}
+std::string ValidateWrittenTextResponse::parseToJSON() {
+    rapidjson::Value json_val;
+    rapidjson::Document doc;
+    auto& allocator = doc.GetAllocator();
+    doc.SetObject();
+
+    json_val.SetUint64(right_count);
+    doc.AddMember("right_count", json_val, allocator);
+
+    rapidjson::StringBuffer buffer;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+    doc.Accept(writer);
+    std::string data = buffer.GetString();
+    std::string dataFrom = ServerCommand::parseToJSON();
+    dataFrom.erase(dataFrom.find('}'), 1);
+    data.replace(data.find('{'),1,",");
+    std::string result = dataFrom + data;
+    return result;
 }
+
+Error::Error(const std::string &clientUUID, const std::string &errorMessage = ""):
+ServerCommand(ERROR, clientUUID, fail, errorMessage) {}

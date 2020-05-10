@@ -66,15 +66,102 @@ TARGET_LINK_LIBRARIES(serverTests ${GTEST_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 #enable_testing()
 #add_test(tests "./tests")
 
-#ADD_EXECUTABLE(parsing testmain.cpp
- #       Parser/Parse.cpp
-  #      Parser/Parse.hpp
-   #     Command/Command.cpp
-    #    Command/Command.hpp
-     #   Command/CommandFactory.cpp
-      #  Command/CommandFactory.hpp
-       # )
-ADD_EXECUTABLE(parsing testmain.cpp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ADD_EXECUTABLE(parsingfrom Parser/Test/testparsefrom.cpp
+        Parser/Parse.cpp
+        Parser/Parse.hpp
+        Command/Command.hpp
+        Command/Command.cpp
+        Command/CommandFactory.hpp
+        Command/CommandFactory.cpp
+        )
+
+ADD_EXECUTABLE(parsingto Parser/Test/testparseto.cpp
         Parser/Parse.cpp
         Parser/Parse.hpp
         Command/Command.hpp

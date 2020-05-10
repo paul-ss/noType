@@ -1,6 +1,5 @@
 {
-  "commandType": 1,
+  "commandType": 4,
   "connectionUUID": "test_connection",
-  "clientUUID": "test_client",
   "key": "test_key"
 }

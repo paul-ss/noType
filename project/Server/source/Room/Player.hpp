@@ -5,17 +5,20 @@
 #pragma once
 
 #include <string>
+#include <Parse.hpp>
 
 enum PlayerState {PLAYER_PLAY, PLAYER_FINISH, PLAYER_WIN};
 
 struct Player {
 
     Player(const std::string &clientUUID, const std::string &name);
-    const std::string _clientUUID;
-    const size_t _playerID;
-    const std::string _name;
-    size_t _textPosition;
-    PlayerState _state;
-    int i;
-    double _currentSpeed;
+    rapidjson::Document toJSON();
+    const std::string clientUUID;
+    const size_t playerID;
+    const std::string name;
+    size_t textPosition;
+    PlayerState state;
+
+    size_t lastTextPosition;
+    double currentSpeed;
 };

@@ -5,18 +5,6 @@
 #pragma once
 #include <iostream>
 
-typedef struct Player_struct Player;
-
-enum playerStatus{PLAYER, WINNER, LOST};
-
-struct Player_struct{
-    unsigned int id;
-    std::string name;
-    unsigned int position;
-    double speed;
-    playerStatus statusOfPlayer;
-};
-
 class Room {
 
 };
