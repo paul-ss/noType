@@ -26,17 +26,11 @@ FIND_PACKAGE(Boost 1.42.0 REQUIRED COMPONENTS system thread regex)
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
-ADD_SUBDIRECTORY(DataBase/)
-#ADD_SUBDIRECTORY(TcpServer/)
 
-ADD_LIBRARY(ServerLib STATIC
-        TcpServer/Client.cpp
-        TcpServer/Client.hpp
-        TcpServer/ConnectedClients.cpp
-        TcpServer/ConnectedClients.hpp
-        TcpServer/TcpServer.cpp
-        TcpServer/TcpServer.hpp
-        TcpServer/ServerConfig.hpp)
+ADD_SUBDIRECTORY(DataBase/)
+ADD_SUBDIRECTORY(TcpServer/)
+ADD_SUBDIRECTORY(Room/)
+ADD_SUBDIRECTORY(QueueManager/)
 
 
 ADD_LIBRARY(RoomLib STATIC
@@ -46,23 +40,18 @@ ADD_LIBRARY(RoomLib STATIC
         Room/Player.cpp
         Room/Room.hpp
         Room/Room.cpp
-        RoomStatus/RoomWait.cpp
-        RoomStatus/RoomWait.hpp
-        RoomStatus/RoomPlay.cpp
-        RoomStatus/RoomPlay.hpp
-        RoomStatus/RoomEnd.cpp
-        RoomStatus/RoomEnd.hpp
         Room/RoomConfig.hpp
+        RoomStatus/IRoomStatus.hpp
+        RoomStatus/RoomWait.hpp
+        RoomStatus/RoomPlay.hpp
+        RoomStatus/RoomEnd.hpp
+        RoomStatus/RoomWait.cpp
+        RoomStatus/RoomPlay.cpp
+        RoomStatus/RoomEnd.cpp
         Utils/Expected.hpp
         Utils/Error.hpp)
 
 TARGET_LINK_LIBRARIES(RoomLib DataBaseFacadeLib)
-
-ADD_LIBRARY(QueueLib STATIC
-        QueueManager/Queue.cpp
-        QueueManager/Queue.hpp
-        QueueManager/QueueManager.cpp
-        QueueManager/QueueManager.hpp)
 
 
 
@@ -90,8 +79,6 @@ ADD_EXECUTABLE(server
         Setup/Setup.hpp)
 
 
-
-
 TARGET_LINK_LIBRARIES(server
         ${Boost_SYSTEM_LIBRARY}
         ${CMAKE_THREAD_LIBS_INIT}
@@ -101,72 +88,12 @@ TARGET_LINK_LIBRARIES(server
         QueueLib
         CommandLib)
 
-#SET(USED_LIBS ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARY})
-
-ADD_EXECUTABLE(roomTests
-        mainTest.cpp
-        Room/Tests/RoomTests.cpp
-        Room/Tests/RoomManagerTests.cpp
-        Room/Tests/RoomWaitTest.cpp
-        Room/Tests/RoomPlayTest.cpp
-        Room/Tests/FakeDataBase.hpp
-        Room/Tests/FakeDataBase.cpp
-        Room/Tests/InteractionTest.cpp)
-
-TARGET_LINK_LIBRARIES(roomTests
-        ${GTEST_LIBRARIES}
-        ${CMAKE_THREAD_LIBS_INIT}
-        ${Boost_SYSTEM_LIBRARY}
-        RoomLib
-        -lgmock)
-
-#ADD_EXECUTABLE(roomTestIteraction
-#        mainTest.cpp
-#        Room/Tests/InteractionTest.cpp)
-#
-#TARGET_LINK_LIBRARIES(roomTestIteraction
-#        ${GTEST_LIBRARIES}
-#        ${CMAKE_THREAD_LIBS_INIT}
-#        ${Boost_SYSTEM_LIBRARY}
-#        RoomLib
-#        -lgmock)
 
 
 
-ADD_EXECUTABLE(tcpServerTests
-        mainTest.cpp
-        TcpServer/Tests/ClientTests.cpp
-        TcpServer/Tests/ConnectedClientsTest.cpp)
-
-TARGET_LINK_LIBRARIES(tcpServerTests
-        ${GTEST_LIBRARIES}
-        ${CMAKE_THREAD_LIBS_INIT}
-        ${Boost_SYSTEM_LIBRARY}
-        ServerLib
-        QueueLib
-        -lgmock)
-
-
-ADD_EXECUTABLE(queueTests
-        mainTest.cpp
-        QueueManager/Tests/QueueTests.cpp
-        QueueManager/Tests/QueueManagerTests.cpp)
 
 
 
-TARGET_LINK_LIBRARIES(queueTests
-        ${GTEST_LIBRARIES}
-        ${CMAKE_THREAD_LIBS_INIT}
-        ${Boost_SYSTEM_LIBRARY}
-        QueueLib
-        -lgmock)
-
-#add_executable(tst)
-#target_link_libraries (tst ${CMAKE_THREAD_LIBS_INIT}
-
-
-#add_executable(tests ...)
-#target_link_libraries(tests ${GTEST_LIBRARIES} ...)
 
 
 

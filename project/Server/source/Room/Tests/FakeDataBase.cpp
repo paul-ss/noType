@@ -19,6 +19,7 @@ void FakeDataBase::UpadatePlayerInfo(std::unique_ptr<DataBase::External::PlayerI
 
 std::unique_ptr<DataBase::External::PlayerInfo> FakeDataBase::FindPlayerInfoByUuid(const std::string& uuid) {
   uuid.size();
+  return std::make_unique<DataBase::External::PlayerInfo>("");
 }
 
 std::unique_ptr<DataBase::External::TextInfo> FakeDataBase::GetRandomText() {
