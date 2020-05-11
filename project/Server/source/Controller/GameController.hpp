@@ -28,9 +28,19 @@ public:
 
 private:
   void commandDistributor(const std::shared_ptr<Command> &command);
-  void startGameSessionHandler(const std::shared_ptr<Command> &command);
-  void getTextHandler(const std::shared_ptr<Command> &command);
-  void getRoomStatusHandler(const std::shared_ptr<Command> &command);
+
+  template <class RequestCommand, class ResponseCommand, typename CommandHandler>
+  void handlerExceptionCatcher(const std::shared_ptr<Command> &command, CommandHandler handler);
+
+  void startGameSessionExcCatcher(const std::shared_ptr<Command> &command);
+  void startGameSessionHandler(const std::shared_ptr<StartGameSessionRequest> &command);
+
+  void getTextExcCatcher(const std::shared_ptr<Command> &command);
+  void getTextHandler(const std::shared_ptr<GetTextRequest> &command);
+
+  void getRoomStatusExcCatcher(const std::shared_ptr<Command> &command);
+  void getRoomStatusHandler(const std::shared_ptr<RoomStatusRequest> &command);
+
   void validateWrittenTextHandler(const std::shared_ptr<Command> &command);
 
   void runGameSessions();
