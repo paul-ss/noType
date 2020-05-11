@@ -15,4 +15,5 @@ TARGET_LINK_LIBRARIES(queueTests
         ${CMAKE_THREAD_LIBS_INIT}
         ${Boost_SYSTEM_LIBRARY}
         QueueLib
+        CommandLib
         -lgmock)

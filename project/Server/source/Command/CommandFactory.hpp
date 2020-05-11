@@ -9,5 +9,6 @@
 
 class CommandFactory {
  public:
+    virtual ~CommandFactory() = default;
     virtual std::shared_ptr<ClientCommand> createCommand(const std::string &data);
 };

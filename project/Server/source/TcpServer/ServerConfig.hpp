@@ -8,7 +8,7 @@
 struct ServerConfig {
 
   ServerConfig() :
-      _ip("127.0.0.0"),
+      _ip("127.0.0.1"),
       _port(8008),
       _listenCount(1024),
       _workerThreadsCount(2),

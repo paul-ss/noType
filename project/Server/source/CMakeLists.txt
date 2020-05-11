@@ -63,7 +63,8 @@ ADD_LIBRARY(CommandLib STATIC
         Command/CommandFactory.cpp
         Command/CommandFactory.hpp
         Room/Player.hpp
-        Room/Player.cpp)
+        Room/Player.cpp
+        RoomStatus/IRoomStatus.hpp)
 
 
 

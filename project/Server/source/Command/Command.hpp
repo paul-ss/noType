@@ -4,10 +4,13 @@
 //
 
 #pragma once
+
+#include "IRoomStatus.hpp"
+
 #include <iostream>
-#include <Player.hpp>
 #include <vector>
 #include <Parse.hpp>
+#include <unordered_map>
 
 
 enum commandType {
@@ -21,7 +24,7 @@ enum commandType {
 
 enum controllerType {BASE, GAME};
 
-enum roomStatus {WAIT, PLAY, END};
+//enum roomState {WAIT, PLAY, END};
 
 enum status {success, fail};
 
@@ -39,6 +42,7 @@ class Command {
 
 class ClientCommand: public Command, public parsableFromJSON{
  public:
+    ClientCommand() = default;
     ClientCommand(const std::string &data,
                   const commandType &typeOfCommand,
                   const controllerType &typeOfController);
@@ -46,7 +50,8 @@ class ClientCommand: public Command, public parsableFromJSON{
     int parseFromJSON(const std::string &data) override;
     std::string getConnectionUUID();
     controllerType getTypeOfController();
- protected:
+
+ public:
     std::string connectionUUID;
     controllerType typeOfController;
 };
@@ -168,15 +173,15 @@ class GetTextResponse: public ServerCommand{
 class RoomStatusResponse: public ServerCommand{
  public:
     RoomStatusResponse(const std::string &clientUUID,
-                        const roomStatus &statusOfRoom, double timeFromStart,
-                       std::map<std::string, Player> &players);
+                        const RoomState &statusOfRoom, double timeFromStart,
+                       std::unordered_map<std::string, Player> &players);
     RoomStatusResponse(const std::string &clientUUID, status state,
                        const std::string &errorMessage);
     std::string parseToJSON() override;
 
-    roomStatus statusOfRoom;
+    RoomState statusOfRoom;
     double timeFromStart;
-    std::map<std::string, Player> players;
+    std::unordered_map<std::string, Player> players;
 };
 
 class ValidateWrittenTextResponse: public ServerCommand{

@@ -18,4 +18,5 @@ TARGET_LINK_LIBRARIES(tcpServerTests
         ${Boost_SYSTEM_LIBRARY}
         ServerLib
         QueueLib
+        CommandLib
         -lgmock)

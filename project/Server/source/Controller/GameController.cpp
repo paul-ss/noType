@@ -9,6 +9,7 @@ GameController::GameController(const std::shared_ptr<QueueManager> &queueManager
                                 const std::shared_ptr<IDataBaseFacade> &dataBaseFacade) :
     _queueManager(queueManager),
     _dataBaseFacade(dataBaseFacade),
+    _roomManager(std::make_shared<RoomManager>()),
     _work(_service),
     _state(GAME_CONTROLLER_STOP) {}
 
@@ -45,28 +46,185 @@ void GameController::stopController() {
 
 
 
+
+
+
+
+// TODO catch all exceptions
 void GameController::commandDistributor(const std::shared_ptr<Command> &command) {
-  command->getTypeOfCommand();
+  auto type = command->getTypeOfCommand();
+
+  try {
+    if (type == START_GAME_SESSION_REQUEST) {
+      startGameSessionHandler(command);
+    } else if (type == GET_TEXT_REQUEST) {
+      getTextHandler(command);
+    } else if (type == ROOM_STATUS_REQUEST) {
+      getRoomStatusHandler(command);
+    } else if (type == VALIDATE_WRITTEN_TEXT_REQUEST) {
+      validateWrittenTextHandler(command);
+    } else {
+      std::cout << "GC : invalid command type" << std::endl;
+      // todo log
+    }
+
+  } catch (ServerException &exc) {
+    std::cout << "GC : exception : " << exc.what() << std::endl;
+    // todo log
+  } catch (...) {
+    std::cout << "GC : exception : unknown" << std::endl;
+  }
 }
 
 
+
 void GameController::startGameSessionHandler(const std::shared_ptr<Command> &command) {
-  command->getTypeOfCommand();
+  auto castedCmd = std::dynamic_pointer_cast<StartGameSessionRequest>(command);
+  if (!castedCmd) {
+    std::cout << "startGameSessionHandler : can't cast command" << std::endl;
+    return;
+    // todo log
+  }
+
+  // todo get player name
+  Player player(castedCmd->key, "name");
+
+  auto addPlayerRes = _roomManager->addPlayer(player);
+  std::shared_ptr<StartGameSessionResponse> commandResp;
+
+  if (!addPlayerRes) {
+    auto addPlAndRoomRes = _roomManager->addPlayerAndRoom(player, _service, _dataBaseFacade);
+
+    if (!addPlAndRoomRes) {
+      std::cout << "startGameSessionHandler : can't add player. " << addPlAndRoomRes.error().what() << std::endl;
+      // todo log
+      commandResp = std::make_shared<StartGameSessionResponse>(
+          castedCmd->getConnectionUUID(),
+          fail,
+          addPlAndRoomRes.error().what());
+    }
+
+    commandResp = std::make_shared<StartGameSessionResponse>(
+        castedCmd->getConnectionUUID(),
+        addPlAndRoomRes.value().playerID,
+        addPlAndRoomRes.value().waitTime);
+
+  } else {
+    commandResp = std::make_shared<StartGameSessionResponse>(
+        castedCmd->getConnectionUUID(),
+        addPlayerRes.value().playerID,
+        addPlayerRes.value().waitTime);
+  }
+
+  _queueManager->controllerPush(commandResp);
 }
 
 
 void GameController::getTextHandler(const std::shared_ptr<Command> &command) {
-  command->getTypeOfCommand();
+  auto castedCmd = std::dynamic_pointer_cast<GetTextRequest>(command);
+  if (!castedCmd) {
+    std::cout << "getTextHandler : can't cast command" << std::endl;
+    return;
+    // todo log
+  }
+
+  std::shared_ptr<GetTextResponse> commandResp;
+
+  auto room = _roomManager->getRoom(castedCmd->key);
+  if (!room) {
+    commandResp = std::make_shared<GetTextResponse>(
+        castedCmd->getConnectionUUID(),
+        fail,
+        "Player with uuid " + castedCmd->key + " doesn't exist in room");
+    _queueManager->controllerPush(commandResp);
+    return;
+  }
+
+  auto textResp = room->getText();
+  if (!textResp) {
+    commandResp = std::make_shared<GetTextResponse>(
+        castedCmd->getConnectionUUID(),
+        fail,
+        textResp.error().what());
+    _queueManager->controllerPush(commandResp);
+    return;
+  }
+
+  commandResp = std::make_shared<GetTextResponse>(castedCmd->getConnectionUUID(), textResp.value());
+  _queueManager->controllerPush(commandResp);
 }
+
 
 
 void GameController::getRoomStatusHandler(const std::shared_ptr<Command> &command) {
-  command->getTypeOfCommand();
+  auto castedCmd = std::dynamic_pointer_cast<RoomStatusRequest>(command);
+  if (!castedCmd) {
+    std::cout << "getRoomStatusHandler : can't cast command" << std::endl;
+    return;
+    // todo log
+  }
+
+  std::shared_ptr<RoomStatusResponse> commandResp;
+
+  auto room = _roomManager->getRoom(castedCmd->key);
+  if (!room) {
+    commandResp = std::make_shared<RoomStatusResponse>(
+        castedCmd->getConnectionUUID(),
+        fail,
+        "Player with uuid " + castedCmd->key + " doesn't exist in room");
+    _queueManager->controllerPush(commandResp);
+    return;
+  }
+
+  auto roomStatus = room->getRoomStatus();
+
+  commandResp = std::make_shared<RoomStatusResponse>(
+      castedCmd->getConnectionUUID(),
+      roomStatus.state,
+      0,
+      roomStatus.players);
+
+  _queueManager->controllerPush(commandResp);
 }
 
 
-void GameController::sendWrittenTextHandler(const std::shared_ptr<Command> &command) {
-  command->getTypeOfCommand();
+
+
+void GameController::validateWrittenTextHandler(const std::shared_ptr<Command> &command) {
+  auto castedCmd = std::dynamic_pointer_cast<ValidateWrittenTextRequest>(command);
+  if (!castedCmd) {
+    std::cout << "validateWrittenTextHandler : can't cast command" << std::endl;
+    return;
+    // todo log
+  }
+
+  std::shared_ptr<ValidateWrittenTextResponse> commandResp;
+
+  auto room = _roomManager->getRoom(castedCmd->key);
+  if (!room) {
+    commandResp = std::make_shared<ValidateWrittenTextResponse>(
+        castedCmd->getConnectionUUID(),
+        fail,
+        "Player with uuid " + castedCmd->key + " doesn't exist in room");
+    _queueManager->controllerPush(commandResp);
+    return;
+  }
+
+  auto validateResp = room->validateWrittenText(castedCmd->writtenText, castedCmd->key);
+  if (!validateResp) {
+    commandResp = std::make_shared<ValidateWrittenTextResponse>(
+        castedCmd->getConnectionUUID(),
+        fail,
+        validateResp.error().what());
+    _queueManager->controllerPush(commandResp);
+    return;
+  }
+
+  commandResp = std::make_shared<ValidateWrittenTextResponse>(
+      castedCmd->getConnectionUUID(),
+      validateResp.value());
+
+  _queueManager->controllerPush(commandResp);
 }
 
 

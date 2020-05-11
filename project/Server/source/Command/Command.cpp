@@ -235,8 +235,8 @@ std::string GetTextResponse::parseToJSON() {
 
 
 RoomStatusResponse::RoomStatusResponse(const std::string &clientUUID,
-                   const roomStatus &statusOfRoom, double timeFromStart,
-                   std::map<std::string, Player> &players):
+                   const RoomState &statusOfRoom, double timeFromStart,
+                   std::unordered_map<std::string, Player> &players):
         ServerCommand(ROOM_STATUS_RESPONSE, clientUUID, success, ""),
         statusOfRoom(statusOfRoom), timeFromStart(timeFromStart), players(players) {}
 RoomStatusResponse::RoomStatusResponse(const std::string &clientUUID, status state,
