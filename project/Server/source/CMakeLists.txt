@@ -102,20 +102,16 @@ TARGET_LINK_LIBRARIES(server
 #add_test(tests "./tests")
 
 # TODO (PavelS) : make Gtests
-ADD_EXECUTABLE(parsingfrom Parser/Test/testparsefrom.cpp
-        Parser/Parse.cpp
-        Parser/Parse.hpp
-        Command/Command.hpp
-        Command/Command.cpp
-        Command/CommandFactory.hpp
-        Command/CommandFactory.cpp
-        )
+ADD_EXECUTABLE(parsingfrom Parser/Test/testparsefrom.cpp)
 
-ADD_EXECUTABLE(parsingto Parser/Test/testparseto.cpp
-        Parser/Parse.cpp
-        Parser/Parse.hpp
-        Command/Command.hpp
-        Command/Command.cpp
-        Command/CommandFactory.hpp
-        Command/CommandFactory.cpp
-        )
+TARGET_LINK_LIBRARIES(parsingfrom
+        ${Boost_SYSTEM_LIBRARY}
+        ${CMAKE_THREAD_LIBS_INIT}
+        CommandLib)
+
+ADD_EXECUTABLE(parsingto Parser/Test/testparseto.cpp)
+
+TARGET_LINK_LIBRARIES(parsingto
+        ${Boost_SYSTEM_LIBRARY}
+        ${CMAKE_THREAD_LIBS_INIT}
+        CommandLib)

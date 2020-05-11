@@ -6,9 +6,11 @@
 
 
 GameController::GameController(const std::shared_ptr<QueueManager> &queueManager,
-                                const std::shared_ptr<IDataBaseFacade> &dataBaseFacade) :
+                                const std::shared_ptr<IDataBaseFacade> &dataBaseFacade,
+                                const RoomConfig &roomConfig) :
     _queueManager(queueManager),
     _dataBaseFacade(dataBaseFacade),
+    _roomConfig(roomConfig),
     _roomManager(std::make_shared<RoomManager>()),
     _work(_service),
     _state(GAME_CONTROLLER_STOP) {}
@@ -46,33 +48,40 @@ void GameController::stopController() {
 
 
 
-
-
-
-
-// TODO catch all exceptions
 void GameController::commandDistributor(const std::shared_ptr<Command> &command) {
-  auto type = command->getTypeOfCommand();
-
   try {
+    auto type = command->getTypeOfCommand();
+
     if (type == START_GAME_SESSION_REQUEST) {
-      startGameSessionHandler(command);
+      //startGameSessionHandler(command);
+      handlerExceptionCatcher<StartGameSessionRequest, StartGameSessionResponse>(
+          command,
+          boost::bind(&GameController::startGameSessionHandler, this, _1));
+
     } else if (type == GET_TEXT_REQUEST) {
-      getTextHandler(command);
+      handlerExceptionCatcher<GetTextRequest, GetTextResponse>(
+          command,
+          boost::bind(&GameController::getTextHandler, this, _1));
+
     } else if (type == ROOM_STATUS_REQUEST) {
-      getRoomStatusHandler(command);
+      handlerExceptionCatcher<RoomStatusRequest, RoomStatusResponse>(
+          command,
+          boost::bind(&GameController::getRoomStatusHandler, this, _1));
+
     } else if (type == VALIDATE_WRITTEN_TEXT_REQUEST) {
-      validateWrittenTextHandler(command);
+      handlerExceptionCatcher<ValidateWrittenTextRequest, ValidateWrittenTextResponse>(
+          command,
+          boost::bind(&GameController::validateWrittenTextHandler, this, _1));
+
     } else {
       std::cout << "GC : invalid command type" << std::endl;
       // todo log
     }
 
-  } catch (ServerException &exc) {
-    std::cout << "GC : exception : " << exc.what() << std::endl;
-    // todo log
   } catch (...) {
-    std::cout << "GC : exception : unknown" << std::endl;
+    std::cout << "GC : exception : unknown, unexpected, mysterious... (like James Bond)" << std::endl;
+    // todo log
+    // send error response
   }
 }
 
@@ -118,37 +127,6 @@ void GameController::handlerExceptionCatcher(const std::shared_ptr<Command> &com
 
 
 
-void GameController::startGameSessionExcCatcher(const std::shared_ptr<Command> &command) {
-  auto castedCmd = std::dynamic_pointer_cast<StartGameSessionRequest>(command);
-  if (!castedCmd) {
-    std::cout <<"startGameSession : can't cast command" << std::endl;
-    //todo log
-    return;
-  }
-
-  try {
-    startGameSessionHandler(castedCmd);
-
-  } catch (std::exception &exc) {
-    auto commandResp = std::make_shared<StartGameSessionResponse>(
-        castedCmd->getConnectionUUID(),
-        fail,
-        exc.what());
-    _queueManager->controllerPush(commandResp);
-    // todo log
-
-  } catch (...) {
-    auto commandResp = std::make_shared<StartGameSessionResponse>(
-        castedCmd->getConnectionUUID(),
-        fail,
-        "Exception : unknown exception type");
-    _queueManager->controllerPush(commandResp);
-    // todo log
-  }
-}
-
-
-
 void GameController::startGameSessionHandler(const std::shared_ptr<StartGameSessionRequest> &command) {
   // todo get player name
   // todo check: does user exist
@@ -158,7 +136,7 @@ void GameController::startGameSessionHandler(const std::shared_ptr<StartGameSess
   std::shared_ptr<StartGameSessionResponse> commandResp;
 
   if (!addPlayerRes) {
-    auto addPlAndRoomRes = _roomManager->addPlayerAndRoom(player, _service, _dataBaseFacade);
+    auto addPlAndRoomRes = _roomManager->addPlayerAndRoom(player, _service, _dataBaseFacade, _roomConfig);
 
     if (!addPlAndRoomRes) {
       throw GameControllerException("startGameSessionHandler : can't add player. " + addPlAndRoomRes.error().what());
@@ -181,35 +159,6 @@ void GameController::startGameSessionHandler(const std::shared_ptr<StartGameSess
 
 
 
-
-void GameController::getTextExcCatcher(const std::shared_ptr<Command> &command) {
-  auto castedCmd = std::dynamic_pointer_cast<GetTextRequest>(command);
-  if (!castedCmd) {
-    std::cout <<"getText : can't cast command" << std::endl;
-    //todo log
-    return;
-  }
-
-  try {
-    getTextHandler(castedCmd);
-
-  } catch (std::exception &exc) {
-    auto commandResp = std::make_shared<GetTextResponse>(
-        castedCmd->getConnectionUUID(),
-        fail,
-        exc.what());
-    _queueManager->controllerPush(commandResp);
-    // todo log
-
-  } catch (...) {
-    auto commandResp = std::make_shared<GetTextResponse>(
-        castedCmd->getConnectionUUID(),
-        fail,
-        "Exception : unknown exception type");
-    _queueManager->controllerPush(commandResp);
-    // todo log
-  }
-}
 
 
 void GameController::getTextHandler(const std::shared_ptr<GetTextRequest> &command) {
@@ -241,62 +190,14 @@ void GameController::getTextHandler(const std::shared_ptr<GetTextRequest> &comma
 
 
 
-void GameController::getRoomStatusExcCatcher(const std::shared_ptr<Command> &command) {
-  auto castedCmd = std::dynamic_pointer_cast<RoomStatusRequest>(command);
-  if (!castedCmd) {
-    std::cout <<"getRoomStatus : can't cast command" << std::endl;
-    //todo log
-    return;
-  }
-
-  try {
-    getRoomStatusHandler(castedCmd);
-
-  } catch (std::exception &exc) {
-    auto commandResp = std::make_shared<RoomStatusResponse>(
-        castedCmd->getConnectionUUID(),
-        fail,
-        exc.what());
-    _queueManager->controllerPush(commandResp);
-    // todo log
-
-  } catch (...) {
-    auto commandResp = std::make_shared<RoomStatusResponse>(
-        castedCmd->getConnectionUUID(),
-        fail,
-        "Exception : unknown exception type");
-    _queueManager->controllerPush(commandResp);
-    // todo log
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void GameController::getRoomStatusHandler(const std::shared_ptr<RoomStatusRequest> &command) {
-  auto castedCmd = std::dynamic_pointer_cast<RoomStatusRequest>(command);
-  if (!castedCmd) {
-    throw GameControllerException("getRoomStatusHandler : can't cast command");
-  }
-
-
-  auto room = _roomManager->getRoom(castedCmd->key);
+  auto room = _roomManager->getRoom(command->key);
   if (!room) {
     auto commandResp = std::make_shared<RoomStatusResponse>(
-        castedCmd->getConnectionUUID(),
+        command->getConnectionUUID(),
         fail,
-        "Player with uuid " + castedCmd->key + " doesn't exist in room");
+        "Player with uuid " + command->key + " doesn't exist in room");
     _queueManager->controllerPush(commandResp);
     return;
   }
@@ -304,7 +205,7 @@ void GameController::getRoomStatusHandler(const std::shared_ptr<RoomStatusReques
   auto roomStatus = room->getRoomStatus();
 
   auto commandResp = std::make_shared<RoomStatusResponse>(
-      castedCmd->getConnectionUUID(),
+      command->getConnectionUUID(),
       roomStatus.state,
       0,
       roomStatus.players);
@@ -315,27 +216,21 @@ void GameController::getRoomStatusHandler(const std::shared_ptr<RoomStatusReques
 
 
 
-void GameController::validateWrittenTextHandler(const std::shared_ptr<Command> &command) {
-  auto castedCmd = std::dynamic_pointer_cast<ValidateWrittenTextRequest>(command);
-  if (!castedCmd) {
-    throw GameControllerException("validateWrittenTextHandler : can't cast command");
-  }
-
-
-  auto room = _roomManager->getRoom(castedCmd->key);
+void GameController::validateWrittenTextHandler(const std::shared_ptr<ValidateWrittenTextRequest> &command) {
+  auto room = _roomManager->getRoom(command->key);
   if (!room) {
     auto commandResp = std::make_shared<ValidateWrittenTextResponse>(
-        castedCmd->getConnectionUUID(),
+        command->getConnectionUUID(),
         fail,
-        "Player with uuid " + castedCmd->key + " doesn't exist in room");
+        "Player with uuid " + command->key + " doesn't exist in room");
     _queueManager->controllerPush(commandResp);
     return;
   }
 
-  auto validateResp = room->validateWrittenText(castedCmd->writtenText, castedCmd->key);
+  auto validateResp = room->validateWrittenText(command->writtenText, command->key);
   if (!validateResp) {
     auto commandResp = std::make_shared<ValidateWrittenTextResponse>(
-        castedCmd->getConnectionUUID(),
+        command->getConnectionUUID(),
         fail,
         validateResp.error().what());
     _queueManager->controllerPush(commandResp);
@@ -343,14 +238,11 @@ void GameController::validateWrittenTextHandler(const std::shared_ptr<Command> &
   }
 
   auto commandResp = std::make_shared<ValidateWrittenTextResponse>(
-      castedCmd->getConnectionUUID(),
+      command->getConnectionUUID(),
       validateResp.value());
 
   _queueManager->controllerPush(commandResp);
 }
-
-
-
 
 
 

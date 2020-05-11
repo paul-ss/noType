@@ -13,7 +13,7 @@ struct ServerConfig {
       _listenCount(1024),
       _workerThreadsCount(2),
       _queueWorkersCount(1),
-      _delim("uuid") {}
+      _delim("delim") {}
 
   std::string _ip;
   unsigned int _port;

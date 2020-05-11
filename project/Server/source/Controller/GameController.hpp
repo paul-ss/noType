@@ -20,7 +20,8 @@ class GameController {
 public:
 
   GameController(const std::shared_ptr<QueueManager> &queueManager,
-                  const std::shared_ptr<IDataBaseFacade> &dataBaseFacade);
+                  const std::shared_ptr<IDataBaseFacade> &dataBaseFacade,
+                  const RoomConfig &roomConfig = RoomConfig());
   ~GameController();
   void startController();
   void stopController();
@@ -32,16 +33,10 @@ private:
   template <class RequestCommand, class ResponseCommand, typename CommandHandler>
   void handlerExceptionCatcher(const std::shared_ptr<Command> &command, CommandHandler handler);
 
-  void startGameSessionExcCatcher(const std::shared_ptr<Command> &command);
   void startGameSessionHandler(const std::shared_ptr<StartGameSessionRequest> &command);
-
-  void getTextExcCatcher(const std::shared_ptr<Command> &command);
   void getTextHandler(const std::shared_ptr<GetTextRequest> &command);
-
-  void getRoomStatusExcCatcher(const std::shared_ptr<Command> &command);
   void getRoomStatusHandler(const std::shared_ptr<RoomStatusRequest> &command);
-
-  void validateWrittenTextHandler(const std::shared_ptr<Command> &command);
+  void validateWrittenTextHandler(const std::shared_ptr<ValidateWrittenTextRequest> &command);
 
   void runGameSessions();
   void runQueueWorker();
@@ -50,6 +45,7 @@ private:
 private:
   std::shared_ptr<QueueManager> _queueManager ;
   std::shared_ptr<IDataBaseFacade> _dataBaseFacade;
+  RoomConfig _roomConfig;
 
   std::shared_ptr<RoomManager> _roomManager;
   boost::asio::io_service _service;
