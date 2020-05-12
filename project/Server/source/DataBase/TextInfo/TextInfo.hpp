@@ -1,5 +1,7 @@
 #pragma once
 
+#include "DataBaseException.hpp"
+
 #include <string>
 #include <memory>
 

@@ -1,8 +1,6 @@
 #pragma once
 
 #include "TextInfo.hpp"
-
-//TODO(vendroid): Нужно реализовать конфиг для базы данных
 #include "DataBaseConfig.hpp"
 
 #include <memory>

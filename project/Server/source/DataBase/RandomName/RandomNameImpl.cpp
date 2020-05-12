@@ -10,17 +10,25 @@ namespace Internal {
 RandomNameGenerator::RandomNameGenerator() : RandomNameGenerator(kDataBaseName) {}
 
 RandomNameGenerator::RandomNameGenerator(const std::string& dataBaseName) : _dataBaseName(dataBaseName) {
-  MongoCxxInit::Instance();
+  try {
+    MongoCxxInit::Instance();
+  } catch (const mongocxx::exception& e) {
+    throw Exception(e.what());
+  }
 }
 
 std::unique_ptr<RandomName> RandomNameGenerator::GetRandomName() {
-  std::string firstName = get_random_document_by_id_and_field(
-    kColorsCollectionName, _kColorIdField, _kColorNameField);
+  try {
+    std::string firstName = get_random_document_by_id_and_field(
+      kColorsCollectionName, _kColorIdField, _kColorNameField);
 
-  std::string secondName = get_random_document_by_id_and_field(
-    kAnimalsCollectionName, _kAnimalIdField, _kAnimalNameField);
+    std::string secondName = get_random_document_by_id_and_field(
+      kAnimalsCollectionName, _kAnimalIdField, _kAnimalNameField);
 
-  return std::make_unique<RandomName>(firstName + " " +  secondName);
+    return std::make_unique<RandomName>(firstName + " " + secondName);
+  } catch (const mongocxx::exception& e) {
+    throw Exception(e.what());
+  }
 }
 
 std::string RandomNameGenerator::get_random_document_by_id_and_field(

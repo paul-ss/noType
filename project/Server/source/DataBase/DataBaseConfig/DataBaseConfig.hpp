@@ -1,16 +1,17 @@
 #pragma once
 
-#include "DataBaseExeption.hpp"
+#include "DataBaseException.hpp"
 
 #include <mongocxx/client.hpp>
 
 #include <bsoncxx/builder/stream/document.hpp>
 #include <bsoncxx/json.hpp>
 
+#include <mongocxx/exception/exception.hpp>
+
+#include <bsoncxx/exception/exception.hpp>
 
 namespace DataBase {
-
-//mongocxx::instance inst{};  // NOTE(vendroid): Глобальная переменная
 
 static constexpr char kDataBaseName[] = "noTypeDataBase";
 

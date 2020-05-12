@@ -3,7 +3,8 @@ project(DataBaseFacade)
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INLCUDE_DIRS})
 
-set(DATA_BASE_FACADE_HEADERS  ../DataBaseConfig/DataBaseConfig.hpp
+set(DATA_BASE_FACADE_HEADERS  ../DataBaseException/DataBaseException.hpp
+                              ../DataBaseConfig/DataBaseConfig.hpp
                               ../TextInfo/TextInfo.hpp
                               ../TextInfo/TextInfoImpl.hpp
                               ../PlayerInfo/PlayerInfo.hpp
@@ -15,7 +16,8 @@ set(DATA_BASE_FACADE_HEADERS  ../DataBaseConfig/DataBaseConfig.hpp
                               ../DataBaseFacade/DataBaseFacadeInterface.hpp)
 
 
-set(DATA_BASE_FACADE_INCLUDE_DIRS   ../DataBaseConfig/
+set(DATA_BASE_FACADE_INCLUDE_DIRS   ../DataBaseException/
+                                    ../DataBaseConfig/
                                     ../TextInfo/
                                     ../TextInfo/
                                     ../PlayerInfo/
@@ -25,7 +27,8 @@ set(DATA_BASE_FACADE_INCLUDE_DIRS   ../DataBaseConfig/
                                     ../MongoCxxInit/
                                     ../DataBaseFacade/)
 
-set(DATA_BASE_FACADE_SOURCE   ../TextInfo/TextInfoImpl.cpp
+set(DATA_BASE_FACADE_SOURCE   ../DataBaseException/DataBaseException.cpp
+                              ../TextInfo/TextInfoImpl.cpp
                               ../PlayerInfo/PlayerInfoImpl.cpp
                               ../RandomName/RandomNameImpl.cpp
                               ../MongoCxxInit/MongoCxxInit.cpp

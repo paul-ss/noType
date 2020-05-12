@@ -25,7 +25,6 @@ set(DATA_BASE_CONFIG_INCLUDE_DIR "DataBaseConfig/")
 set(MONGOCXX_INIT_INCLUDE_DIR "MongoCxxInit/")
 
 
-
 # NOTE(vendroid): Директории с тестами
 add_subdirectory(TextInfo/)
 add_subdirectory(RandomName/)

@@ -9,5 +9,4 @@ MongoCxxInit& MongoCxxInit::Instance() {
 
 MongoCxxInit::MongoCxxInit() : inst{} {}
 
-
 }  // DataBase
