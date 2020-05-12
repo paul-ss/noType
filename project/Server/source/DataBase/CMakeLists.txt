@@ -1,28 +1,27 @@
 project(DataBase)
 
-# TODO(vendroid): выпилить этот участок в ближайшее время
-# set(CMAKE_CXX_STANDARD 17)
-# set(CMAKE_CXX_STANDARD_REQUIRED ON)
-# set(CMAKE_CXX_FLAGS "-Wall -Wextra --pedantic")
-
-
-
-# NOTE: Не работает такой способ
-# find_package(libmongocxx REQUIRED)
-# find_package(libbsoncxx REQUIRED)
 
 find_package(PkgConfig REQUIRED)
 
 pkg_check_modules(LIBMONGOCXX REQUIRED IMPORTED_TARGET libmongocxx)
 pkg_check_modules(LIBBSONCXX REQUIRED IMPORTED_TARGET libbsoncxx)
 
-message(STATUS PkgConfig::LIBMONGOCXX)
+find_package(GTest REQUIRED)
+#include_directories(${GTEST_INLCUDE_DIRS})
 
 #PavelS:
 #INCLUDE_DIRECTORIES(${LIBMONGOCXX_INCLUDE_DIRS})
 
-set(DATA_BASE_CONFIG_INCLUDE_DIR "DataBaseConfig/")
-set(MONGOCXX_INIT_INCLUDE_DIR "MongoCxxInit/")
+set(DATA_BASE_CONFIG_DIR "DataBaseConfig")
+set(DATA_BASE_CONFIG_HEADER "${DATA_BASE_CONFIG_DIR}/DataBaseConfig.hpp")
+
+set(MONGOCXX_INIT_DIR "MongoCxxInit")
+set(MONGOCXX_INIT_HEADER "${MONGOCXX_INIT_DIR}/MongoCxxInit.hpp")
+set(MONGOCXX_INIT_SRC "${MONGOCXX_INIT_DIR}/MongoCxxInit.cpp")
+
+set(MONGOCXX_EXCEPTION_DIR "DataBaseException")
+set(MONGOCXX_EXCEPTION_HEADER "${MONGOCXX_EXCEPTION_DIR}/DataBaseException.hpp")
+set(MONGOCXX_EXCEPTION_SRC "${MONGOCXX_EXCEPTION_DIR}/DataBaseException.cpp")
 
 
 # NOTE(vendroid): Директории с тестами
