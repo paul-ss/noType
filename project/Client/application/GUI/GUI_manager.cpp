@@ -6,7 +6,7 @@
 #include "GUI_label.hpp"
 #include "logger.hpp"
 
-#define INTERFACE_FILE_PATH "assets/media/GUI_interfaces/"
+#define INTERFACE_FILE_PATH "assets/media/GUI_guiContainer/"
 #define STYLE_FILE_PATH "assets/media/GUI_styles/"
 
 GUI_Manager::GUI_Manager(std::weak_ptr<EventManager> l_eMgr, std::weak_ptr<SharedContext> l_shared) :
@@ -20,58 +20,63 @@ GUI_Manager::GUI_Manager(std::weak_ptr<EventManager> l_eMgr, std::weak_ptr<Share
     _elemTypes.emplace("TextField", GUI_ElementType::TextField);
     _elemTypes.emplace("Interface", GUI_ElementType::Window);
 
-    auto lambdaClick = [this](EventDetails& l_details) {
-        this->HandleClick(l_details);
-    };
-    _eventMgr->AddCallback(StateType(0), "Mouse_Left", lambdaClick);
+    try {
+        std::shared_ptr<EventManager> eMgr(_eventMgr);
+        auto lambdaClick = [this](EventDetails& l_details) {
+            this->HandleClick(l_details);
+        };
+        eMgr->AddCallback(StateType(0), "Mouse_Left", lambdaClick);
 
-    auto lambdaRelease = [this](EventDetails& l_details) {
-        this->HandleRelease(l_details);
-    };
-    _eventMgr->AddCallback(StateType(0), "Mouse_Left_Release", lambdaRelease);
+        auto lambdaRelease = [this](EventDetails& l_details) {
+            this->HandleRelease(l_details);
+        };
+        eMgr->AddCallback(StateType(0), "Mouse_Left_Release", lambdaRelease);
 
-    auto lambdaTextEntered = [this](EventDetails& l_details) {
-        this->HandleTextEntered(l_details);
-    };
-    _eventMgr->AddCallback(StateType(0), "Text_Entered", lambdaTextEntered);
+        auto lambdaTextEntered = [this](EventDetails& l_details) {
+            this->HandleTextEntered(l_details);
+        };
+        eMgr->AddCallback(StateType(0), "Text_Entered", lambdaTextEntered);
+    } catch (std::bad_weak_ptr& e) {
+        //log
+    }
 }
 
 GUI_Manager::~GUI_Manager() {
-    _eventMgr->RemoveCallback(StateType(0), "Mouse_Left");
-    _eventMgr->RemoveCallback(StateType(0), "Mouse_Left_Release");
-    _eventMgr->RemoveCallback(StateType(0), "Text_Entered");
-
-    /*for (auto &itr : _interfaces) {
-        for (auto &itr2 : itr.second) {
-            itr2.second.reset();
-        }
-    }*/
+    try {
+    std::shared_ptr<EventManager> eMgr(_eventMgr);
+    eMgr->RemoveCallback(StateType(0), "Mouse_Left");
+    eMgr->RemoveCallback(StateType(0), "Mouse_Left_Release");
+    eMgr->RemoveCallback(StateType(0), "Text_Entered");
+    } catch (std::bad_weak_ptr& e) {
+        // log
+    }
 }
 
 std::weak_ptr<GUI_Interface> GUI_Manager::GetInterface(const StateType& l_state,
-    const std::string& l_name)
-{
-    auto s = _interfaces.find(l_state);
-    if (s == _interfaces.end()) {
+    const std::string& l_name) {
+    auto stateItr = _guiContainer.find(l_state);
+    if (stateItr == _guiContainer.end()) {
         return nullptr;
     }
-    auto i = s->second.find(l_name);
-    return (i != s->second.end() ? i->second : nullptr);
+
+    auto interfaceItr = stateItr->second.find(l_name);
+    return (interfaceItr != stateItr->second.end() ? interfaceItr->second.first :
+            std::weak_ptr<GUI_Interface>());
 }
 
 bool GUI_Manager::RemoveInterface(const StateType& l_state,
-    const std::string& l_name)
-{
-    auto s = _interfaces.find(l_state);
-    if (s == _interfaces.end()) {
+    const std::string& l_name) {
+    auto stateItr = _guiContainer.find(l_state);
+    if (stateItr == _guiContainer.end()) {
         return false;
     }
-    auto i = s->second.find(l_name);
-    if (i == s->second.end()) {
+
+    auto interfaceItr = s->second.find(l_name);
+    if (interfaceItr == s->second.end()) {
         return false;
     }
-    delete i->second;
-    return s->second.erase(l_name);
+
+    return stateItr->second.erase(l_name);
 }
 
 void GUI_Manager::SetCurrentState(const StateType& l_state) {
@@ -87,8 +92,8 @@ std::weak_ptr<SharedContext> GUI_Manager::GetContext() {
 }
 
 void GUI_Manager::DefocusAllInterfaces() {
-    auto state = _interfaces.find(_currentState);
-    if (state == _interfaces.end()) {
+    auto state = _guiContainer.find(_currentState);
+    if (state == _guiContainer.end()) {
         return;
     }
     for (auto &itr : state->second) {
@@ -97,8 +102,8 @@ void GUI_Manager::DefocusAllInterfaces() {
 }
 
 void GUI_Manager::HandleClick(EventDetails& l_details) {
-    auto state = _interfaces.find(_currentState);
-    if (state == _interfaces.end()) {
+    auto state = _guiContainer.find(_currentState);
+    if (state == _guiContainer.end()) {
         return;
     }
     sf::Vector2i mousePos = _eventMgr->GetMousePos(_context->_wind->GetRenderWindow());
@@ -117,8 +122,8 @@ void GUI_Manager::HandleClick(EventDetails& l_details) {
 }
 
 void GUI_Manager::HandleRelease(EventDetails& l_details) {
-    auto state = _interfaces.find(_currentState);
-    if (state == _interfaces.end()) {
+    auto state = _guiContainer.find(_currentState);
+    if (state == _guiContainer.end()) {
         return;
     }
     for (auto &itr : state->second) {
@@ -136,8 +141,8 @@ void GUI_Manager::HandleRelease(EventDetails& l_details) {
 }
 
 void GUI_Manager::HandleTextEntered(EventDetails& l_details) {
-    auto state = _interfaces.find(_currentState);
-    if (state == _interfaces.end()) {
+    auto state = _guiContainer.find(_currentState);
+    if (state == _guiContainer.end()) {
         return;
     }
     for (auto &itr : state->second) {
@@ -167,8 +172,8 @@ bool GUI_Manager::PollEvent(GUI_Event& l_event) {
 void GUI_Manager::Update(float l_dT) {
     sf::Vector2i mousePos = _eventMgr->GetMousePos(_context->_wind->GetRenderWindow());
 
-    auto state = _interfaces.find(_currentState);
-    if (state == _interfaces.end()) {
+    auto state = _guiContainer.find(_currentState);
+    if (state == _guiContainer.end()) {
         return;
     }
     for (auto itr = state->second.begin(); itr != state->second.end(); ++itr) {
@@ -193,8 +198,8 @@ void GUI_Manager::Update(float l_dT) {
 }
 
 void GUI_Manager::Render(std::weak_ptr<sf::RenderWindow> l_window) {
-    auto state = _interfaces.find(_currentState);
-    if (state == _interfaces.end()) {
+    auto state = _guiContainer.find(_currentState);
+    if (state == _guiContainer.end()) {
         return;
     }
     for (auto &itr : state->second) {
@@ -215,23 +220,29 @@ void GUI_Manager::Render(std::weak_ptr<sf::RenderWindow> l_window) {
     }
 }
 
-std::shared_ptr<GUI_Element> GUI_Manager::createElement(const GUI_ElementType& l_id, GUI_Interface* l_owner) {
+std::shared_ptr<GUI_Element> GUI_Manager::createElement(const GUI_ElementType& l_id, std::string& l_name) {
     if (l_id == GUI_ElementType::Window) {
-        return new GUI_Interface("", this);
+        return std::make_shared<GUI_Interface>(std::string());
     }
+
     auto f = _factory.find(l_id);
-    return (f != _factory.end() ? f->second(l_owner) : nullptr);
+    return (f != _factory.end() ? f->second(l_name) : nullptr);
 }
 
 bool GUI_Manager::AddInterface(const StateType& l_state,
     const std::string& l_name) {
-    auto s = _interfaces.emplace(l_state, GUI_Interfaces()).first;
-    GUI_Interface* temp = new GUI_Interface(l_name, this);
-    if (s->second.emplace(l_name, temp).second) {
-        return true;
+    auto s = _guiContainer.emplace(l_state, GUI_guiContainer()).first;
+    if (!s->second.emplace(l_name, GUI_Frame()).second) {
+        //log
+        return false;
     }
-    delete temp;
-    return false;
+    return true;
+}
+
+std::weak_ptr<GUI_Interface> GUI_Manager::GetFrame( const StateType& l_type, cosnt std::string& l_name) {
+    auto interface = _guiContainer.find(l_type);
+    auto frame = interface.find(l_name);
+    retrurn (frame ? frame.first() : nullptr);
 }
 
 bool GUI_Manager::LoadInterface(const StateType& l_state,

@@ -11,11 +11,12 @@
 #include "eventManager.hpp"
 #include "sharedContext.hpp"
 
-using GUI_Interfaces = std::unordered_map<std::string, std::shared_ptr<GUI_Interface>>;
+using GUI_Frame = std::pair<std::shared_ptr<GUI_Interface>, std::vector<std::shared_ptr<GUI_Element>>>;
+using GUI_Interfaces = std::unordered_map<std::string, GUI_Frame>;
 using GUI_Container = std::unordered_map<StateType, GUI_Interfaces>;
 using GUI_Events = std::unordered_map<StateType, std::vector<GUI_Event>>;
 using GUI_Factory = std::unordered_map<GUI_ElementType,
-        std::function<std::shared_ptr<GUI_Element>(std::weak_ptr<GUI_Interface>)>>;
+        std::function<std::shared_ptr<GUI_Element>(std::string&)>>;
 using GUI_ElemTypes = std::unordered_map <std::string, GUI_ElementType>;
 
 struct SharedContext;
@@ -39,6 +40,7 @@ public:
     void SetCurrentState(const StateType& l_state);
 
     std::weak_ptr<SharedContext> GetContext();
+    std::weak_ptr<GUI_Interface> GetFrame();
 
     void DefocusAllInterfaces();
 
@@ -53,22 +55,20 @@ public:
     void Render(std::weak_ptr<sf::RenderWindow> l_window);
 
 private:
-    std::shared_ptr<GUI_Element> createElement(const GUI_ElementType& l_id,
-            std::weak_ptr<GUI_Interface> l_owner);
+    std::shared_ptr<GUI_Element> createElement(const GUI_ElementType& l_id);
 
     GUI_ElementType stringToType(const std::string& l_string);
     bool loadStyle(const std::string& l_file, std::weak_ptr<GUI_Element> l_element);
 
     template<class T>
     void registerElement(const GUI_ElementType& l_id) {
-        _factory[l_id] =
-                [](std::weak_ptr<GUI_Interface> l_owner) -> std::shared_ptr<GUI_Element> {
-            return std::make_shared<T>(std::string(), l_owner);
+        _factory[l_id] = [](const string& l_name) -> std::shared_ptr<GUI_Element> {
+            return std::make_shared<T>(l_name);
         };
     }
 
 private:
-    GUI_Container _interfaces;
+    GUI_Container _guiContainer;
     GUI_Events _events;
     StateType _currentState;
     GUI_Factory _factory;

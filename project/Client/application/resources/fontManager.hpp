@@ -4,11 +4,11 @@
 
 #include "resourceManager.hpp"
 
-#define FONTS_FILE_PATH "assets/fonts.cfg"
+#define FONTS_FILE_PATH "assets/fonts.json"
 
 class FontManager : public ResourceManager<FontManager, sf::Font> {
 public:
-    FontManager() : ResourceManager(FONTS_FILE_PATH) {}
+    FontManager() : ResourceManager(FONTS_FILE_PATH, "fonts") {}
 
     std::shared_ptr<sf::Font> load(const std::string& l_path) {
         auto font = std::make_shared<sf::Font>();

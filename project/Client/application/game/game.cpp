@@ -28,8 +28,8 @@ Game::Game() {
     _fontManager->RequireResource("Main");
     _context->_fontManager = _fontManager;
 
-    _guiManager = std::make_shared<GUI_Manager>(_window->GetEventManager(), _context);
-    _context->_guiManager = _guiManager;
+    //_guiManager = std::make_shared<GUI_Manager>(_window->GetEventManager(), _context);
+    //_context->_guiManager = _guiManager;
 
     _stateManager = std::make_shared<StateManager>(_context);
     _stateManager->SwitchTo(StateType::Intro);
@@ -49,10 +49,10 @@ void Game::update() {
     _guiManager->Update(_elapsed.asSeconds());
     _soundManager->Update(_elapsed.asSeconds());
 
-    GUI_Event guiEvent;
-    while (_context->_guiManager.lock()->PollEvent(guiEvent)) {
-        _window->GetEventManager().lock()->HandleEvent(guiEvent);
-    }
+    //GUI_Event guiEvent;
+    //while (_context->_guiManager.lock()->PollEvent(guiEvent)) {
+    //    _window->GetEventManager().lock()->HandleEvent(guiEvent);
+    //}
 }
 
 void Game::render() {

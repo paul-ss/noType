@@ -6,11 +6,11 @@
 
 #include "resourceManager.hpp"
 
-#define AUDIO_FILE_PATH "assets/audio.cfg"
+#define AUDIO_FILE_PATH "assets/audio.json"
 
 class AudioManager : public ResourceManager<AudioManager, sf::SoundBuffer> {
 public:
-    AudioManager() : ResourceManager(AUDIO_FILE_PATH) {}
+    AudioManager() : ResourceManager(AUDIO_FILE_PATH, "audio") {}
 
     std::shared_ptr<sf::SoundBuffer> load(const std::string& l_path) {
         auto sound = std::make_shared<sf::SoundBuffer>();

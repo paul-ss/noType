@@ -7,10 +7,10 @@ SET(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic")
 SET(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/application")
 
 SET(ALL_HEADERS
+    ${SOURCE_DIR}/new_gui
     ${SOURCE_DIR}/eventManager
     ${SOURCE_DIR}/exceptions
     ${SOURCE_DIR}/game
-    ${SOURCE_DIR}/GUI
     ${SOURCE_DIR}/logger
     ${SOURCE_DIR}/soundManager
     ${SOURCE_DIR}/resources
@@ -22,14 +22,10 @@ SET(ALL_HEADERS
 )
 
 SET(ALL_SOURCES
+    ${SOURCE_DIR}/new_gui/button.cpp
     ${SOURCE_DIR}/eventManager/eventManager.cpp
     ${SOURCE_DIR}/exceptions/exceptions.hpp
     ${SOURCE_DIR}/game/game.cpp
-    ${SOURCE_DIR}/GUI/GUI_element.cpp
-    ${SOURCE_DIR}/GUI/GUI_textField.cpp
-    ${SOURCE_DIR}/GUI/GUI_label.cpp
-    ${SOURCE_DIR}/GUI/GUI_interface.cpp
-    ${SOURCE_DIR}/GUI/GUI_manager.cpp
     ${SOURCE_DIR}/logger/logger.cpp
     ${SOURCE_DIR}/soundManager/soundManager.cpp
     ${SOURCE_DIR}/stateManager/stateManager.cpp
@@ -41,7 +37,7 @@ SET(ALL_SOURCES
 
 SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 FIND_PACKAGE(SFML 2 REQUIRED graphics window system network audio)
-FIND_PACKAGE(Boost COMPONENTS log log_setup REQUIRED)
+FIND_PACKAGE(Boost COMPONENTS log log_setup serialization REQUIRED)
 
 SET(Boost_USE_STATIC_LIBS ON)
 
@@ -61,3 +57,5 @@ SET_TARGET_PROPERTIES(notype
     RUNTIME_OUTPUT_DIRECTORY "${SOURCE_DIR}/.."
 )
 TARGET_LINK_LIBRARIES(notype ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${Boost_LIBRARIES})
+
+#ADD_SUBDIRECTORY(tests)

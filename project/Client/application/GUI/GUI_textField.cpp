@@ -6,8 +6,8 @@
 #include "utils.hpp"
 #include "logger.hpp"
 
-GUI_TextField::GUI_TextField(const std::string& l_name, std::shared_ptr<GUI_Interface> l_owner)
-    : GUI_Element(l_name, GUI_ElementType::TextField , l_owner) {}
+GUI_TextField::GUI_TextField(const std::string& l_name)
+    : GUI_Element(l_name, GUI_ElementType::TextField) {}
 
 GUI_TextField::~GUI_TextField() {}
 

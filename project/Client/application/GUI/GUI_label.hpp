@@ -4,7 +4,7 @@
 
 class GUI_Label : public GUI_Element {
 public:
-    GUI_Label(const std::string& l_name, std::shared_ptr<GUI_Interface> l_owner);
+    GUI_Label(const std::string& l_name);
     ~GUI_Label() = default;
 
     void ReadIn(std::stringstream& l_stream);

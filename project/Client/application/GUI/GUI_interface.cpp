@@ -108,7 +108,7 @@ bool GUI_Interface::IsFocused() {
     return _focused;
 }
 
-void GUI_Interface::ReadIn(std::stringstream& l_stream) {
+void GUI_Interface::ReadIn(const std::string& l_stream) {
     std::string movableState;
     std::string titleShow;
     std::string title;

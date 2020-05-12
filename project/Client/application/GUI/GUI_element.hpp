@@ -9,6 +9,7 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 
 #include "GUI_style.hpp"
+#include "sharedContext.hpp"
 #include "logger.hpp"
 
 enum class GUI_ElementType { None = -1, Window, Label, Button, TextField };
@@ -22,8 +23,7 @@ class GUI_Element {
 
 public:
     GUI_Element(const std::string& l_name,
-            const GUI_ElementType& l_type,
-            std::shared_ptr<GUI_Interface> l_owner);
+            const GUI_ElementType& l_type, std::weak_ptr<SharedContext>);
 
     virtual ~GUI_Element();
 
@@ -85,7 +85,7 @@ protected:
     GUI_Visual _visual;
     GUI_ElementType _type;
     GUI_ElementState _state;
-    std::shared_ptr<GUI_Interface> _owner;
+    std::weak_ptr<SharedContext> _context;
 
     bool _needsRedraw;
     bool _active;

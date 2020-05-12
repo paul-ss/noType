@@ -15,6 +15,7 @@ class GUI_Manager;
 class GUI_Interface : public GUI_Element, public std::enable_shared_from_this<GUI_Interface> {
     friend class GUI_Element;
     friend class GUI_Manager;
+
 public:
     explicit GUI_Interface(const std::string& name, std::weak_ptr<GUI_Manager> guiManager);
     ~GUI_Interface();

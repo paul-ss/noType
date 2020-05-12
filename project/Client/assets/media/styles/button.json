@@ -1,0 +1,18 @@
+{
+    "button" : {
+        "neutral" : {
+            "size" : [300, 32],
+            "bgColor" : [255, 255, 255, 255],
+            "textSize" : 14,
+            "font" : "Main",
+            "textPadding" : [150, 16],
+            "textOriginCenter" : "true"
+        },
+        "hover" : {
+            "bgColor" : [0, 255, 255, 255]
+        },
+        "clicked" : {
+            "bgColor" : [255, 150, 0, 255]
+        }
+    }
+}

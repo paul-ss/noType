@@ -1,0 +1,42 @@
+{
+    "events" : {
+        "keys" : {
+            "Window_close" : {
+                "eventType" : "0",
+                "keyCode" : "0"
+            },
+            "Fullscreen_toggle" : {
+                "eventType" : "5",
+                "keyCode" : "89"
+            },
+            "Intro_Continue" : {
+                "eventType" : "5",
+                "keyCode" : "57"
+            },
+            "Mouse_Left" : {
+                "eventType" : "9",
+                "keyCode" : "0"
+            },
+            "Mouse_Left_Release" : {
+                "eventType" : "10",
+                "keyCode" : "0"
+            },
+            "Key_Escape" : {
+                "eventType" : "5",
+                "keyCode" : "36"
+            }
+        },
+        "gui" : {
+            "MainMenu_Play" : {
+                "eventType" : "27",
+                "interface" : "MainMenu",
+                "function" : "Play"
+            },
+            "MainMenu_Quit" : {
+                "eventType" : "27",
+                "interface" : "MainMenu",
+                "function" : "Quit"
+            }
+        }
+    }
+}

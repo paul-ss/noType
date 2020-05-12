@@ -5,15 +5,19 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <memory>
 #include <filesystem>
+
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
 #include "logger.hpp"
 
 template <typename Derived, typename T>
 class ResourceManager {
 public:
-    explicit ResourceManager(const std::string& l_pathsFile) {
-        loadPaths(l_pathsFile);
+    explicit ResourceManager(const std::string& l_pathsFile, const std::string& l_key) {
+        loadPaths(l_pathsFile, l_key);
     }
 
     virtual ~ResourceManager() = default;
@@ -26,7 +30,7 @@ protected:
     std::shared_ptr<T> load(const std::string& l_path);
 
 private:
-    void loadPaths(const std::string& l_pathFile);
+    void loadPaths(const std::string& l_pathFile, const std::string& l_key);
 
 private:
     std::unordered_map<std::string, std::shared_ptr<T>> _resources;
@@ -69,21 +73,16 @@ std::shared_ptr<T> ResourceManager<Derived, T>::load(const std::string& l_path) 
 }
 
 template <typename Derived, typename T>
-void ResourceManager<Derived, T>::loadPaths(const std::string& l_pathFile) {
-    std::ifstream paths;
-    paths.open(std::filesystem::absolute(l_pathFile));
-    if(paths.is_open()) {
-        std::string line;
-        while(std::getline(paths, line)) {
-            std::stringstream keystream(line);
-            std::string pathName;
-            std::string path;
-            keystream >> pathName;
-            keystream >> path;
-            _paths.emplace(pathName, path);
+void ResourceManager<Derived, T>::loadPaths(const std::string& l_pathFile,
+        const std::string& l_key) {
+    try {
+        boost::property_tree::ptree root;
+        boost::property_tree::read_json(l_pathFile, root);
+
+        for (boost::property_tree::ptree::value_type& currPath : root.get_child(l_key)) {
+            _paths.emplace(currPath.first.data(), currPath.second.data());
         }
-        paths.close();
-        return;
+    } catch (const boost::property_tree::ptree_error& e) {
+    BOOST_LOG_TRIVIAL(error) << e.what() << " " << l_pathFile;
     }
-    BOOST_LOG_TRIVIAL(error) << "Failed loading the path file: " << l_pathFile;
 }

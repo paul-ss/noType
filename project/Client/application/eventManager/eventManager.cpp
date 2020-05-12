@@ -1,10 +1,15 @@
 #include <filesystem>
 
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+
 #include "eventManager.hpp"
 #include "exceptions.hpp"
 #include "logger.hpp"
 
-EventManager::EventManager():_currentState(StateType(0)), _hasFocus(true) {
+#define BINDINGS_FILE_PATH "assets/bindings.json"
+
+EventManager::EventManager(): _currentState(StateType(0)), _hasFocus(true) {
     loadBindings();
 }
 
@@ -172,57 +177,40 @@ void EventManager::Update() {
 }
 
 void EventManager::loadBindings() {
-    std::string delimiter = ":";
-    std::ifstream bindings;
-    std::filesystem::path path = std::filesystem::absolute("assets/keys.cfg");
-    bindings.open(path);
-    if (!bindings.is_open()) {
-        BOOST_LOG_TRIVIAL(error) << "Failed to load keys file: " << path;
-        return;
-    }
-    std::string line;
-    while(std::getline(bindings, line)) {
-        std::stringstream keystream(line);
-        std::string callbackName;
-        keystream >> callbackName;
-        auto bind = std::make_shared<Binding>(callbackName);
-        while(!keystream.eof()) {
-            std::string keyval;
-            keystream >> keyval;
-            int start = 0;
-            int end = keyval.find(delimiter);
-            if (end == std::string::npos) {
-                break;
-            }
-            EventType type = EventType(stoi(keyval.substr(start, end-start)));
+    try {
+        boost::property_tree::ptree root;
+        boost::property_tree::read_json(BINDINGS_FILE_PATH, root);
 
+        for (boost::property_tree::ptree::value_type& keyEvent : root.get_child("events.keys")) {
+            auto bind = std::make_shared<Binding>(keyEvent.first.data());
+
+            auto eventType = keyEvent.second.get<EventType>("eventType");
+            auto keyCode = keyEvent.second.get<EventInfo>("keyCode");
+            bind->BindEvent(eventType, keyCode);
+
+            if (!AddBinding(bind)) {
+                throw InvalidCmd();
+            }
+        }
+
+        for (boost::property_tree::ptree::value_type& guiEvent : root.get_child("events.gui")) {
+            auto bind = std::make_shared<Binding>(guiEvent.first.data());
             EventInfo eventInfo;
-            if (type == EventType::GUI_Click || type == EventType::GUI_Release ||
-                type == EventType::GUI_Hover || type == EventType::GUI_Leave) {
-                start = end + delimiter.length();
-                end = keyval.find(delimiter, start);
-                std::string window = keyval.substr(start, end - start);
-                std::string element;
-                if (end != std::string::npos) {
-                    start = end + delimiter.length();
-                    end = keyval.length();
-                    element = keyval.substr(start, end);
-                }
 
-                eventInfo._gui._interface = window;
-                eventInfo._gui._element = element;
-            } else {
-                int code = stoi(keyval.substr(end + delimiter.length(),
-                    keyval.find(delimiter,end + delimiter.length())));
-                eventInfo._code = code;
+            auto eventType = guiEvent.second.get<EventType>("eventType");
+            eventInfo._gui._interface = guiEvent.second.get<std::string>("interface");
+            eventInfo._gui._element = guiEvent.second.get<std::string>("function");
+            bind->BindEvent(eventType, eventInfo);
+
+            if (!AddBinding(bind)) {
+                throw InvalidCmd();
             }
-            bind->BindEvent(type, eventInfo);
         }
 
-        if (!AddBinding(bind)) {
-            BOOST_LOG_TRIVIAL(error) << "Failed to add new Binding";
-            throw InvalidCmd();
-        }
+    } catch (const boost::property_tree::ptree_error& e) {
+        BOOST_LOG_TRIVIAL(error) << e.what();
+
+    } catch (const InvalidCmd& e) {
+        BOOST_LOG_TRIVIAL(error) << "Failed to add new Binding " << e.what();
     }
-    bindings.close();
 }

@@ -4,11 +4,11 @@
 
 #include "resourceManager.hpp"
 
-#define TEXTURES_FILE_PATH "assets/textures.cfg"
+#define TEXTURES_FILE_PATH "assets/textures.json"
 
 class TextureManager: public ResourceManager<TextureManager, sf::Texture> {
 public:
-    TextureManager(): ResourceManager(TEXTURES_FILE_PATH) {}
+    TextureManager(): ResourceManager(TEXTURES_FILE_PATH, "textures") {}
 
     std::shared_ptr<sf::Texture> load(const std::string& l_path) {
         auto texture = std::make_shared<sf::Texture>();

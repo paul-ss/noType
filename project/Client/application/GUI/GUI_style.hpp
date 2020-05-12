@@ -1,12 +1,12 @@
 #pragma once
 
+#include <string>
+
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Sprite.hpp>
-
-#include <string>
 
 enum class GUI_ElementState{ Neutral, Focused, Clicked };
 

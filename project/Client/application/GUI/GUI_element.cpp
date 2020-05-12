@@ -4,14 +4,14 @@
 #include "sharedContext.hpp"
 
 GUI_Element::GUI_Element(const std::string& l_name, const GUI_ElementType& l_type,
-                std::shared_ptr<GUI_Interface> l_owner) :
+        std::weak_ptr<SharedContext> l_context) :
         _name(l_name),
         _type(l_type),
         _state(GUI_ElementState::Neutral),
-        _owner(l_owner),
         _needsRedraw(false),
         _active(true),
-        _isControl(false) {}
+        _isControl(false),
+        _context(l_context) {}
 
 GUI_Element::~GUI_Element() {
     releaseResources();
@@ -50,6 +50,8 @@ void GUI_Element::ApplyStyle() {
     applyTextStyle();
     applyBgStyle();
     applyGlyphStyle();
+    auto frame = GetFrame();
+    
     if (_owner.get() != this && !IsControl()) {
         _owner->AdjustContentSize(this);
     }
@@ -57,10 +59,12 @@ void GUI_Element::ApplyStyle() {
 
 void GUI_Element::applyTextStyle() {
     try {
-        std::shared_ptr<GUI_Interface> interface(_owner);
-        std::shared_ptr<GUI_Manager> guiManager(interface->GetManager());
-        std::shared_ptr<SharedContext> context(guiManager->GetContext());
-        std::shared_ptr<FontManager> fontMgr(context->_fontManager);
+        //std::shared_ptr<GUI_Interface> interface(_owner);
+        //std::shared_ptr<GUI_Manager> guiManager(interface->GetManager());
+        //std::shared_ptr<SharedContext> context(guiManager->GetContext());
+        //std::shared_ptr<FontManager> fontMgr(context->_fontManager);
+        std::shared_ptr<TextureManager> context(_context);
+        std::shared_ptr<TextureManager> textureMgr(context->_textureManager);
 
         const GUI_Style& CurrentStyle = _style[_state];
         if (!CurrentStyle._textFont.empty()) {
@@ -84,9 +88,11 @@ void GUI_Element::applyTextStyle() {
 
 void GUI_Element::applyBgStyle() {
     try {
-        std::shared_ptr<GUI_Interface> interface(_owner);
-        std::shared_ptr<GUI_Manager> guiManager(interface->GetManager());
-        std::shared_ptr<SharedContext> context(guiManager->GetContext());
+        //std::shared_ptr<GUI_Interface> interface(_owner);
+        //std::shared_ptr<GUI_Manager> guiManager(interface->GetManager());
+        //std::shared_ptr<SharedContext> context(guiManager->GetContext());
+        //std::shared_ptr<TextureManager> textureMgr(context->_textureManager);
+        std::shared_ptr<TextureManager> context(_context);
         std::shared_ptr<TextureManager> textureMgr(context->_textureManager);
 
         const GUI_Style& CurrentStyle = _style[_state];
@@ -226,7 +232,7 @@ sf::Vector2f GUI_Element::GetGlobalPosition() const {
     std::shared_ptr<GUI_Interface> interface(_owner);
     sf::Vector2f position = GetPosition();
     if (interface == nullptr || interface.get() == this) {
-        return position; 
+        return position;
     }
     position += interface->GetGlobalPosition();
     if (IsControl()) {

@@ -8,11 +8,6 @@ void MainMenuState::OnCreate() {
     try {
         std::shared_ptr<StateManager> stateMgr(_stateMgr);
         std::shared_ptr<SharedContext> context(stateMgr->GetContext());
-        std::shared_ptr<GUI_Manager> gui(context->_guiManager);
-        gui->LoadInterface(StateType::MainMenu, "mainMenu.interface", "MainMenu");
-
-        std::shared_ptr<GUI_Interface>interface(gui->GetInterface(StateType::MainMenu, "MainMenu"));
-        interface->SetPosition(sf::Vector2f(250.f, 168.f));
 
         std::shared_ptr<EventManager> eMgr(context->_eventManager);
         auto lambdaPlay = [this](EventDetails& details) { this->Play(details); };

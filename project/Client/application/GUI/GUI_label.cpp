@@ -4,8 +4,8 @@
 #include "GUI_label.hpp"
 #include "utils.hpp"
 
-GUI_Label::GUI_Label(const std::string& l_name, std::shared_ptr<GUI_Interface> l_owner)
-    : GUI_Element(l_name, GUI_ElementType::Label, l_owner) {}
+GUI_Label::GUI_Label(const std::string& l_name)
+    : GUI_Element(l_name, GUI_ElementType::Label) {}
 
 void GUI_Label::ReadIn(std::stringstream& l_stream) {
     std::string content;
