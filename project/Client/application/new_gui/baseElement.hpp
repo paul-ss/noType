@@ -8,31 +8,10 @@ enum class GUI_ElementType {
     TextField
 };
 
-enum class GUI_ElementState{
+enum class GUI_ElementState {
     Neutral,
     Focused,
     Clicked
-};
-
-enum class GUI_EventType {
-    None,
-    Click,
-    Release,
-    Hover,
-    Leave
-};
-
-struct ClickCoordinates {
-    float x, y;
-};
-
-struct GUI_Event {
-    GUI_EventType type;
-    std::string element;
-    std::string interface;
-    union {
-        ClickCoordinates clickCoords;
-    };
 };
 
 struct GUI_Style {
@@ -74,6 +53,10 @@ struct GUI_Visual {
     sf::Text text;
 };
 
+using ElementStyles = std::unordered_map<GUI_ElementState, GUI_Style>;
+
+class EventManager;
+
 class BaseElement {
 public:
     BaseElement(const std::string& l_path, std::weak_ptr<EventManager> l_eMgr) : _eventManager(l_eMgr) {
@@ -82,7 +65,7 @@ public:
     ~BaseElement() = default;
 
     virtual void Draw(std::shared_ptr<sf::RenderTarget> l_target) = 0;
-    virtual void ReadIn(cosnt std::string& l_stream) = 0;
+    virtual void ReadIn(const std::string& l_stream) = 0;
     virtual void OnClick(const sf::Vector2f& l_mousePos) = 0;
     virtual void OnRelease() = 0;
     virtual void OnHover(const sf::Vector2f& l_mousePos) = 0;
@@ -91,6 +74,9 @@ public:
 
 protected:
     void loadStyle(const std::string& l_path);
+
+    void requireTexture(const std::string& l_name);
+    void requireFont(const std::string& l_name);
 
 protected:
     std::string _name;

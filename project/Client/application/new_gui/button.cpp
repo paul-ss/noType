@@ -1,6 +1,9 @@
-#include "baseElement.hpp"
+#include "button.hpp"
 
-Button::Button() {
+#define BUTTON_STYLE_PATH "assets/media/styles"
+
+Button::Button(std::weak_ptr<EventManager> l_eMgr) : BaseElement(BUTTON_STYLE_PATH, l_eMgr) {
+    /*
     try {
         std::shared_ptr<EventManager> eMgr(_eventMgr);
         auto lambdaClick = [this](EventDetails& l_details) {
@@ -20,4 +23,27 @@ Button::Button() {
     } catch (std::bad_weak_ptr& e) {
         //log
     }
+    */
 }
+
+    void Button::ReadIn(const std::string& l_stream) {
+
+    }
+    void Button::OnClick(const sf::Vector2f& l_mousePos) {
+
+    }
+    void Button::OnRelease() {
+
+    }
+    void Button::OnHover(const sf::Vector2f& l_mousePos) {
+
+    }
+    void Button::OnLeave() {
+
+    }
+    void Button::Update(float l_dT) {
+
+    }
+    void Button::Draw(std::shared_ptr<sf::RenderTarget> l_target) {
+
+    }

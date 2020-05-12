@@ -31,6 +31,6 @@ private:
     std::shared_ptr<FontManager> _fontManager;
     std::shared_ptr<AudioManager> _audioManager;
     std::shared_ptr<SoundManager> _soundManager;
-    std::shared_ptr<GUI_Manager> _guiManager;
+    //std::shared_ptr<GUI_Manager> _guiManager;
     std::shared_ptr<StateManager> _stateManager;
 };

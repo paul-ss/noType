@@ -49,9 +49,7 @@ void SoundManager::ChangeState(const StateType& state) {
     if (_musicContainer.find(_currentState) != _musicContainer.end()) {
         return;
     }
-    auto info = std::make_shared<SoundInfo>();
-    std::shared_ptr<sf::Music> music = nullptr;
-    _musicContainer.emplace(_currentState, std::make_pair(info, music));
+    _musicContainer.emplace(_currentState, std::make_pair<>(SoundInfo(), std::shared_ptr<sf::Music>()));
 }
 
 bool SoundManager::PlayMusic(const StateType& state){

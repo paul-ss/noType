@@ -7,8 +7,8 @@ SET(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic")
 SET(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/application")
 
 SET(ALL_HEADERS
-    ${SOURCE_DIR}/new_gui
     ${SOURCE_DIR}/eventManager
+    ${SOURCE_DIR}/new_gui
     ${SOURCE_DIR}/exceptions
     ${SOURCE_DIR}/game
     ${SOURCE_DIR}/logger
@@ -22,6 +22,7 @@ SET(ALL_HEADERS
 )
 
 SET(ALL_SOURCES
+    ${SOURCE_DIR}/new_gui/baseElement.cpp
     ${SOURCE_DIR}/new_gui/button.cpp
     ${SOURCE_DIR}/eventManager/eventManager.cpp
     ${SOURCE_DIR}/exceptions/exceptions.hpp
@@ -45,9 +46,6 @@ INCLUDE_DIRECTORIES(${SFML_INCLUDE_DIR})
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
-
-message("include ${Boost_INCLUDE_DIR}")
-message("lib ${Boost_LIBRARIES}")
 
 INCLUDE_DIRECTORIES(${ALL_HEADERS})
 

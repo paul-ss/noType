@@ -87,7 +87,7 @@ void StateManager::ProcessRequests() {
 
 void StateManager::SwitchTo(const StateType& type) {
     _shared.lock()->_eventManager.lock()->SetCurrentState(type);
-    _shared.lock()->_guiManager.lock()->SetCurrentState(type);
+    //_shared.lock()->_guiManager.lock()->SetCurrentState(type);
     _shared.lock()->_soundManager.lock()->ChangeState(type);
     for (auto itr = _states.begin();
         itr != _states.end(); ++itr) {

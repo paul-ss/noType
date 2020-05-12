@@ -34,12 +34,12 @@ void MainMenuState::OnDestroy() {
         return;
     }
 
-    auto gui = context->_guiManager.lock();
-    if (!gui) {
-        BOOST_LOG_TRIVIAL(error) << "Not valid gui manager [menu - ondestroy]";
-        return;
-    }
-    gui->RemoveInterface(StateType::MainMenu, "MainMenu");
+    //auto gui = context->_guiManager.lock();
+    //if (!gui) {
+    //    BOOST_LOG_TRIVIAL(error) << "Not valid gui manager [menu - ondestroy]";
+    //    return;
+    //}
+    //gui->RemoveInterface(StateType::MainMenu, "MainMenu");
 
     auto eMgr = context->_eventManager.lock();
     if (!eMgr) {

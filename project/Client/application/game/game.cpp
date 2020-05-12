@@ -46,7 +46,7 @@ void Game::restartClock() {
 void Game::update() {
     _window->Update();
     _stateManager->Update(_elapsed);
-    _guiManager->Update(_elapsed.asSeconds());
+    //_guiManager->Update(_elapsed.asSeconds());
     _soundManager->Update(_elapsed.asSeconds());
 
     //GUI_Event guiEvent;
@@ -59,7 +59,7 @@ void Game::render() {
     _window->BeginDraw();
     _stateManager->Draw();
 
-    _guiManager->Render(_window->GetRenderWindow());
+    //_guiManager->Render(_window->GetRenderWindow());
     _window->EndDraw();
 }
 

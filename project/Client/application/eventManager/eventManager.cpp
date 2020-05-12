@@ -40,10 +40,10 @@ sf::Vector2i EventManager::GetMousePos(std::weak_ptr<sf::RenderWindow> l_window)
 }
 
 bool EventManager::AddBinding(std::shared_ptr<Binding> binding) {
-    if (_bindings.find(binding->_name) != _bindings.end()) {
+    if (_bindings.find(binding->name) != _bindings.end()) {
         return false;
     }
-    return _bindings.emplace(binding->_name, binding).second;
+    return _bindings.emplace(binding->name, binding).second;
 }
 
 bool EventManager::RemoveBinding(std::string name) {
@@ -58,39 +58,39 @@ bool EventManager::RemoveBinding(std::string name) {
 void EventManager::HandleEvent(const sf::Event& l_event) {
     for (auto &b_itr : _bindings) {
         auto bind = b_itr.second;
-        for (auto &e_itr : bind->_events) {
+        for (auto &e_itr : bind->events) {
             EventType sfmlEvent = (EventType)l_event.type;
             if (e_itr.first != sfmlEvent) {
                 continue;
             }
             if (sfmlEvent == EventType::KeyDown || sfmlEvent == EventType::KeyUp) {
-                if (e_itr.second._code == l_event.key.code) {
-                    if (bind->_details._keyCode != -1) {
-                        bind->_details._keyCode = e_itr.second._code;
+                if (e_itr.second.code == l_event.key.code) {
+                    if (bind->details.keyCode != -1) {
+                        bind->details.keyCode = e_itr.second.code;
                     }
-                    ++(bind->_count);
+                    ++(bind->count);
                     break;
                 }
             } else if (sfmlEvent == EventType::MButtonDown || sfmlEvent == EventType::MButtonUp) {
-                if (e_itr.second._code == l_event.mouseButton.button) {
-                    bind->_details._mouse.x = l_event.mouseButton.x;
-                    bind->_details._mouse.y = l_event.mouseButton.y;
-                    if (bind->_details._keyCode != -1) {
-                        bind->_details._keyCode = e_itr.second._code;
+                if (e_itr.second.code == l_event.mouseButton.button) {
+                    bind->details.mouse.x = l_event.mouseButton.x;
+                    bind->details.mouse.y = l_event.mouseButton.y;
+                    if (bind->details.keyCode != -1) {
+                        bind->details.keyCode = e_itr.second.code;
                     }
-                    ++(bind->_count);
+                    ++(bind->count);
                     break;
                 }
             } else {
                 if (sfmlEvent == EventType::MouseWheel) {
-                    bind->_details._mouseWheelDelta = l_event.mouseWheel.delta;
+                    bind->details.mouseWheelDelta = l_event.mouseWheel.delta;
                 } else if (sfmlEvent == EventType::WindowResized) {
-                    bind->_details._size.x = l_event.size.width;
-                    bind->_details._size.y = l_event.size.height;
+                    bind->details.size.x = l_event.size.width;
+                    bind->details.size.y = l_event.size.height;
                 } else if (sfmlEvent == EventType::TextEntered) {
-                    bind->_details._textEntered = l_event.text.unicode;
+                    bind->details.textEntered = l_event.text.unicode;
                 }
-                ++(bind->_count);
+                ++(bind->count);
             }
         }
     }
@@ -99,24 +99,24 @@ void EventManager::HandleEvent(const sf::Event& l_event) {
 void EventManager::HandleEvent(const GUI_Event& l_event) {
     for (auto &b_itr : _bindings) {
         auto bind = b_itr.second;
-        for (auto &e_itr : bind->_events) {
+        for (auto &e_itr : bind->events) {
             if (e_itr.first != EventType::GUI_Click && e_itr.first != EventType::GUI_Release &&
                 e_itr.first != EventType::GUI_Hover && e_itr.first != EventType::GUI_Leave) {
                 continue;
             }
-            if ((e_itr.first == EventType::GUI_Click && l_event._type != GUI_EventType::Click) ||
-                (e_itr.first == EventType::GUI_Release && l_event._type != GUI_EventType::Release) ||
-                (e_itr.first == EventType::GUI_Hover && l_event._type != GUI_EventType::Hover) ||
-                (e_itr.first == EventType::GUI_Leave && l_event._type != GUI_EventType::Leave)) {
+            if ((e_itr.first == EventType::GUI_Click && l_event.type != GUI_EventType::Click) ||
+                (e_itr.first == EventType::GUI_Release && l_event.type != GUI_EventType::Release) ||
+                (e_itr.first == EventType::GUI_Hover && l_event.type != GUI_EventType::Hover) ||
+                (e_itr.first == EventType::GUI_Leave && l_event.type != GUI_EventType::Leave)) {
                     continue;
             }
-            if ((e_itr.second._gui._interface == l_event._interface) ||
-                (e_itr.second._gui._element == l_event._element)) {
+            if ((e_itr.second.gui.interface == l_event.interface) ||
+                (e_itr.second.gui.element == l_event.element)) {
                     continue;
             }
-            bind->_details._guiInterface = l_event._interface;
-            bind->_details._guiElement = l_event._element;
-            ++(bind->_count);
+            bind->details.guiInterface = l_event.interface;
+            bind->details.guiElement = l_event.element;
+            ++(bind->count);
         }
     }
 }
@@ -127,24 +127,24 @@ void EventManager::Update() {
     }
     for (auto &b_itr : _bindings) {
         auto bind = (b_itr.second);
-        for (auto &e_itr : bind->_events) {
+        for (auto &e_itr : bind->events) {
             switch (e_itr.first) {
                 case(EventType::Keyboard) : {
-                    if (sf::Keyboard::isKeyPressed( sf::Keyboard::Key(e_itr.second._code))) {
-                        if (bind->_details._keyCode != -1) {
-                            bind->_details._keyCode = e_itr.second._code;
+                    if (sf::Keyboard::isKeyPressed( sf::Keyboard::Key(e_itr.second.code))) {
+                        if (bind->details.keyCode != -1) {
+                            bind->details.keyCode = e_itr.second.code;
                         }
-                        ++(bind->_count);
+                        ++(bind->count);
                     }
                     break;
                 }
 
                 case(EventType::Mouse) : {
-                    if (sf::Mouse::isButtonPressed( sf::Mouse::Button(e_itr.second._code))) {
-                        if (bind->_details._keyCode != -1) {
-                            bind->_details._keyCode = e_itr.second._code;
+                    if (sf::Mouse::isButtonPressed( sf::Mouse::Button(e_itr.second.code))) {
+                        if (bind->details.keyCode != -1) {
+                            bind->details.keyCode = e_itr.second.code;
                         }
-                        ++(bind->_count);
+                        ++(bind->count);
                     }
                     break;
                 }
@@ -154,25 +154,25 @@ void EventManager::Update() {
             }
         }
 
-        if (bind->_events.size() == bind->_count) {
+        if (bind->events.size() == bind->count) {
             auto stateCallbacks = _callbacks.find(_currentState);
             auto otherCallbacks = _callbacks.find(StateType(0));
             if (stateCallbacks != _callbacks.end()) {
-                auto callItr = stateCallbacks->second.find(bind->_name);
+                auto callItr = stateCallbacks->second.find(bind->name);
                 if (callItr != stateCallbacks->second.end()) {
-                    callItr->second(bind->_details);
+                    callItr->second(bind->details);
                 }
             }
             if (otherCallbacks != _callbacks.end()) {
-                auto callItr = otherCallbacks->second.find(bind->_name);
+                auto callItr = otherCallbacks->second.find(bind->name);
                 if (callItr != otherCallbacks->second.end()) {
-                    callItr->second(bind->_details);
+                    callItr->second(bind->details);
                 }
             }
         }
 
-        bind->_count = 0;
-        bind->_details.Clear();
+        bind->count = 0;
+        bind->details.Clear();
     }
 }
 
@@ -181,31 +181,31 @@ void EventManager::loadBindings() {
         boost::property_tree::ptree root;
         boost::property_tree::read_json(BINDINGS_FILE_PATH, root);
 
-        for (boost::property_tree::ptree::value_type& keyEvent : root.get_child("events.keys")) {
-            auto bind = std::make_shared<Binding>(keyEvent.first.data());
-
-            auto eventType = keyEvent.second.get<EventType>("eventType");
-            auto keyCode = keyEvent.second.get<EventInfo>("keyCode");
-            bind->BindEvent(eventType, keyCode);
-
-            if (!AddBinding(bind)) {
-                throw InvalidCmd();
-            }
-        }
-
-        for (boost::property_tree::ptree::value_type& guiEvent : root.get_child("events.gui")) {
-            auto bind = std::make_shared<Binding>(guiEvent.first.data());
-            EventInfo eventInfo;
-
-            auto eventType = guiEvent.second.get<EventType>("eventType");
-            eventInfo._gui._interface = guiEvent.second.get<std::string>("interface");
-            eventInfo._gui._element = guiEvent.second.get<std::string>("function");
-            bind->BindEvent(eventType, eventInfo);
-
-            if (!AddBinding(bind)) {
-                throw InvalidCmd();
-            }
-        }
+        //for (boost::property_tree::ptree::value_type& keyEvent : root.get_child("events.keys")) {
+        //    auto bind = std::make_shared<Binding>(keyEvent.first.data());
+//
+        //    auto eventType = keyEvent.second.get<EventType>("eventType");
+        //    auto keyCode = keyEvent.second.get<EventInfo>("keyCode");
+        //    bind->BindEvent(eventType, keyCode);
+//
+        //    if (!AddBinding(bind)) {
+        //        throw InvalidCmd();
+        //    }
+        //}
+//
+        //for (boost::property_tree::ptree::value_type& guiEvent : root.get_child("events.gui")) {
+        //    auto bind = std::make_shared<Binding>(guiEvent.first.data());
+        //    EventInfo eventInfo;
+//
+        //    auto eventType = guiEvent.second.get<EventType>("eventType");
+        //    eventInfo.gui.interface = guiEvent.second.get<std::string>("interface");
+        //    eventInfo.gui.element = guiEvent.second.get<std::string>("function");
+        //    bind->BindEvent(eventType, eventInfo);
+//
+        //    if (!AddBinding(bind)) {
+        //        throw InvalidCmd();
+        //    }
+        //}
 
     } catch (const boost::property_tree::ptree_error& e) {
         BOOST_LOG_TRIVIAL(error) << e.what();

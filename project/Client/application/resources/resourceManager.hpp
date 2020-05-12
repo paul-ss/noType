@@ -40,7 +40,10 @@ private:
 template <typename Derived, typename T>
 std::weak_ptr<T> ResourceManager<Derived, T>::GetResource(const std::string& l_id) {
     auto res = _resources.find(l_id);
-    return(res ? res->second : std::weak_ptr<T>());
+    if (res == _resources.end()) {
+        return {};
+    }
+    return res->second;
 }
 
 template <typename Derived, typename T>
@@ -51,10 +54,11 @@ std::string ResourceManager<Derived, T>::GetPath(const std::string& l_id) {
 
 template <typename Derived, typename T>
 bool ResourceManager<Derived, T>::RequireResource(const std::string& l_id) {
-    auto res = _resources.find(l_id).lock();
-    if(res) {
+    auto res = _resources.find(l_id);
+    if(res != _resources.end()) {
         return true;
     }
+
     auto path = _paths.find(l_id);
     if (path == _paths.end()) {
         return false;

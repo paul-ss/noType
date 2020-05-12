@@ -13,7 +13,7 @@ using SoundID = int;
 
 enum class StateType;
 
-struct SoundInfo{
+struct SoundInfo {
     SoundInfo() = default;
     explicit SoundInfo(const std::string& name): _name(name), _manualPaused(false) {}
     std::string _name;
