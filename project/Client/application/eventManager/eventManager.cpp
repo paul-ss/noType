@@ -199,7 +199,6 @@ void EventManager::loadBindings() {
 
             EventType type = EventType(stoi(guiEvent.second.get<std::string>("eventType")));
             EventInfo eventInfo;
-            eventInfo.gui.interface = guiEvent.second.get<std::string>("interface");
             eventInfo.gui.element = guiEvent.second.get<std::string>("function");
             bind->BindEvent(type, eventInfo);
 

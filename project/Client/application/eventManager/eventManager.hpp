@@ -52,7 +52,6 @@ struct EventDetails {
     int mouseWheelDelta;
     int keyCode;
 
-    std::string guiInterface;
     std::string guiElement;
     GUI_EventType guiEvent;
 
@@ -62,7 +61,6 @@ struct EventDetails {
         mouse = sf::Vector2i(0, 0);
         mouseWheelDelta = 0;
         keyCode = -1;
-        guiInterface = "";
         guiElement = "";
         guiEvent = GUI_EventType::None;
     }
