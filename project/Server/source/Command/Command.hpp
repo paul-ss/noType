@@ -69,7 +69,7 @@ enum class ControllerType {basic, game};
 class Command {
  public:
     Command(CommandType commandType, const std::string &connectionUUID);
-    Command() = default;
+    Command();
     virtual ~Command() = default;
 
     CommandType getCommandType();
@@ -85,7 +85,7 @@ protected:
 
 class ClientCommand: public Command {
  public:
-    ClientCommand() = default;
+    ClientCommand();
     ClientCommand(CommandType commandType, const std::string &connectionUUID);
     ControllerType getControllerType();
 
@@ -129,7 +129,7 @@ class ErrorRequest: public ClientCommand {
 public:
   explicit ErrorRequest(const std::string &connectionUUID) :
       ClientCommand(CommandType::ErrorRequest, connectionUUID) {}
-  void parseFromPtree(pt::ptree &&pTree) {
+  void parseFromPtree(pt::ptree &&pTree) override {
     pTree.empty();
   }
 };

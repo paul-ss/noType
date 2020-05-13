@@ -4,8 +4,10 @@
 //
 
 #include "Command.hpp"
-#define SUCCESS 0
-#define FAIL 1
+
+
+Command::Command() :
+    _commandType(CommandType::ErrorRequest){}
 
 
 Command::Command(CommandType commandType, const std::string &connectionUUID) :
@@ -28,6 +30,9 @@ std::string Command::getConnectionUUID() {
 
 
 
+
+ClientCommand::ClientCommand() :
+    _controllerType(ControllerType::basic) {}
 
 
 ClientCommand::ClientCommand(CommandType commandType, const std::string &connectionUUID) :

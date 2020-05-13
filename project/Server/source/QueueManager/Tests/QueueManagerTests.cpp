@@ -18,10 +18,18 @@ public:
 };
 
 
+class FakeClientCommand : public ClientCommand {
+  void parseFromPtree(pt::ptree &&pTree) override {
+    pTree.empty();
+  }
+};
+
 class FakeCommandFactory : public CommandFactory {
-  std::shared_ptr<ClientCommand> createCommand(const std::string &data) override {
+  std::shared_ptr<ClientCommand> createCommand(const std::string &connectionUUID,
+                                                  const std::string &data) override {
     data.size();
-    return std::make_shared<ClientCommand>();
+    connectionUUID.size();
+    return std::make_shared<FakeClientCommand>();
   }
 };
 
