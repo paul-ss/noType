@@ -17,7 +17,7 @@
 
 
 class Room;
-enum RoomState {ROOM_WAIT, ROOM_PLAY, ROOM_END};
+BETTER_ENUM(RoomState, int, wait, play, end)
 
 template<class T> using ExpectedRoom = Expected<T, RoomError>;
 

@@ -59,8 +59,6 @@ BETTER_ENUM (CommandType, int,
 
 BETTER_ENUM (ResponseStatus, int, success, fail)
 
-BETTER_ENUM (RoomStatus, int, wait, play, end)
-
 enum class ControllerType {basic, game};
 
 

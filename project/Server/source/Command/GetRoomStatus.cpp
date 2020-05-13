@@ -28,17 +28,17 @@ std::string RoomStatusRequest::getClientUUID() {
 
 RoomStatusResponse::RoomStatusResponse(
         const std::string &connectionUUID,
-        RoomStatus roomStatus,
+        RoomState roomStatus,
         std::unordered_map<std::string, Player> &&players) :
     ServerCommand(CommandType::RoomStatusResponse, connectionUUID),
-    _roomStatus(roomStatus),
+    _roomState(roomStatus),
     _players(std::move(players)) {}
 
 
 
 RoomStatusResponse::RoomStatusResponse(const std::string &connectionUUID) :
     ServerCommand(CommandType::RoomStatusResponse, connectionUUID),
-    _roomStatus(RoomStatus::wait) {}
+    _roomState(RoomState::wait) {}
 
 
 std::string RoomStatusResponse::parseToJSON() {
@@ -64,15 +64,15 @@ std::string RoomStatusResponse::internalParseToJSON() {
   tree.put(COMMAND_TYPE_JSON_PATH, _commandType._to_string());
   tree.put(RESPONSE_STATUS_JSON_PATH, _status._to_string());
   tree.put(ERROR_MSG_JSON_PATH, _errorMsg);
-  tree.put(ROOM_STATUS_JSON_PATH, "roomStatus");
+  tree.put(ROOM_STATUS_JSON_PATH, _roomState._to_string());
 
   for (auto &player : _players) {
-    std::string playerCharacterDir(ROOM_PLAYERS_JSON_PATH "." + player.first + ".");
+    std::string playerCharacterDir(ROOM_PLAYERS_JSON_PATH "." + player.second.playerID + ".");
 
     tree.put(playerCharacterDir + PLAYER_NAME_JSON_DIR, player.second.name);
     tree.put(playerCharacterDir + PLAYER_POS_JSON_DIR, player.second.textPosition);
     tree.put(playerCharacterDir + PLAYER_SPEED_JSON_DIR, player.second.currentSpeed);
-    tree.put(playerCharacterDir + PLAYER_STATUS_JSON_DIR, "playerStatus");
+    tree.put(playerCharacterDir + PLAYER_STATUS_JSON_DIR, player.second.state._to_string());
   }
 
 

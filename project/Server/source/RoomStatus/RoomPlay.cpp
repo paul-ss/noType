@@ -39,7 +39,7 @@ ExpectedRoom<size_t> RoomPlay::validateWrittenText(std::shared_ptr<Room> room,
   }
 
 
-  if (room->getPlayerState(clientUUID) != PLAYER_PLAY) {
+  if (room->getPlayerState(clientUUID)._value != PlayerState::play) {
     return RoomError("Sorry, you can't enter the text, because you have already finished! Congratulations!");
   }
 
@@ -49,9 +49,9 @@ ExpectedRoom<size_t> RoomPlay::validateWrittenText(std::shared_ptr<Room> room,
   auto textPosition = room->getTextPosition(clientUUID);
   if (textPosition >= room->_text.size() || textPosition >= _roomConfig._finishLine) {
     if (room->_numberOfFinishers == 0) {
-      room->setPlayerState(clientUUID, PLAYER_WIN);
+      room->setPlayerState(clientUUID, PlayerState::win);
     } else {
-      room->setPlayerState(clientUUID, PLAYER_FINISH);
+      room->setPlayerState(clientUUID, PlayerState::finish);
     }
     room->_numberOfFinishers++;
 
@@ -75,7 +75,7 @@ ExpectedRoom<size_t> RoomPlay::validateWrittenText(std::shared_ptr<Room> room,
 
 GetRoomStatusResp RoomPlay::getRoomStatus(std::shared_ptr<Room> room) {
   std::unique_lock<std::mutex> lock(room->_roomMutex);  // ??
-  return GetRoomStatusResp(room->_players, ROOM_PLAY);
+  return GetRoomStatusResp(room->_players, RoomState::play);
 }
 
 

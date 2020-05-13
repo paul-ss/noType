@@ -26,7 +26,7 @@ class RoomStatusResponse: public ServerCommand {
 public:
   RoomStatusResponse(
         const std::string &connectionUUID,
-        RoomStatus roomStatus,
+        RoomState roomStatus,
         std::unordered_map<std::string, Player> &&players);
   RoomStatusResponse(const std::string &connectionUUID);
   std::string parseToJSON() override;
@@ -35,6 +35,6 @@ private:
   std::string internalParseToJSON();
 
 private:
-  RoomStatus _roomStatus;
+  RoomState _roomState;
   std::unordered_map<std::string, Player> _players;
 };

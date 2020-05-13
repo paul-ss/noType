@@ -10,7 +10,7 @@ Player::Player(const std::string &clientUUID, const std::string &name) :
     playerID(randomUUID()),
     name(name),
     textPosition(0),
-    state(PLAYER_PLAY),
+    state(PlayerState::play),
     lastTextPosition(0),
     currentSpeed(0) {}
 
@@ -21,16 +21,3 @@ std::string Player::randomUUID() {
   return to_string(uuid);
 }
 
-rapidjson::Document Player::toJSON() {
-    rapidjson::Document doc;
-    auto& allocator = doc.GetAllocator();
-    doc.SetObject();
-    rapidjson::Value jsonVal;
-    jsonVal.SetString(clientUUID.c_str(), allocator);
-    jsonVal.AddMember("clientUUID", jsonVal, allocator);
-    jsonVal.SetString(name.c_str(), allocator);
-    jsonVal.AddMember("name", jsonVal, allocator);
-    jsonVal.SetUint64(textPosition);
-    jsonVal.AddMember("textPosition", jsonVal, allocator);
-    return doc;
-}

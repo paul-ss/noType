@@ -65,11 +65,11 @@ void GameController::commandDistributor(const std::shared_ptr<Command> &command)
             boost::bind(&GameController::getTextHandler, this, _1));
         break;
 
-//      case (CommandType::RoomStatusRequest) :
-//        handlerExceptionCatcher<RoomStatusRequest, RoomStatusResponse>(
-//            command,
-//            boost::bind(&GameController::getRoomStatusHandler, this, _1));
-//        break;
+      case (CommandType::RoomStatusRequest) :
+        handlerExceptionCatcher<RoomStatusRequest, RoomStatusResponse>(
+            command,
+            boost::bind(&GameController::getRoomStatusHandler, this, _1));
+        break;
 
       case (CommandType::ValidateWrittenTextRequest) :
         handlerExceptionCatcher<ValidateWrittenTextRequest, ValidateWrittenTextResponse>(
@@ -186,26 +186,26 @@ void GameController::getTextHandler(const std::shared_ptr<GetTextRequest> &comma
 
 
 
-//
-//
-//void GameController::getRoomStatusHandler(const std::shared_ptr<RoomStatusRequest> &command) {
-//  auto room = _roomManager->getRoom(command->getClientUUID());
-//  if (!room) {
-//    auto commandResp = std::make_shared<RoomStatusResponse>(command->getConnectionUUID());
-//    commandResp->setError("Player with uuid " + command->getClientUUID() + " doesn't exist in room");
-//    _queueManager->controllerPush(commandResp);
-//    return;
-//  }
-//
-//  auto roomStatus = room->getRoomStatus();
-//
-//  auto commandResp = std::make_shared<RoomStatusResponse>(
-//      command->getConnectionUUID(),
-//      roomStatus.state,
-//      roomStatus.players);
-//
-//  _queueManager->controllerPush(commandResp);
-//}
+
+
+void GameController::getRoomStatusHandler(const std::shared_ptr<RoomStatusRequest> &command) {
+  auto room = _roomManager->getRoom(command->getClientUUID());
+  if (!room) {
+    auto commandResp = std::make_shared<RoomStatusResponse>(command->getConnectionUUID());
+    commandResp->setError("Player with uuid " + command->getClientUUID() + " doesn't exist in room");
+    _queueManager->controllerPush(commandResp);
+    return;
+  }
+
+  auto roomStatus = room->getRoomStatus();
+
+  auto commandResp = std::make_shared<RoomStatusResponse>(
+      command->getConnectionUUID(),
+      roomStatus.state,
+      std::move(roomStatus.players));
+
+  _queueManager->controllerPush(commandResp);
+}
 
 
 

@@ -9,15 +9,15 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/random_generator.hpp>
 
-#include <Parse.hpp>
+#include <enum.hpp>
 
 
-enum PlayerState {PLAYER_PLAY, PLAYER_FINISH, PLAYER_WIN};
+BETTER_ENUM (PlayerState, int, play, finish, win)
 
 struct Player {
 public:
   Player(const std::string &clientUUID, const std::string &name);
-  rapidjson::Document toJSON();
+
 
 public:
   const std::string clientUUID;
