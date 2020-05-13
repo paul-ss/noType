@@ -11,7 +11,10 @@ enum class GUI_ElementType {
 enum class GUI_ElementState {
     Neutral,
     Focused,
-    Clicked
+    Clicked,
+    Hover,
+    Release,
+    TextEntered
 };
 
 struct GUI_Style {
@@ -53,27 +56,24 @@ struct GUI_Visual {
     sf::Text text;
 };
 
-using ElementStyles = std::unordered_map<GUI_ElementState, GUI_Style>;
+using ElementStyles = std::unordered_map<GUI_ElementState, std::shared_ptr<GUI_Style>>;
 struct SharedContext;
 class BaseElement {
 public:
     BaseElement(const std::string& l_path, std::weak_ptr<SharedContext> l_sharedContext) :
-            _sharedContext(l_sharedContext) {
-
-        loadStyle(l_path);
-}
+            _sharedContext(l_sharedContext) {}
     ~BaseElement() = default;
 
-    virtual void Draw(std::shared_ptr<sf::RenderTarget> l_target) = 0;
+    virtual void Draw(std::shared_ptr<sf::RenderTarget> l_target);
+    virtual void Update(float l_dT);
+
+protected:
+    virtual void loadStyle(const std::string& l_path) = 0;
     virtual void ReadIn(const std::string& l_stream) = 0;
     virtual void OnClick(const sf::Vector2f& l_mousePos) = 0;
     virtual void OnRelease() = 0;
     virtual void OnHover(const sf::Vector2f& l_mousePos) = 0;
-    virtual void OnLeave() = 0;
-    virtual void Update(float l_dT) = 0;
-
-protected:
-    virtual void loadStyle(const std::string& l_path) = 0;
+    virtual void OnLeave();
 
 protected:
     std::string _name;

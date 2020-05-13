@@ -17,7 +17,6 @@ struct ClickCoordinates {
 struct GUI_Event {
     GUI_EventType type;
     std::string element;
-    std::string interface;
     union {
         ClickCoordinates clickCoords;
     };
