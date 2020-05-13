@@ -116,18 +116,20 @@ public:
 
 
 
-//class ErrorResponse: public ServerCommand {
-// public:
-//    Error(const std::string &clientUUID, const std::string &errorMessage);
-//};
+class ErrorResponse: public ServerCommand {
+ public:
+    ErrorResponse(const std::string &connectionUUID, std::string &&errorMsg);
+    std::string parseToJSON() override ;
+};
 
 
 
 class ErrorRequest: public ClientCommand {
 public:
-  explicit ErrorRequest(const std::string &connectionUUID) :
-      ClientCommand(CommandType::ErrorRequest, connectionUUID) {}
-  void parseFromPtree(pt::ptree &&pTree) override {
-    pTree.empty();
-  }
+  explicit ErrorRequest(const std::string &connectionUUID, const std::string &errorMsg);
+  void parseFromPtree(pt::ptree &&pTree) override;
+  std::string getErrorMsg();
+
+private:
+  std::string _errorMsg;
 };

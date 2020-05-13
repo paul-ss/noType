@@ -13,16 +13,19 @@ std::shared_ptr<ClientCommand> CommandFactory::createCommand(
     return createCommandInternal(connectionUUID, data);
 
   } catch (const pt::ptree_error &exc) {
-    std::cout << exc.what() << std::endl;
-    return std::make_shared<ErrorRequest>(connectionUUID);
+    std::cout << "CommandFactory exception: " + std::string(exc.what()) << std::endl;
+    return std::make_shared<ErrorRequest>(connectionUUID,
+        "CommandFactory exception: " + std::string(exc.what()));
     
   } catch (std::runtime_error &exc) {
-    std::cout << exc.what() << std::endl;
-    return std::make_shared<ErrorRequest>(connectionUUID);
+    std::cout << "CommandFactory exception: " + std::string(exc.what()) << std::endl;
+    return std::make_shared<ErrorRequest>(connectionUUID,
+        "CommandFactory exception: " +  std::string(exc.what()));
     
   } catch (...) {
     std::cout << "CommandFactory : unknown exception" << std::endl;
-    return std::make_shared<ErrorRequest>(connectionUUID);
+    return std::make_shared<ErrorRequest>(connectionUUID,
+        "CommandFactory : unknown exception");
     
   }
 }
@@ -63,6 +66,6 @@ std::shared_ptr<ClientCommand> CommandFactory::createCommandInternal(
       return std::make_shared<ValidateWrittenTextRequest>(connectionUUID, std::move(tree));
 
     default:
-      return std::make_shared<ErrorRequest>(connectionUUID);
+      return std::make_shared<ErrorRequest>(connectionUUID, "CommandFactory error: invalid command type");
   }
 }

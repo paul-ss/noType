@@ -64,6 +64,8 @@ ControllerType ClientCommand::controllerTypeFromCommandType(CommandType commandT
 
 
 
+
+
 ServerCommand::ServerCommand(CommandType commandType, const std::string &connectionUUID) :
     Command(commandType, connectionUUID),
     _status(ResponseStatus::success),
@@ -75,3 +77,35 @@ void ServerCommand::setError(std::string &&errorMsg) {
   _errorMsg = errorMsg;
 }
 
+
+ErrorResponse::ErrorResponse(const std::string &connectionUUID, std::string &&errorMsg) :
+    ServerCommand(CommandType::ErrorResponse, connectionUUID) {
+  setError(std::move(errorMsg));
+}
+
+
+std::string ErrorResponse::parseToJSON() {
+  return "{\n \"" COMMAND_TYPE_JSON_PATH "\" : \"" + std::string(_commandType._to_string()) + "\",\n" +
+         "\"" ERROR_MSG_JSON_PATH "\" : \"" + _errorMsg + "\",\n }";
+}
+
+
+
+
+
+
+
+
+ErrorRequest::ErrorRequest(const std::string &connectionUUID, const std::string &errorMsg) :
+    ClientCommand(CommandType::ErrorRequest, connectionUUID),
+    _errorMsg(errorMsg) {}
+
+
+void ErrorRequest::parseFromPtree(pt::ptree &&pTree) {
+  pTree.empty();
+}
+
+
+std::string ErrorRequest::getErrorMsg() {
+  return _errorMsg;
+}

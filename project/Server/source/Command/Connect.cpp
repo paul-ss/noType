@@ -36,14 +36,17 @@ std::string ConnectResponse::parseToJSON() {
     return internalParseToJSON();
 
   } catch (const pt::ptree_error &exc) {
-    std::cout << exc.what() << std::endl;
-    // todo log
-    // todo return valid json
-    return "sorry";
+    std::cout << "ConnectResponse::parseToJSON :" + std::string(exc.what()) << std::endl;
+    auto resp = ErrorResponse(_connectionUUID,
+        "ConnectResponse::parseToJSON :" + std::string(exc.what()));
+    return resp.parseToJSON();
+
 
   } catch (...) {
     std::cout << "ConnectResponse::parseToJSON : unknown exception" << std::endl;
-    return "sorry";
+    auto resp = ErrorResponse(_connectionUUID,
+                              "ConnectResponse::parseToJSON : unknown exception");
+    return resp.parseToJSON();
   }
 }
 
