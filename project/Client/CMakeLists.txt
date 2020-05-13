@@ -21,7 +21,6 @@ SET(ALL_HEADERS
 )
 
 SET(ALL_SOURCES
-    ${SOURCE_DIR}/new_gui/baseElement.cpp
     ${SOURCE_DIR}/new_gui/button.cpp
     ${SOURCE_DIR}/eventManager/eventManager.cpp
     ${SOURCE_DIR}/exceptions/exceptions.hpp

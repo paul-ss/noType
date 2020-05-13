@@ -18,7 +18,6 @@ void IntroState::OnCreate() {
                                 introTexture->getSize().y / 2.0f);
 
         std::shared_ptr<sf::RenderWindow>renderWindow(window->GetRenderWindow());
-        std::cout << renderWindow.use_count() <<"<- on create renderWindow \n";
         sf::Vector2u windowSize = renderWindow->getSize();
         _introSprite.setPosition(windowSize.x / 2.0f, windowSize.y / 2.0f);
 
@@ -38,7 +37,8 @@ void IntroState::OnCreate() {
         evMgr->AddCallback(StateType::Intro, "Intro_Continue", lambdaContinue);
 
         std::shared_ptr<SoundManager>soundMgr(context->_soundManager);
-        //soundMgr->PlayMusic("noType", 50.f, true);
+        soundMgr->PlayMusic("noType", 50.f, true);
+
     } catch (const std::bad_weak_ptr &e) {
         BOOST_LOG_TRIVIAL(error) << "[intro - oncreate] " << e.what();
         return;
@@ -63,7 +63,7 @@ void IntroState::Draw() {
         std::shared_ptr<SharedContext>context(stateMgr->GetContext());
         std::shared_ptr<Window>window(context->_window);
         std::shared_ptr<sf::RenderWindow>renderWindow(window->GetRenderWindow());
-
+        renderWindow->clear(sf::Color::Magenta);
         renderWindow->draw(_introSprite);
         renderWindow->draw(_text);
     } catch(const std::bad_weak_ptr &e) {

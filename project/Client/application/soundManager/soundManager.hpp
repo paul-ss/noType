@@ -7,8 +7,6 @@
 
 #include <SFML/Audio.hpp>
 
-#include "audioManager.hpp"
-
 using SoundID = int;
 
 enum class StateType;
@@ -21,12 +19,10 @@ struct SoundInfo {
 };
 
 using MusicContainer = std::unordered_map<StateType, std::pair<SoundInfo, std::shared_ptr<sf::Music>>>;
-
+struct SharedContext;
 class SoundManager {
 public:
-    explicit SoundManager(std::weak_ptr<AudioManager> l_audioMgr) :
-            _numSounds(0), _elapsed(0.f), _audioManager(l_audioMgr) {};
-
+    explicit SoundManager(std::weak_ptr<SharedContext> l_sharedContext);
     ~SoundManager() = default;
 
     void ChangeState(const StateType& l_state);
@@ -49,5 +45,5 @@ private:
     StateType _currentState;
     unsigned int _numSounds;
     float _elapsed;
-    std::weak_ptr<AudioManager> _audioManager;
+    std::weak_ptr<SharedContext> _sharedContext;
 };

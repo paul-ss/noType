@@ -2,7 +2,13 @@
 
 #include <boost/log/trivial.hpp>
 
+#include "sharedContext.hpp"
 #include "soundManager.hpp"
+
+SoundManager::SoundManager(std::weak_ptr<SharedContext> l_sharedContext) :
+            _numSounds(0),
+            _elapsed(0.f),
+            _sharedContext(l_sharedContext) {};
 
 void SoundManager::RemoveState(const StateType& l_state) {
     auto music = _musicContainer.find(l_state);
@@ -43,7 +49,7 @@ void SoundManager::ChangeState(const StateType& state) {
     pauseAll(_currentState);
     unPauseAll(state);
     _currentState = state;
-    
+
     if (_musicContainer.find(_currentState) != _musicContainer.end()) {
         return;
     }
@@ -98,37 +104,32 @@ bool SoundManager::PlayMusic(const std::string& musicId, float volume, bool loop
         return false;
     }
 
-    auto audioManager = _audioManager.lock();
-    if (!audioManager) {
+    try {
+        std::shared_ptr<SharedContext> sharedContext(_sharedContext);
+        std::shared_ptr<AudioManager> audioManager(sharedContext->_audioManager);
+
+        if (!currStateMusic->second.second) {
+            audioManager->RequireResource(musicId);
+            currStateMusic->second.second = audioManager->GetResource(musicId).lock();
+            if (!currStateMusic->second.second) {
+                BOOST_LOG_TRIVIAL(error) << "Failed to require resource : " << musicId;
+                return false;
+            }
+            ++_numSounds;
+        }
+
+        auto&& music = currStateMusic->second.second;
+        music->setLoop(loop);
+        music->setVolume(volume);
+        music->setRelativeToListener(true);
+        music->play();
+        currStateMusic->second.first._name = musicId;
+        return true;
+
+    } catch (const std::bad_weak_ptr &e) {
         BOOST_LOG_TRIVIAL(error) << "AudioManager is expired";
         return false;
     }
-    std::string path = audioManager->GetPath(musicId);
-    if (path.empty()) {
-        BOOST_LOG_TRIVIAL(error) << "Wrong path to music file: " << path;
-        return false;
-    }
-
-    if (!currStateMusic->second.second) {
-        currStateMusic->second.second = std::make_shared<sf::Music>();
-        ++_numSounds;
-    }
-
-    auto&& music = currStateMusic->second.second;
-    if (!music->openFromFile(std::filesystem::absolute(path))) {
-        music.reset();
-        --_numSounds;
-        music = nullptr;
-        BOOST_LOG_TRIVIAL(error) << "Failed to load music from file: " << musicId;
-        return false;
-    }
-
-    music->setLoop(loop);
-    music->setVolume(volume);
-    music->setRelativeToListener(true);
-    music->play();
-    currStateMusic->second.first._name = musicId;
-    return true;
 }
 
 void SoundManager::Update(float dT) {

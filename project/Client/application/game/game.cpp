@@ -18,7 +18,7 @@ Game::Game() {
     _audioManager = std::make_shared<AudioManager>();
     _context->_audioManager = _audioManager;
 
-    _soundManager = std::make_shared<SoundManager>(_context->_audioManager);
+    _soundManager = std::make_shared<SoundManager>(_context);
     _context->_soundManager = _soundManager;
 
     _textureManager = std::make_shared<TextureManager>();
@@ -27,9 +27,6 @@ Game::Game() {
     _fontManager = std::make_shared<FontManager>();
     _fontManager->RequireResource("Main");
     _context->_fontManager = _fontManager;
-
-    //_guiManager = std::make_shared<GUI_Manager>(_window->GetEventManager(), _context);
-    //_context->_guiManager = _guiManager;
 
     _stateManager = std::make_shared<StateManager>(_context);
     _stateManager->SwitchTo(StateType::Intro);

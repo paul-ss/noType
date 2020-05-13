@@ -1,6 +1,6 @@
 #pragma once
 
-#include "eventManager.hpp"
+#include "sharedContext.hpp"
 
 enum class GUI_ElementType {
     Label,
@@ -54,12 +54,12 @@ struct GUI_Visual {
 };
 
 using ElementStyles = std::unordered_map<GUI_ElementState, GUI_Style>;
-
-class EventManager;
-
+struct SharedContext;
 class BaseElement {
 public:
-    BaseElement(const std::string& l_path, std::weak_ptr<EventManager> l_eMgr) : _eventManager(l_eMgr) {
+    BaseElement(const std::string& l_path, std::weak_ptr<SharedContext> l_sharedContext) :
+            _sharedContext(l_sharedContext) {
+
         loadStyle(l_path);
 }
     ~BaseElement() = default;
@@ -73,10 +73,7 @@ public:
     virtual void Update(float l_dT) = 0;
 
 protected:
-    void loadStyle(const std::string& l_path);
-
-    void requireTexture(const std::string& l_name);
-    void requireFont(const std::string& l_name);
+    virtual void loadStyle(const std::string& l_path) = 0;
 
 protected:
     std::string _name;
@@ -86,7 +83,7 @@ protected:
     GUI_ElementType _type;
     GUI_ElementState _state;
 
-    std::weak_ptr<EventManager> _eventManager;
+    std::weak_ptr<SharedContext> _sharedContext;
     std::shared_ptr<sf::Font> _font;
     std::shared_ptr<sf::Texture> _texture;
 

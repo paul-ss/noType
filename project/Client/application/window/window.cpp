@@ -1,5 +1,6 @@
 #include "window.hpp"
 
+#define GAME_NAME "noType"
 #define HEIGHT 640
 #define WEIGHT 640
 #define FPS 60
@@ -45,7 +46,7 @@ void Window::create() {
         _window->create({ _windowSize.x, _windowSize.y, BITS_PER_PIXEL },
                 _windowTitle, style);
     } else {
-        _window->create(sf::VideoMode::getFullscreenModes()[0], _windowTitle, style);
+        _window->create(sf::VideoMode::getFullscreenModes()[0], _windowTitle, sf::Style::Fullscreen);
     }
 }
 

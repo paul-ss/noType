@@ -4,7 +4,6 @@
 
 #include "window.hpp"
 #include "eventManager.hpp"
-//#include "GUI_manager.hpp"
 #include "fontManager.hpp"
 #include "textureManager.hpp"
 #include "audioManager.hpp"
@@ -17,5 +16,4 @@ struct SharedContext {
     std::weak_ptr<SoundManager> _soundManager;
     std::weak_ptr<TextureManager> _textureManager;
     std::weak_ptr<FontManager> _fontManager;
-    //std::weak_ptr<GUI_Manager> _guiManager;
 };
