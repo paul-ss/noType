@@ -181,31 +181,32 @@ void EventManager::loadBindings() {
         boost::property_tree::ptree root;
         boost::property_tree::read_json(BINDINGS_FILE_PATH, root);
 
-        //for (boost::property_tree::ptree::value_type& keyEvent : root.get_child("events.keys")) {
-        //    auto bind = std::make_shared<Binding>(keyEvent.first.data());
-//
-        //    auto eventType = keyEvent.second.get<EventType>("eventType");
-        //    auto keyCode = keyEvent.second.get<EventInfo>("keyCode");
-        //    bind->BindEvent(eventType, keyCode);
-//
-        //    if (!AddBinding(bind)) {
-        //        throw InvalidCmd();
-        //    }
-        //}
-//
-        //for (boost::property_tree::ptree::value_type& guiEvent : root.get_child("events.gui")) {
-        //    auto bind = std::make_shared<Binding>(guiEvent.first.data());
-        //    EventInfo eventInfo;
-//
-        //    auto eventType = guiEvent.second.get<EventType>("eventType");
-        //    eventInfo.gui.interface = guiEvent.second.get<std::string>("interface");
-        //    eventInfo.gui.element = guiEvent.second.get<std::string>("function");
-        //    bind->BindEvent(eventType, eventInfo);
-//
-        //    if (!AddBinding(bind)) {
-        //        throw InvalidCmd();
-        //    }
-        //}
+        for (boost::property_tree::ptree::value_type& keyEvent : root.get_child("events.keys")) {
+            auto bind = std::make_shared<Binding>(keyEvent.first.data());
+
+            EventType type = EventType(stoi(keyEvent.second.get<std::string>("eventType")));
+            EventInfo eInfo(keyEvent.second.get<int>("keyCode"));
+
+            bind->BindEvent(type, eInfo);
+
+            if (!AddBinding(bind)) {
+                throw InvalidCmd();
+            }
+        }
+
+        for (boost::property_tree::ptree::value_type& guiEvent : root.get_child("events.gui")) {
+            auto bind = std::make_shared<Binding>(guiEvent.first.data());
+
+            EventType type = EventType(stoi(guiEvent.second.get<std::string>("eventType")));
+            EventInfo eventInfo;
+            eventInfo.gui.interface = guiEvent.second.get<std::string>("interface");
+            eventInfo.gui.element = guiEvent.second.get<std::string>("function");
+            bind->BindEvent(type, eventInfo);
+
+            if (!AddBinding(bind)) {
+                throw InvalidCmd();
+            }
+        }
 
     } catch (const boost::property_tree::ptree_error& e) {
         BOOST_LOG_TRIVIAL(error) << e.what();

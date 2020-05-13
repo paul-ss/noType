@@ -17,7 +17,6 @@ SET(ALL_HEADERS
     ${SOURCE_DIR}/sharedContext
     ${SOURCE_DIR}/stateManager
     ${SOURCE_DIR}/states
-    ${SOURCE_DIR}/utils
     ${SOURCE_DIR}/window
 )
 

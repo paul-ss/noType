@@ -73,5 +73,6 @@ void Game::Run() {
         update();
         render();
         lateUpdate();
+        sf::sleep(sf::seconds(0.01f));
     }
 }

@@ -1,6 +1,6 @@
 #include "button.hpp"
 
-#define BUTTON_STYLE_PATH "assets/media/styles"
+#define BUTTON_STYLE_PATH "assets/media/styles/button.json"
 
 Button::Button(std::weak_ptr<EventManager> l_eMgr) : BaseElement(BUTTON_STYLE_PATH, l_eMgr) {
     /*

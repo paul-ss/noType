@@ -41,7 +41,12 @@ void Window::setup(const std::string& title, const sf::Vector2u& size) {
 
 void Window::create() {
     auto style = (_isFullScreen ? sf::Style::Fullscreen : sf::Style::Default);
-    _window->create({ _windowSize.x, _windowSize.y, BITS_PER_PIXEL }, _windowTitle, style);
+    if (style == sf::Style::Default) {
+        _window->create({ _windowSize.x, _windowSize.y, BITS_PER_PIXEL },
+                _windowTitle, style);
+    } else {
+        _window->create(sf::VideoMode::getFullscreenModes()[0], _windowTitle, style);
+    }
 }
 
 void Window::destroy() {
@@ -65,7 +70,7 @@ void Window::Update() {
 
 void Window::ToggleFullscreen() {
     _isFullScreen = !_isFullScreen;
-    Close();
+    _window->close();
     create();
 }
 

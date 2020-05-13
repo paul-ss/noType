@@ -1,10 +1,10 @@
-#include <iostream>
-#include <filesystem>
-
 #include "logger.hpp"
 #include "game.hpp"
 
-#include <SFML/Graphics.hpp>
+//#include <SFML/Graphics.hpp>
+//#include <vector>
+//#include <iostream>
+//#include <filesystem>
 //
 //#include <boost/property_tree/ptree.hpp>
 //#include <boost/property_tree/json_parser.hpp>
@@ -15,39 +15,33 @@ int main() {
     Game game;
     game.Run();
     BOOST_LOG_TRIVIAL(info) << "notype end";
-//    try {
-//        boost::property_tree::ptree root;
-//        boost::property_tree::read_json("assets/media/styles/button.json", root);
-//        std::vector<std::string> jsonPath = {
-//                "button.neutral",
-//                "button.hover",
-//                "button.clicked"
-//        };
-//        //for (auto& path : jsonPath) {
-//            for (boost::property_tree::ptree::value_type& currStyle : root.get_child("button.neutral.bgColor")) {
-//                //sf::Color backgroundColor = currStyle.get<uint8_t>("bgColor", backgroundColor);
+
+        //boost::property_tree::ptree root;
+        //boost::property_tree::read_json("assets/media/styles/button.json", root);
+        //std::vector<std::string> jsonPath = {
+        //        "button.neutral",
+        //        "button.hover",
+        //        "button.clicked"
+        //};
 //
-//                std::cout << currStyle.second.data() << "\n";
-//
-//                //sf::Color elementColor = currStyle.second;
-//                //std::string backgroundImage = currStyle.get();
-//                //sf::Color backgroundImageColor = currStyle.get();
-////
-//                //sf::Color textColor = currStyle.get();
-//                //std::string textFont = currStyle.get();
-//                //sf::Vector2f textPadding = currStyle.get();
-//                //unsigned int textSize = currStyle.get();
-//                //bool textCenterOrigin = currStyle.get();
-////
-//                //std::string glyph = currStyle.get();
-//                //sf::Vector2f glyphPadding = currStyle.get();
-//            }
-//        //}
-//
-//    } catch (const boost::property_tree::ptree_error& e) {
-//    //BOOST_LOG_TRIVIAL(error) << e.what() << " " << l_path;
-//    }
-//
-//
+        //for (auto& path : jsonPath) {
+        //    std::vector<int> sizeVec;
+        //    std::vector<uint8_t> bgColor;
+        //    std::vector<uint8_t> paddingVec;
+        //    //for (boost::property_tree::ptree::value_type& currStyle : root.get_child(path)) {
+        //        for (boost::property_tree::ptree::value_type& size :
+        //                root.get_child(path + ".size")) {
+        //            std::cout << size.second.get_value_optional<int>();
+        //            //sizeVec.push_back(size.second.get_value<uint8_t>());
+        //        }
+        //        for(boost::property_tree::ptree::value_type& color :
+        //                root.get_child(path + ".bgColor")) {
+        //            //bgColor.push_back(color.second.get_value<uint8_t>());
+        //        }
+        //        for (boost::property_tree::ptree::value_type& padding :
+        //                root.get_child(path + ".textPadding")) {
+        //            //paddingVec.push_back(padding.second.get_value<uint8_t>());
+        //        }
+        //}
     return 0;
 }

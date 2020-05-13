@@ -3,8 +3,6 @@
 #include <boost/log/trivial.hpp>
 
 #include "soundManager.hpp"
-#include "utils.hpp"
-
 
 void SoundManager::RemoveState(const StateType& l_state) {
     auto music = _musicContainer.find(l_state);
