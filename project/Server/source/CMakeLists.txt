@@ -80,6 +80,17 @@ ADD_LIBRARY(CommandLib STATIC
 
 
 
+ADD_EXECUTABLE(commandTests
+        Command/Tests/ParseFromTests.cpp
+        mainTest.cpp)
+
+TARGET_LINK_LIBRARIES(commandTests
+        ${GTEST_LIBRARIES}
+        ${CMAKE_THREAD_LIBS_INIT}
+        ${Boost_SYSTEM_LIBRARY}
+        CommandLib)
+
+
 
 ADD_EXECUTABLE(server
         main.cpp

@@ -7,6 +7,7 @@ ADD_LIBRARY(ServerLib STATIC
         TcpServer.hpp
         ServerConfig.hpp)
 
+
 ADD_EXECUTABLE(tcpServerTests
         ../mainTest.cpp
         Tests/ClientTests.cpp
