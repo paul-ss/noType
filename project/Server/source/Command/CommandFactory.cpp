@@ -1,48 +1,68 @@
 //
 // Created by paul_s on 17.04.2020.
-// Modified by foxyuiop
 //
 
 #include "CommandFactory.hpp"
 
-std::shared_ptr<ClientCommand> CommandFactory::createCommand(const std::string &data) {
-    parsableFromJSON parser;
-    auto command = static_cast<commandType>(parser.parseFromJSON(data));
-    switch (command) {
-        case INIT_REQUEST: {
-            controllerType controller = BASE;
-            std::shared_ptr<InitRequest> init(new InitRequest(data, command, controller));
-            return init;
-        }
-        case CONNECT_REQUEST: {
-            controllerType controller = BASE;
-            std::shared_ptr<ConnectRequest> connect(new ConnectRequest(data, command, controller));
-            return connect;
-        }
-        case START_GAME_SESSION_REQUEST: {
-            controllerType controller = GAME;
-            std::shared_ptr<StartGameSessionRequest> start_game(
-                    new StartGameSessionRequest(data, command, controller));
-            return start_game;
-        }
-        case GET_TEXT_REQUEST: {
-            controllerType controller = GAME;
-            std::shared_ptr<GetTextRequest> get_text(new GetTextRequest(data,
-                                                                        command, controller));
-            return get_text;
-        }
-        case ROOM_STATUS_REQUEST: {
-            controllerType controller = GAME;
-            std::shared_ptr<RoomStatusRequest> get_status(new RoomStatusRequest(data, command, controller));
-            return get_status;
-        }
-        case VALIDATE_WRITTEN_TEXT_REQUEST: {
-            controllerType controller = GAME;
-            std::shared_ptr<ValidateWrittenTextRequest> written_text(new ValidateWrittenTextRequest(data,
-                                                                            command, controller));
-            return written_text;
-        }
-        default:
-            return nullptr;
-    }
+
+
+std::shared_ptr<ClientCommand> CommandFactory::createCommand(
+                            const std::string &connectionUUID,
+                            const std::string &data) {
+  try {
+    return createCommandInternal(connectionUUID, data);
+
+  } catch (const pt::ptree_error &exc) {
+    std::cout << exc.what() << std::endl;
+    return std::make_shared<ErrorRequest>(connectionUUID);
+    
+  } catch (std::runtime_error &exc) {
+    std::cout << exc.what() << std::endl;
+    return std::make_shared<ErrorRequest>(connectionUUID);
+    
+  } catch (...) {
+    std::cout << "CommandFactory : unknown exception" << std::endl;
+    return std::make_shared<ErrorRequest>(connectionUUID);
+    
+  }
+}
+
+
+
+
+
+
+std::shared_ptr<ClientCommand> CommandFactory::createCommandInternal(
+                            const std::string &connectionUUID,
+                            const std::string &data) {
+  pt::ptree tree;
+  std::stringstream stream(data);
+  pt::read_json(stream, tree);
+
+  auto commandTypeStr = tree.get<std::string>(COMMAND_TYPE_JSON_PATH);
+  CommandType commandType = CommandType::_from_string(commandTypeStr.c_str());
+
+
+  switch (commandType) {
+    case CommandType::InitRequest :
+      return std::make_shared<InitRequest>(connectionUUID, std::move(tree));
+
+    case CommandType::ConnectRequest :
+      return std::make_shared<ConnectRequest>(connectionUUID, std::move(tree));
+
+    case CommandType::StartGameSessionRequest :
+      return std::make_shared<StartGameSessionRequest>(connectionUUID, std::move(tree));
+
+    case CommandType::GetTextRequest :
+      return std::make_shared<GetTextRequest>(connectionUUID, std::move(tree));
+
+    case CommandType::RoomStatusRequest :
+      return std::make_shared<RoomStatusRequest>(connectionUUID, std::move(tree));
+
+    case CommandType::ValidateWrittenTextRequest :
+      return std::make_shared<ValidateWrittenTextRequest>(connectionUUID, std::move(tree));
+
+    default:
+      return std::make_shared<ErrorRequest>(connectionUUID);
+  }
 }

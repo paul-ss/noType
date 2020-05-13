@@ -105,7 +105,7 @@ void TcpServer::runQueueWorker() {
         auto serverCmd = std::dynamic_pointer_cast<ServerCommand>(command);
 
         if (serverCmd) {
-          auto client = _clients->getClient(serverCmd->clientUUID);
+          auto client = _clients->getClient(serverCmd->getConnectionUUID());
           client->putDataToSend(serverCmd->parseToJSON());
 
         } else {

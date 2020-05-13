@@ -8,6 +8,13 @@
 #include "RoomManager.hpp"
 #include "DataBaseFacade.hpp"
 
+#include "Init.hpp"
+#include "Connect.hpp"
+#include "GetRoomStatus.hpp"
+#include "GetText.hpp"
+#include "StartGameSession.hpp"
+#include "ValidateWrittenText.hpp"
+
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <memory>

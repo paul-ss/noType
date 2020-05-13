@@ -62,9 +62,21 @@ ADD_LIBRARY(CommandLib STATIC
         Command/Command.hpp
         Command/CommandFactory.cpp
         Command/CommandFactory.hpp
+        Command/StartGameSession.cpp
+        Command/StartGameSession.hpp
         Room/Player.hpp
         Room/Player.cpp
-        RoomStatus/IRoomStatus.hpp)
+        RoomStatus/IRoomStatus.hpp
+        Command/GetText.cpp
+        Command/GetText.hpp
+        Command/GetRoomStatus.cpp
+        Command/GetRoomStatus.hpp
+        Command/ValidateWrittenText.cpp
+        Command/ValidateWrittenText.hpp
+        Command/Init.cpp
+        Command/Init.hpp
+        Command/Connect.cpp
+        Command/Connect.hpp)
 
 
 
