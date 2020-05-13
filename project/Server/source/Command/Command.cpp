@@ -84,6 +84,10 @@ ErrorResponse::ErrorResponse(const std::string &connectionUUID, std::string &&er
 }
 
 
+ErrorResponse::ErrorResponse(const std::string &connectionUUID) :
+    ServerCommand(CommandType::ErrorResponse, connectionUUID) {}
+
+
 std::string ErrorResponse::parseToJSON() {
   return "{\n \"" COMMAND_TYPE_JSON_PATH "\" : \"" + std::string(_commandType._to_string()) + "\",\n" +
          "\"" ERROR_MSG_JSON_PATH "\" : \"" + _errorMsg + "\",\n }";

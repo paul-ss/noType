@@ -21,7 +21,7 @@ void Setup::parseConfig() {
 void Setup::start() {
   _tcpServer->startServer();
   _gameController->startController();
- // _basicController->startController();
+  _basicController->startController();
 
   _threads.emplace_back(std::bind(&Setup::runInterface, this));
   std::cout << "Server started" << std::endl;
@@ -31,7 +31,7 @@ void Setup::start() {
 void Setup::stop() {
   _tcpServer->stopServer();
   _gameController->stopController();
-  // _basicController->stopController();
+   _basicController->stopController();
 }
 
 void Setup::runInterface() {
@@ -61,5 +61,5 @@ void Setup::setup() {
 
   _tcpServer = std::make_unique<TcpServer>(_queueManager);
   _gameController = std::make_unique<GameController>(_queueManager, _dataBaseFacade, roomConfig);
-  _basicController = std::make_unique<BasicController>(/*_queueManager*/);
+  _basicController = std::make_unique<BasicController>(_queueManager, _dataBaseFacade);
 }

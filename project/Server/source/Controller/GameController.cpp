@@ -79,14 +79,20 @@ void GameController::commandDistributor(const std::shared_ptr<Command> &command)
 
       default:
         std::cout << "GC : invalid command type" << std::endl;
-        // todo log
 
+        auto commandResp = std::make_shared<ErrorResponse>(
+            command->getConnectionUUID(),
+            "GC : invalid command type");
+        _queueManager->controllerPush(commandResp);
     }
 
   } catch (...) {
     std::cout << "GC : exception : unknown, unexpected, mysterious... (like James Bond)" << std::endl;
-    // todo log
-    // send error response
+
+    auto commandResp = std::make_shared<ErrorResponse>(
+        command->getConnectionUUID(),
+        "GC : exception : unknown, unexpected, mysterious... (like James Bond)" );
+    _queueManager->controllerPush(commandResp);
   }
 }
 
@@ -98,9 +104,13 @@ template <class RequestCommand, class ResponseCommand, typename CommandHandler>
 void GameController::handlerExceptionCatcher(const std::shared_ptr<Command> &command, CommandHandler handler) {
   auto castedCmd = std::dynamic_pointer_cast<RequestCommand>(command);
   if (!castedCmd) {
-    std::cout <<"startGameSession : can't cast command " + std::string(typeid(command).name()) << std::endl;
+    std::cout <<"Can't cast command " + std::string(typeid(command).name()) << std::endl;
     std::cout <<"handler type: " + std::string(typeid(handler).name()) << std::endl;
-    //todo log
+
+    auto commandResp = std::make_shared<ErrorResponse>(
+        castedCmd->getConnectionUUID(),
+        "Can't cast command " + std::string(typeid(command).name()));
+    _queueManager->controllerPush(commandResp);
 
     return;
   }

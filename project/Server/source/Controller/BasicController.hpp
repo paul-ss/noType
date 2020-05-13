@@ -21,21 +21,27 @@ public:
 
   BasicController(const std::shared_ptr<QueueManager> &queueManager,
                  const std::shared_ptr<IDataBaseFacade> &dataBaseFacade);
-  BasicController() = default;
-  ~BasicController() = default;
+  ~BasicController();
   void startController();
   void stopController();
 
 
 private:
   void commandDistributor(const std::shared_ptr<Command> &command);
-  void startGameSessionHandler(const std::shared_ptr<Command> &command);
-  void getTextHandler(const std::shared_ptr<Command> &command);
-  void getRoomStatusHandler(const std::shared_ptr<Command> &command);
-  void sendWrittenTextHandler(const std::shared_ptr<Command> &command);
+
+  template <class RequestCommand, class ResponseCommand, typename CommandHandler>
+  void handlerExceptionCatcher(const std::shared_ptr<Command> &command, CommandHandler handler);
+
+  void initHandler(const std::shared_ptr<InitRequest> &command);
+  void connectHandler(const std::shared_ptr<ConnectRequest> &command);
+  void errorHandler(const std::shared_ptr<ErrorRequest> &command);
+
 
   // void runClientsObserver(); ??
   void runQueueWorker();
+  std::string randomUUID();
+
+
 
 
 private:
@@ -43,9 +49,11 @@ private:
   std::shared_ptr<IDataBaseFacade> _dataBaseFacade;
 
 
-//  boost::asio::io_service _service;
-//  boost::asio::io_service::work _work;
-  std::mutex _gameControllerMutex;
+  boost::asio::io_service _service;
+  boost::asio::io_service::work _work;
+  std::mutex _basicControllerMutex;
   BasicControllerState _state;
   std::vector<std::thread> _threads;
+
+
 };

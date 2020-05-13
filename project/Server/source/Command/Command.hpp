@@ -119,6 +119,7 @@ public:
 class ErrorResponse: public ServerCommand {
  public:
     ErrorResponse(const std::string &connectionUUID, std::string &&errorMsg);
+    explicit ErrorResponse(const std::string &connectionUUID);
     std::string parseToJSON() override ;
 };
 

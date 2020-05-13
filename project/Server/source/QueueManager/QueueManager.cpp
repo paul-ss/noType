@@ -26,7 +26,11 @@ void QueueManager::serverPush(const std::string &data, const std::string &connec
   // TODO !!!! catch exceptions
 
   auto command = _commandFactory->createCommand(connectionUUID, data);
-  _queueToGameController->push(command);
+  if (command->getControllerType() == ControllerType::game) {
+    _queueToGameController->push(command);
+  } else {
+    _queueToBasicController->push(command);
+  }
 }
 
 
