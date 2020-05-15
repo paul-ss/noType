@@ -10,10 +10,10 @@
 #include "soundManager.hpp"
 
 struct SharedContext {
-    std::weak_ptr<Window> _window;
-    std::weak_ptr<EventManager> _eventManager;
-    std::weak_ptr<AudioManager> _audioManager;
-    std::weak_ptr<SoundManager> _soundManager;
-    std::weak_ptr<TextureManager> _textureManager;
-    std::weak_ptr<FontManager> _fontManager;
+    std::weak_ptr<Window> window;
+    std::weak_ptr<EventManager> eventManager;
+    std::weak_ptr<AudioManager> audioManager;
+    std::weak_ptr<SoundManager> soundManager;
+    std::weak_ptr<TextureManager> textureManager;
+    std::weak_ptr<FontManager> fontManager;
 };

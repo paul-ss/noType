@@ -29,7 +29,7 @@ public:
     void RemoveState(const StateType& l_state);
     void Update(float l_dT);
     bool PlayMusic(const std::string& l_musicId, float l_volume = 100.f, bool l_loop = false);
-    bool PlayMusic(const StateType& l_state);
+    bool PlayMusic();
     bool StopMusic(const StateType& l_state);
     bool PauseMusic(const StateType& l_state);
 

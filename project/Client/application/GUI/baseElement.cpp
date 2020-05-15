@@ -1,0 +1,158 @@
+#include "baseElement.hpp"
+
+#define PATH_TO_STYLES "assets/media/styles/"
+
+BaseElement::BaseElement(std::weak_ptr<SharedContext> l_sharedContext, const sf::Vector2f& l_position, const std::string& l_style) :
+        _sharedContext(l_sharedContext),
+        _position(l_position),
+        _state(ElementState::Neutral) {
+
+    loadStyle(l_style);
+        }
+
+void BaseElement::applyStyle(const std::shared_ptr<Style>& l_style) {
+    try {
+        std::shared_ptr<SharedContext>sharedContext(_sharedContext);
+        // Background
+        if (!l_style->backgroundImage.empty()) {
+            std::shared_ptr<TextureManager>tMgr(sharedContext->textureManager);
+            if (tMgr->RequireResource(l_style->backgroundImage)) {
+                std::shared_ptr<sf::Texture>tempTexture(tMgr->GetResource(l_style->backgroundImage));
+                _visual.backgroundImage.setTexture(*tempTexture);
+                _visual.backgroundImage.setColor(l_style->backgroundColor);
+                _visual.backgroundImage.setPosition(_position);
+            }
+        }
+        _visual.backgroundSolid.setSize(sf::Vector2f(l_style->size));
+        _visual.backgroundSolid.setFillColor(l_style->backgroundColor);
+        _visual.backgroundSolid.setPosition(_position);
+
+        // Text
+        if (!l_style->textFont.empty()) {
+            std::shared_ptr<FontManager>fMgr(sharedContext->fontManager);
+            if (fMgr->RequireResource(l_style->textFont)) {
+                std::shared_ptr<sf::Font>tempFont(fMgr->GetResource(l_style->textFont));
+                _visual.text.setFont(*tempFont);
+                _visual.text.setFillColor(l_style->textColor);
+                _visual.text.setCharacterSize(l_style->textSize);
+                if (l_style->textCenterOrigin) {
+                    sf::FloatRect rect = _visual.text.getLocalBounds();
+                    _visual.text.setOrigin(rect.left + rect.width / 2.0f,
+                        rect.top + rect.height / 2.0f);
+                } else {
+                    _visual.text.setOrigin(0.f, 0.f);
+                }
+                _visual.text.setPosition(_position + l_style->textPadding);
+            }
+        }
+
+        // Glyph
+        if (!l_style->glyph.empty()) {
+            std::shared_ptr<TextureManager>tMgr(sharedContext->textureManager);
+            std::shared_ptr<sf::Texture>tempTexture(tMgr->GetResource(l_style->glyph));
+            _visual.glyph.setTexture(*tempTexture);
+            _visual.glyph.setPosition(_position + l_style->glyphPadding);
+        }
+
+    } catch (std::bad_weak_ptr& e) {
+        //log
+    }
+}
+
+void BaseElement::loadStyle(const std::string& l_path) {
+    try {
+        boost::property_tree::ptree root;
+        boost::property_tree::read_json(PATH_TO_STYLES + l_path, root);
+
+        for (boost::property_tree::ptree::value_type& currState : root) {
+            auto currStyle = std::make_shared<Style>();
+
+            std::vector<int> sizeVec;
+            for (boost::property_tree::ptree::value_type &size : root.get_child(currState.first + ".size")) {
+                sizeVec.push_back(size.second.get_value<int>());
+            }
+            currStyle->size.x = sizeVec[0];
+            currStyle->size.y = sizeVec[1];
+
+            // Background
+            std::vector<int> bgColorVec;
+            for (boost::property_tree::ptree::value_type &bgColor : root.get_child(currState.first + ".bgColor")) {
+                bgColorVec.push_back(bgColor.second.get_value<int>());
+            }
+            currStyle->backgroundColor.r = bgColorVec[0];
+            currStyle->backgroundColor.g = bgColorVec[1];
+            currStyle->backgroundColor.b = bgColorVec[2];
+            currStyle->backgroundColor.a = bgColorVec[3];
+
+            currStyle->backgroundImage = root.get<std::string>(currState.first + ".bgImage");
+
+            std::vector<int> bgImgColorVec;
+            for (boost::property_tree::ptree::value_type &bgImgColor : root.get_child(currState.first + ".bgImgColor")) {
+                bgColorVec.push_back(bgImgColor.second.get_value<int>());
+            }
+            currStyle->backgroundImageColor.r = bgImgColorVec[0];
+            currStyle->backgroundImageColor.g = bgImgColorVec[1];
+            currStyle->backgroundImageColor.b = bgImgColorVec[2];
+            currStyle->backgroundImageColor.a = bgImgColorVec[3];
+
+            // Text
+            std::vector<int> textColorVec;
+            for (boost::property_tree::ptree::value_type &textColor : root.get_child(currState.first + ".textColor")) {
+                textColorVec.push_back(textColor.second.get_value<int>());
+            }
+            currStyle->textColor.r = textColorVec[0];
+            currStyle->textColor.g = textColorVec[1];
+            currStyle->textColor.b = textColorVec[2];
+            currStyle->textColor.a = textColorVec[3];
+
+            currStyle->textFont = root.get<std::string>(currState.first + ".textFont");
+
+            std::vector<int> textPaddingVec;
+            for (boost::property_tree::ptree::value_type &textPadding : root.get_child(currState.first + ".textPadding")) {
+                textColorVec.push_back(textPadding.second.get_value<int>());
+            }
+            currStyle->textPadding.x = textPaddingVec[0];
+            currStyle->textPadding.y = textPaddingVec[1];
+
+            currStyle->textSize = root.get<int>(currState.first + ".textSize");
+
+            currStyle->textCenterOrigin = root.get<bool>(currState.first + ".textOriginCenter");
+
+            // Glyph
+            currStyle->glyph = root.get<std::string>(currState.first + ".glyph");
+
+            std::vector<int> glyphPaddingVec;
+            for (boost::property_tree::ptree::value_type &glyphPadding : root.get_child(currState.first + ".glyphPadding")) {
+                textColorVec.push_back(glyphPadding.second.get_value<int>());
+            }
+            currStyle->glyphPadding.x = glyphPaddingVec[0];
+            currStyle->glyphPadding.y = glyphPaddingVec[1];
+
+            _style.emplace(ElementState(std::stoi(currState.first)), currStyle);
+        }
+
+    } catch (const boost::property_tree::ptree_error& e) {
+        BOOST_LOG_TRIVIAL(error) << e.what() << " not valid json file: " << l_path;
+    } catch (const std::bad_weak_ptr& e) {
+        BOOST_LOG_TRIVIAL(error) << e.what();
+    } catch (...) {
+        std::cout << "SSSSSSEEEEGG" << "\n";
+    }
+
+}
+
+ElementState BaseElement::GetState() const {
+    return _state;
+}
+
+void BaseElement::SetText(const std::string& l_text) {
+    _visual.text.setString(l_text);
+}
+
+sf::Vector2f BaseElement::GetSize() const {
+    return _visual.backgroundSolid.getSize();
+}
+
+sf::Vector2f BaseElement::GetPosition() const {
+    return _position;
+}

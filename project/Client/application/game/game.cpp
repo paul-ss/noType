@@ -1,8 +1,6 @@
 #include "game.hpp"
 
 #define GAME_NAME "noType"
-#define WINDOW_HEIGHT 800
-#define WINDOW_WEIGHT 600
 
 Game::Game() {
 
@@ -11,25 +9,25 @@ Game::Game() {
 
     _context = std::make_shared<SharedContext>();
 
-    _window = std::make_shared<Window>(GAME_NAME, sf::Vector2u(WINDOW_HEIGHT, WINDOW_WEIGHT));
-    _context->_window = _window;
-    _context->_eventManager = _window->GetEventManager();
+    _window = std::make_shared<Window>(GAME_NAME);
+    _context->window = _window;
+    _context->eventManager = _window->GetEventManager();
 
     _audioManager = std::make_shared<AudioManager>();
-    _context->_audioManager = _audioManager;
+    _context->audioManager = _audioManager;
 
     _soundManager = std::make_shared<SoundManager>(_context);
-    _context->_soundManager = _soundManager;
+    _context->soundManager = _soundManager;
 
     _textureManager = std::make_shared<TextureManager>();
-    _context->_textureManager = _textureManager;
+    _context->textureManager = _textureManager;
 
     _fontManager = std::make_shared<FontManager>();
     _fontManager->RequireResource("Main");
-    _context->_fontManager = _fontManager;
+    _context->fontManager = _fontManager;
 
     _stateManager = std::make_shared<StateManager>(_context);
-    _stateManager->SwitchTo(StateType::Intro);
+    _stateManager->SwitchTo(StateType::MainMenu);
 }
 
 sf::Time Game::getElapsed() {
@@ -43,20 +41,12 @@ void Game::restartClock() {
 void Game::update() {
     _window->Update();
     _stateManager->Update(_elapsed);
-    //_guiManager->Update(_elapsed.asSeconds());
     _soundManager->Update(_elapsed.asSeconds());
-
-    //GUI_Event guiEvent;
-    //while (_context->_guiManager.lock()->PollEvent(guiEvent)) {
-    //    _window->GetEventManager().lock()->HandleEvent(guiEvent);
-    //}
 }
 
 void Game::render() {
     _window->BeginDraw();
     _stateManager->Draw();
-
-    //_guiManager->Render(_window->GetRenderWindow());
     _window->EndDraw();
 }
 
@@ -70,6 +60,6 @@ void Game::Run() {
         update();
         render();
         lateUpdate();
-        sf::sleep(sf::seconds(0.01f));
+        sf::sleep(sf::milliseconds(0.01f));
     }
 }

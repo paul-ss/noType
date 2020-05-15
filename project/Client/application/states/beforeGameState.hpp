@@ -18,8 +18,6 @@ public:
     void Update(const sf::Time& time) override;
     void Draw() override;
 
-    void MainMenu(EventDetails* details);
-
 private:
     sf::Texture _texture;
     sf::Sprite _sprite;

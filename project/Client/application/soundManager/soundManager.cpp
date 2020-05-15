@@ -56,7 +56,7 @@ void SoundManager::ChangeState(const StateType& state) {
     _musicContainer.emplace(_currentState, std::make_pair<>(SoundInfo(), std::shared_ptr<sf::Music>()));
 }
 
-bool SoundManager::PlayMusic(const StateType& state){
+bool SoundManager::PlayMusic(){
     auto music = _musicContainer.find(_currentState);
     if (music == _musicContainer.end()) {
         return false;
@@ -106,7 +106,7 @@ bool SoundManager::PlayMusic(const std::string& musicId, float volume, bool loop
 
     try {
         std::shared_ptr<SharedContext> sharedContext(_sharedContext);
-        std::shared_ptr<AudioManager> audioManager(sharedContext->_audioManager);
+        std::shared_ptr<AudioManager> audioManager(sharedContext->audioManager);
 
         if (!currStateMusic->second.second) {
             audioManager->RequireResource(musicId);

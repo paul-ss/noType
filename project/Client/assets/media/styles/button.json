@@ -1,29 +1,41 @@
 {
-    "neutral" : {
+    "Neutral" : {
+        "size" : [300, 32],
+        "bgColor" : [255,99,71 ,1],
+        "bgImage" : "",
+        "bgImgColor" : [0, 0, 0, 0],
+        "textColor" : [0, 0, 0, 0],
+        "textFont" : "Main",
+        "textPadding" : [150, 16],
+        "textSize" : 14,
+        "textOriginCenter" : "true",
+        "glyph" : "",
+        "glyphPaddin" : [150, 16]
+    },
+    "Hover" : {
+        "size" : [320, 40],
+        "bgColor" : [127,255,212 ,1],
+        "bgImage" : "",
+        "bgImgColor" : [0, 0, 0, 0],
+        "textColor" : [0, 0, 0, 0],
+        "textFont" : "Main",
+        "textPadding" : [150, 16],
+        "textSize" : 14,
+        "textOriginCenter" : "true",
+        "glyph" : "",
+        "glyphPaddin" : [150, 16]
+    },
+    "Clicked" : {
         "size" : [300, 32],
         "bgColor" : [255, 255, 255, 255],
+        "bgImage" : "",
+        "bgImgColor" : [0, 0, 0, 0],
         "textColor" : [0, 0, 0, 0],
-        "textSize" : 14,
-        "font" : "Main",
+        "textFont" : "Main",
         "textPadding" : [150, 16],
-        "textOriginCenter" : "true"
-    },
-    "hover" : {
-        "size" : [350, 40],
-        "bgColor" : [255, 255, 255, 255],
-        "textColor" : [0, 0, 0, 0],
         "textSize" : 14,
-        "font" : "Main",
-        "textPadding" : [150, 16],
-        "textOriginCenter" : "true"
-    },
-    "clicked" : {
-        "size" : [300, 32],
-        "bgColor" : [255, 255, 255, 255],
-        "textColor" : [0, 0, 0, 0],
-        "textSize" : 14,
-        "font" : "Main",
-        "textPadding" : [150, 16],
-        "textOriginCenter" : "true"
+        "textOriginCenter" : "true",
+        "glyph" : "",
+        "glyphPaddin" : [150, 16]
     }
 }

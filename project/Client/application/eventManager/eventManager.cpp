@@ -96,31 +96,6 @@ void EventManager::HandleEvent(const sf::Event& l_event) {
     }
 }
 
-void EventManager::HandleEvent(const GUI_Event& l_event) {
-    for (auto &b_itr : _bindings) {
-        auto bind = b_itr.second;
-        for (auto &e_itr : bind->events) {
-            if (e_itr.first != EventType::GUI_Click && e_itr.first != EventType::GUI_Release &&
-                e_itr.first != EventType::GUI_Hover && e_itr.first != EventType::GUI_Leave) {
-                continue;
-            }
-            if ((e_itr.first == EventType::GUI_Click && l_event.type != GUI_EventType::Click) ||
-                (e_itr.first == EventType::GUI_Release && l_event.type != GUI_EventType::Release) ||
-                (e_itr.first == EventType::GUI_Hover && l_event.type != GUI_EventType::Hover) ||
-                (e_itr.first == EventType::GUI_Leave && l_event.type != GUI_EventType::Leave)) {
-                    continue;
-            }
-            if ((e_itr.second.gui.interface == l_event.interface) ||
-                (e_itr.second.gui.element == l_event.element)) {
-                    continue;
-            }
-            bind->details.guiInterface = l_event.interface;
-            bind->details.guiElement = l_event.element;
-            ++(bind->count);
-        }
-    }
-}
-
 void EventManager::Update() {
     if (!_hasFocus) {
         return;
@@ -154,7 +129,7 @@ void EventManager::Update() {
             }
         }
 
-        if (bind->events.size() == bind->count) {
+        if (bind->events.size() == static_cast<unsigned long>(bind->count)) {
             auto stateCallbacks = _callbacks.find(_currentState);
             auto otherCallbacks = _callbacks.find(StateType(0));
             if (stateCallbacks != _callbacks.end()) {
@@ -184,23 +159,10 @@ void EventManager::loadBindings() {
         for (boost::property_tree::ptree::value_type& keyEvent : root.get_child("events.keys")) {
             auto bind = std::make_shared<Binding>(keyEvent.first.data());
 
-            EventType type = EventType(stoi(keyEvent.second.get<std::string>("eventType")));
+            EventType type = EventType(std::stoi(keyEvent.second.get<std::string>("eventType")));
             EventInfo eInfo(keyEvent.second.get<int>("keyCode"));
 
             bind->BindEvent(type, eInfo);
-
-            if (!AddBinding(bind)) {
-                throw InvalidCmd();
-            }
-        }
-
-        for (boost::property_tree::ptree::value_type& guiEvent : root.get_child("events.gui")) {
-            auto bind = std::make_shared<Binding>(guiEvent.first.data());
-
-            EventType type = EventType(stoi(guiEvent.second.get<std::string>("eventType")));
-            EventInfo eventInfo;
-            eventInfo.gui.element = guiEvent.second.get<std::string>("function");
-            bind->BindEvent(type, eventInfo);
 
             if (!AddBinding(bind)) {
                 throw InvalidCmd();

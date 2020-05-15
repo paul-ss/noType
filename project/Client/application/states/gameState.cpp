@@ -16,7 +16,7 @@ void GameState::OnCreate() {
         BOOST_LOG_TRIVIAL(error) << "Not valid shared context [game - oncreate]";
         return;
     }
-    auto eMgr = context->_eventManager.lock();
+    auto eMgr = context->eventManager.lock();
     if (!eMgr) {
         BOOST_LOG_TRIVIAL(error) << "Not valid event manager [game - oncreate]";
         return;
@@ -36,7 +36,7 @@ void GameState::OnDestroy() {
         BOOST_LOG_TRIVIAL(error) << "Not valid shared context [game - ondestroy]";
         return;
     }
-    auto eMgr = context->_eventManager.lock();
+    auto eMgr = context->eventManager.lock();
     if (!eMgr) {
         BOOST_LOG_TRIVIAL(error) << "Not valid event manager [game - ondestroy]";
         return;

@@ -8,8 +8,6 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
-#include "gui_event.hpp"
-
 enum class EventType {
 KeyDown = sf::Event::KeyPressed,
 KeyUp = sf::Event::KeyReleased,
@@ -23,19 +21,15 @@ MouseEntered = sf::Event::MouseEntered,
 MouseLeft = sf::Event::MouseLeft,
 Closed = sf::Event::Closed,
 TextEntered = sf::Event::TextEntered,
-Keyboard = sf::Event::Count + 1, Mouse, Joystick,
-        GUI_Click, GUI_Release, GUI_Hover, GUI_Leave
+Keyboard = sf::Event::Count + 1, Mouse, Joystick
 };
 
 struct EventInfo {
     EventInfo() : code(0) {}
     EventInfo(int l_event) : code(l_event) {}
-    EventInfo(const GUI_Event& l_guiEvent) : gui(l_guiEvent) {}
-    EventInfo(const EventInfo& l_eventInfo) : gui(l_eventInfo.gui) {}
     ~EventInfo() {}
     union {
         int code;
-        GUI_Event gui;
     };
 };
 
@@ -52,17 +46,12 @@ struct EventDetails {
     int mouseWheelDelta;
     int keyCode;
 
-    std::string guiElement;
-    GUI_EventType guiEvent;
-
     void Clear() {
         size = sf::Vector2i(0, 0);
         textEntered = 0;
         mouse = sf::Vector2i(0, 0);
         mouseWheelDelta = 0;
         keyCode = -1;
-        guiElement = "";
-        guiEvent = GUI_EventType::None;
     }
 };
 
@@ -109,7 +98,6 @@ public:
     bool RemoveCallback(StateType l_state, const std::string& l_name);
 
     void HandleEvent(const sf::Event& l_event);
-    void HandleEvent(const GUI_Event& l_event);
     void Update();
 
     sf::Vector2i GetMousePos(std::weak_ptr<sf::RenderWindow> l_window);

@@ -6,9 +6,30 @@ SET(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic")
 
 SET(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/application")
 
+SET(SOURCE_THIRD_PARTY "${CMAKE_CURRENT_SOURCE_DIR}/thirdPartyLib")
+
+ADD_LIBRARY(animation STATIC
+    ${SOURCE_THIRD_PARTY}/animation/animation.hpp
+    ${SOURCE_THIRD_PARTY}/animation/animation.cpp
+    ${SOURCE_THIRD_PARTY}/animation/animatedSprite.hpp
+    ${SOURCE_THIRD_PARTY}/animation/animatedSprite.hpp
+)
+
+ADD_LIBRARY(progressBar STATIC
+    ${SOURCE_THIRD_PARTY}/progressBar/Common.hpp
+    ${SOURCE_THIRD_PARTY}/progressBar/ProgressBar.hpp
+    ${SOURCE_THIRD_PARTY}/progressBar/ProgressBar.cpp
+)
+
+ADD_LIBRARY(colorString STATIC
+    ${SOURCE_THIRD_PARTY}/colorString/RichText.hpp
+    ${SOURCE_THIRD_PARTY}/colorString/RichText.cpp
+)
+
 SET(ALL_HEADERS
+    ${SOURCE_DIR}/utils
     ${SOURCE_DIR}/eventManager
-    ${SOURCE_DIR}/new_gui
+    ${SOURCE_DIR}/gui
     ${SOURCE_DIR}/exceptions
     ${SOURCE_DIR}/game
     ${SOURCE_DIR}/logger
@@ -21,7 +42,8 @@ SET(ALL_HEADERS
 )
 
 SET(ALL_SOURCES
-    ${SOURCE_DIR}/new_gui/button.cpp
+    ${SOURCE_DIR}/gui/baseElement.cpp
+    ${SOURCE_DIR}/gui/button.cpp
     ${SOURCE_DIR}/eventManager/eventManager.cpp
     ${SOURCE_DIR}/exceptions/exceptions.hpp
     ${SOURCE_DIR}/game/game.cpp
@@ -38,8 +60,6 @@ SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 FIND_PACKAGE(SFML 2 REQUIRED graphics window system network audio)
 FIND_PACKAGE(Boost COMPONENTS log log_setup serialization REQUIRED)
 
-SET(Boost_USE_STATIC_LIBS ON)
-
 INCLUDE_DIRECTORIES(${SFML_INCLUDE_DIR})
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 
@@ -52,6 +72,12 @@ SET_TARGET_PROPERTIES(notype
     PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${SOURCE_DIR}/.."
 )
-TARGET_LINK_LIBRARIES(notype ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${Boost_LIBRARIES})
+TARGET_LINK_LIBRARIES(notype
+    ${SFML_LIBRARIES}
+    ${SFML_DEPENDENCIES}
+    ${Boost_LIBRARIES}
+    colorString
+    progressBar
+    animation)
 
 #ADD_SUBDIRECTORY(tests)
