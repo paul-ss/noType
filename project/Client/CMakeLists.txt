@@ -49,3 +49,5 @@ SET_TARGET_PROPERTIES(notype
     RUNTIME_OUTPUT_DIRECTORY "${SOURCE_DIR}/.."
 )
 TARGET_LINK_LIBRARIES(notype ${SFML_LIBRARIES} ${SFML_DEPENDENCIES})
+
+add_subdirectory(application/Network)

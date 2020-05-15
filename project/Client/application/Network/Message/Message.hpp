@@ -91,7 +91,7 @@ struct ValidateWrittenTextResponse {
 
 class Message {
 public:
-  Message(MessageType msg_type, std::any&& data);
+  Message(MessageType msgType, std::any&& data);
 
   const MessageType& GetMessageType();
 
