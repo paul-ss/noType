@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Message.hpp"
 #include "MessageParser.hpp"
 #include "QueueManager.hpp"
@@ -7,20 +5,22 @@
 #include "NetworkManagerConfig.hpp"
 #include "NetworkManager.hpp"
 
+#include <iostream>
+
 #include <boost/system/system_error.hpp>
 
 namespace Network {
 
-NetworkManager::NetworkManager(const std::shared_ptr<Connector::IQueueManager>& queueManager)
-                              NetworkManager(queueManager, kServerIp, kServerPort) : {}
+NetworkManager::NetworkManager(const std::shared_ptr<Connector::IQueueManager>& queueManager) :
+                                            NetworkManager(queueManager, std::string(kServerIp), kServerPort)  {}
 
 NetworkManager::NetworkManager(const std::shared_ptr<Connector::IQueueManager>& queueManager,
                                std::string serverIp,
                                std::uint32_t port) :
-                                 _queueManager{queueManager}
-                                 _ioService{};
+                                 _queueManager{queueManager},
+                                 _ioService{},
                                  _endPoint(boost::asio::ip::address::from_string(serverIp), port),
-                                 _socket(_ioService) {};
+                                 _socket(_ioService) {}
 
 NetworkManager::~NetworkManager() {
   _thread->join();
@@ -43,7 +43,7 @@ void NetworkManager::Disconnect() {
 }
 
 void NetworkManager::Run() {
-  auto work = [this](){ this->loop() };
+  auto work = [this](){ this->loop(); };
   _isWorking = true;
   _thread = std::make_unique<std::thread>(work);
 }
@@ -60,15 +60,15 @@ void NetworkManager::loop() {
     if (auto msg = _queueManager->PopSendingData(); msg != nullptr ) {
       std::string jsonData = _messageParser->ParseToJson(std::move(msg));
 
-      boost::asio::write(_socket, boost::asio::buffer(jsonData + kDelimiter));
+      boost::asio::write(_socket, boost::asio::buffer(jsonData + std::string(kDelimiter)));
     }
 
     boost::asio::streambuf buf;
     boost::asio::read_until(_socket, buf, kDelimiter);
-    std::string jsonData = boost::asio::buffer_cast<const char*>(buf);
+    std::string jsonData = boost::asio::buffer_cast<const char*>(buf.data());
 
     auto msg = _messageParser->ParseToMessage(jsonData);
-    _queueManager->PushToReceivedData(std::move(jsonData));
+    _queueManager->PushToReceivedData(std::move(msg));
   }
 }
 

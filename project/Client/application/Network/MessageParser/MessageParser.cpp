@@ -2,8 +2,8 @@
 #include "MessageParser.hpp"
 #include "Message.hpp"
 
+#include <iostream>
 
-#include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/exceptions.hpp>
 
@@ -36,6 +36,9 @@ std::string MessageParser::ParseToJson(std::unique_ptr<Message> msg) {
       }
       case MessageType::ValidateWrittenTextRequest: {
         res = ValidateWrittenTextRequestToJson(std::move(msg));
+      }
+      default: {
+        std::cerr << "Invalid request type" << std::endl;
       }
     }
   } catch (const boost::property_tree::ptree_error& error) {
@@ -166,7 +169,7 @@ std::unique_ptr<Message> MessageParser::InitResponseToMessage(boost::property_tr
 
   InitResponse initResponse = {id, errorData.first, errorData.second};
   std::any data = initResponse;
-  return std::make_unique<Message>(MessageType::InitResponse, std::make_any(initResponse));
+  return std::make_unique<Message>(MessageType::InitResponse, std::move(data));
 }
 
 std::unique_ptr<Message> MessageParser::ConnectResponseToMessage(boost::property_tree::ptree &pt) {
@@ -206,18 +209,27 @@ std::unique_ptr<Message> MessageParser::RoomStatusResponseToMessage(boost::prope
   for (const auto& [uuid, _]: pt.get_child(JsonFields::Players)) {
     PlayerInfo playerInfo;
 
-    std::string pathToUuid = JsonFields::Players + kComma + uuid;
+    std::string pathToUuid = JsonFields::Players + kComma;
+    pathToUuid += uuid;
 
-    std::string pathToName = pathToUuid + kComma + JsonFields::PlayerInfoFields::Name;
+    std::string pathToName = pathToUuid + kComma;
+    pathToName += JsonFields::PlayerInfoFields::Name;
+
     playerInfo.name = pt.get<std::string>(pathToName);
 
-    std::string pathToPosition = pathToUuid + kComma + JsonFields::PlayerInfoFields::Position;
+    std::string pathToPosition = pathToUuid + kComma;
+    pathToPosition += JsonFields::PlayerInfoFields::Position;
+
     playerInfo.position = pt.get<std::uint16_t>(pathToPosition);
 
-    std::string pathToSpeed = pathToUuid + kComma + JsonFields::PlayerInfoFields::Speed;
+    std::string pathToSpeed = pathToUuid + kComma;
+    pathToSpeed += JsonFields::PlayerInfoFields::Speed;
+
     playerInfo.position = pt.get<double>(pathToSpeed);
 
-    std::string pathToStatus = pathToUuid + kComma + JsonFields::PlayerInfoFields::Status;
+    std::string pathToStatus = pathToUuid + kComma;
+    pathToStatus += JsonFields::PlayerInfoFields::Status;
+
     auto stringPlayerStatus = pt.get<std::string>(pathToStatus);
     if (stringPlayerStatus == JsonFields::PlayerInfoFields::Play) {
       playerInfo.status = PlayerInfo::Status::Play;
@@ -231,7 +243,7 @@ std::unique_ptr<Message> MessageParser::RoomStatusResponseToMessage(boost::prope
   }
 
   RoomStatusResponse roomStatusResponse = {timeFromStart, playersInfo, errorData.first, errorData.second};
-  std::any data = getTextResponse;
+  std::any data = roomStatusResponse;
   return std::make_unique<Message>(MessageType::RoomStatusResponse, std::move(data));
 }
 
@@ -258,7 +270,7 @@ std::pair<Status, std::string> MessageParser::ParseErrorAndStatus(boost::propert
 
   auto error = pt.get<std::string>(JsonFields::ErrorMessage);
 
-  return {Status, error};
+  return {status, error};
 }
 
 }  // namespace Network

@@ -5,15 +5,15 @@
 #include <mutex>
 #include <condition_variable>
 
-class Message;
-
 namespace Network {
+
+class Message;
 
 namespace Client {
 
 class IQueueManager {
 public:
-  virtual std::unique_ptr<Message> void PopReceivedData() = 0;
+  virtual std::unique_ptr<Message> PopReceivedData() = 0;
   virtual void PushToSendingData(std::unique_ptr<Message> msg) = 0;
   virtual ~IQueueManager() = default;
 };
@@ -24,7 +24,7 @@ namespace Connector {
 
 class IQueueManager {
 public:
-  virtual std::unique_ptr<Message> void PopSendingData() = 0;
+  virtual std::unique_ptr<Message> PopSendingData() = 0;
   virtual void PushToReceivedData(std::unique_ptr<Message> msg) = 0;
   virtual ~IQueueManager() = default;
 };
@@ -33,12 +33,12 @@ public:
 
 class QueueManager : public Client::IQueueManager, public Connector::IQueueManager {
 public:
-  QueueManager() = default;
+  QueueManager();
 
-  std::unique_ptr<Message> void PopReceivedData() override;
+  std::unique_ptr<Message> PopReceivedData() override;
   void PushToSendingData(std::unique_ptr<Message> msg) override;
 
-  std::unique_ptr<Message> void PopSendingData() override;
+  std::unique_ptr<Message> PopSendingData() override;
   void PushToReceivedData(std::unique_ptr<Message> msg) override;
 
 private:
@@ -52,8 +52,8 @@ private:
   std::condition_variable _receivedMessagesCheck;
   std::condition_variable _sendingMessagesCheck;
 
-  bool _receivedMessagesNotified;
-  bool _sendingMessagesNotified;
+  [[maybe_unused]] bool _receivedMessagesNotified;
+  [[maybe_unused]] bool _sendingMessagesNotified;
 };
 
 }  // namespace Network

@@ -1,5 +1,4 @@
-#pragma once
-
+#include "Message.hpp"
 #include "QueueManager.hpp"
 
 namespace Network {
@@ -33,7 +32,7 @@ void QueueManager::PushToSendingData(std::unique_ptr<Message> msg) {
 std::unique_ptr<Message> QueueManager::PopSendingData() {
   std::unique_lock<std::mutex> lock(_sendingMessagesMutex);
 
-  if (_sendingMessagesNotified.empty()) {
+  if (_sendingMessages.empty()) {
     _sendingMessagesCheck.wait(lock, [&](){
       return !_sendingMessages.empty();
     });

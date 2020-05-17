@@ -3,6 +3,7 @@
 #include "PlayerInfo.hpp"
 
 #include <any>
+#include <unordered_map>
 
 namespace Network {
 
