@@ -16,8 +16,8 @@ Game::Game() {
     _audioManager = std::make_shared<AudioManager>();
     _context->audioManager = _audioManager;
 
-    _soundManager = std::make_shared<SoundManager>(_context);
-    _context->soundManager = _soundManager;
+    //_soundManager = std::make_shared<SoundManager>(_context);
+    //_context->soundManager = _soundManager;
 
     _textureManager = std::make_shared<TextureManager>();
     _context->textureManager = _textureManager;
@@ -27,7 +27,7 @@ Game::Game() {
     _context->fontManager = _fontManager;
 
     _stateManager = std::make_shared<StateManager>(_context);
-    _stateManager->SwitchTo(StateType::MainMenu);
+    _stateManager->SwitchTo(StateType::Intro);
 }
 
 sf::Time Game::getElapsed() {
@@ -41,7 +41,6 @@ void Game::restartClock() {
 void Game::update() {
     _window->Update();
     _stateManager->Update(_elapsed);
-    _soundManager->Update(_elapsed.asSeconds());
 }
 
 void Game::render() {
@@ -60,6 +59,6 @@ void Game::Run() {
         update();
         render();
         lateUpdate();
-        sf::sleep(sf::milliseconds(0.01f));
+        //sf::sleep(sf::milliseconds(500));
     }
 }

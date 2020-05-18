@@ -5,6 +5,11 @@
 #include "sharedContext.hpp"
 #include "soundManager.hpp"
 
+SoundManager::SoundManger(std::weak_ptr<SharedContext> l_sharedContext) :
+        _isPaused(false),
+        _sharedContext(l_sharedContext) {}
+
+/*
 SoundManager::SoundManager(std::weak_ptr<SharedContext> l_sharedContext) :
             _numSounds(0),
             _elapsed(0.f),
@@ -154,4 +159,4 @@ void SoundManager::Update(float dT) {
     music->second.second.reset();
     music->second.second = nullptr;
     --_numSounds;
-}
+}*/

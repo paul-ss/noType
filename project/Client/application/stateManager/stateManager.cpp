@@ -3,6 +3,9 @@
 StateManager::StateManager(std::weak_ptr<SharedContext> l_sharedContext) : _shared(l_sharedContext) {
     registerState<IntroState>(StateType::Intro);
     registerState<MainMenuState>(StateType::MainMenu);
+    registerState<BeforeGameState>(StateType::BeforeGame);
+    registerState<GameState>(StateType::Game);
+    registerState<AfterGameState>(StateType::AfterGame);
 }
 
 StateManager::~StateManager() {
@@ -87,7 +90,6 @@ void StateManager::ProcessRequests() {
 
 void StateManager::SwitchTo(const StateType& type) {
     _shared.lock()->eventManager.lock()->SetCurrentState(type);
-    _shared.lock()->soundManager.lock()->ChangeState(type);
     for (auto itr = _states.begin();
         itr != _states.end(); ++itr) {
         if (itr->first == type) {
@@ -128,7 +130,6 @@ void StateManager::removeState(const StateType& type) {
             itr->second->OnDestroy();
             itr->second.reset();
             _states.erase(itr);
-            _shared.lock()->soundManager.lock()->RemoveState(type);
             return;
         }
     }

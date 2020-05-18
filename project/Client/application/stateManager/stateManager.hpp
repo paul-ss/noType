@@ -7,11 +7,15 @@
 #include "gameState.hpp"
 #include "introState.hpp"
 #include "mainMenuState.hpp"
+#include "beforeGameState.hpp"
+#include "afterGameState.hpp"
 
 enum class StateType{
     Intro = 1,
     MainMenu,
-    Game
+    BeforeGame,
+    Game,
+    AfterGame
 };
 
 using StateContainer =

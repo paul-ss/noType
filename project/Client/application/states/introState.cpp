@@ -1,4 +1,5 @@
 #include "introState.hpp"
+#include "utils.hpp"
 
 IntroState::IntroState(std::weak_ptr<StateManager> l_stateManager)
     : BaseState(l_stateManager) {}
@@ -8,36 +9,20 @@ void IntroState::OnCreate() {
         std::shared_ptr<StateManager>stateMgr(_stateMgr);
         std::shared_ptr<SharedContext>context(stateMgr->GetContext());
         std::shared_ptr<Window>window(context->window);
-
-        std::shared_ptr<TextureManager>textureMgr(context->textureManager);
-        textureMgr->RequireResource("Rose");
-
         std::shared_ptr<sf::RenderWindow>renderWindow(window->GetRenderWindow());
-        sf::Vector2u windowSize = renderWindow->getSize();
-        _introSprite.setPosition(windowSize.x / 2.0f, windowSize.y / 2.0f);
 
-        std::shared_ptr<sf::Texture>introTexture(textureMgr->GetResource("Rose"));
-        _introSprite.setTexture(*introTexture);
-        _introSprite.setOrigin(windowSize.x / _introSprite.getLocalBounds().width,
-                                windowSize.y / _introSprite.getLocalBounds().width);
+        auto windowSize = renderWindow->getSize();
+        //auto filler = std::make_shared<Label>(context, sf::Vector2f(0, 0), "filler.json");
+        //_elements.push_back(filler);
 
-        sf::FloatRect textRect = _text.getLocalBounds();
-        std::shared_ptr<FontManager>fontMgr(context->fontManager);
-        std::shared_ptr<sf::Font>mainFont(fontMgr->GetResource("Main"));
-        _text.setFont(*mainFont);
-        _text.setOrigin(textRect.left + textRect.width / 2.0f,
-            textRect.top + textRect.height / 2.0f);
-        _text.setPosition(windowSize.x / 2.0f, windowSize.y / 2.0f);
-        _text.setString({ "Press SPACE to continue" });
-        _text.setFillColor(sf::Color::Cyan);
-        _text.setCharacterSize(40);
+        sf::Vector2f introPosition(windowSize.x * 0.5f, windowSize.y * 0.5f);
+        auto introSprite = std::make_shared<Label>(context, introPosition, "introSprite.json");
+        introSprite->SetText("PRESS CONTINUE");
+        _elements.push_back(introSprite);
 
         std::shared_ptr<EventManager>evMgr(context->eventManager);
         auto lambdaContinue = [this](EventDetails& details) { this->Continue(details); };
         evMgr->AddCallback(StateType::Intro, "Intro_Continue", lambdaContinue);
-
-        std::shared_ptr<SoundManager>soundMgr(context->soundManager);
-        //soundMgr->PlayMusic("noType", 50.f, true);
 
     } catch (const std::bad_weak_ptr &e) {
         BOOST_LOG_TRIVIAL(error) << "[intro - oncreate] " << e.what();
@@ -58,20 +43,13 @@ void IntroState::OnDestroy() {
 }
 
 void IntroState::Draw() {
-    try {
-        std::shared_ptr<StateManager>stateMgr(_stateMgr);
-        std::shared_ptr<SharedContext>context(stateMgr->GetContext());
-        std::shared_ptr<Window>window(context->window);
-        std::shared_ptr<sf::RenderWindow>renderWindow(window->GetRenderWindow());
-        renderWindow->clear(sf::Color(255,192,203 ,1));
-        renderWindow->draw(_introSprite);
-        renderWindow->draw(_text);
-    } catch(const std::bad_weak_ptr &e) {
-        BOOST_LOG_TRIVIAL(error) << "[intro - draw] " << e.what();
+    for (size_t i = 0; i < _elements.size(); ++i) {
+        _elements[i]->Draw();
     }
 }
 
-void IntroState::Continue(EventDetails& details) {
+void IntroState::Continue(EventDetails& l_details) {
+    utils::unusedArgs(l_details);
     auto stateMgr = _stateMgr.lock();
     if (!stateMgr) {
         BOOST_LOG_TRIVIAL(error) << "Not valid state manager [intro - continue]";
@@ -81,9 +59,7 @@ void IntroState::Continue(EventDetails& details) {
     stateMgr->Remove(StateType::Intro);
 }
 
-void IntroState::Update(const sf::Time& time) {
-    _introSprite.rotate(time.asSeconds());
-}
+void IntroState::Update(const sf::Time& time) {}
 
 void IntroState::Activate() {}
 void IntroState::Deactivate() {}

@@ -159,7 +159,7 @@ void EventManager::loadBindings() {
         for (boost::property_tree::ptree::value_type& keyEvent : root.get_child("events.keys")) {
             auto bind = std::make_shared<Binding>(keyEvent.first.data());
 
-            EventType type = EventType(std::stoi(keyEvent.second.get<std::string>("eventType")));
+            EventType type = EventType(stoi(keyEvent.second.get<std::string>("eventType")));
             EventInfo eInfo(keyEvent.second.get<int>("keyCode"));
 
             bind->BindEvent(type, eInfo);

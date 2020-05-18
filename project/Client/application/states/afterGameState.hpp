@@ -3,10 +3,11 @@
 #include "baseState.hpp"
 #include "eventManager.hpp"
 #include "stateManager.hpp"
+#include "label.hpp"
 
 class AfterGameState : public BaseState {
 public:
-    explicit AfterGameState(StateManager* l_stateManager);
+    explicit AfterGameState(std::weak_ptr<StateManager> l_stateManager);
     ~AfterGameState();
 
     void OnCreate() override;
@@ -18,10 +19,9 @@ public:
     void Update(const sf::Time& l_time) override;
     void Draw() override;
 
-    void MainMenu(EventDetails* l_details);
+    void MainMenu(EventDetails& l_details);
+    void Game(EventDetails& l_details);
 
 private:
-    sf::Texture _texture;
-    sf::Sprite _sprite;
-    sf::Vector2f _increment;
+    std::vector<std::shared_ptr<BaseElement>> _elements;
 };

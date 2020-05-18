@@ -3,6 +3,7 @@
 #include "baseState.hpp"
 #include "eventManager.hpp"
 #include "stateManager.hpp"
+#include "label.hpp"
 
 class IntroState : public BaseState {
 public:
@@ -21,7 +22,5 @@ public:
     void Continue(EventDetails& details);
 
 private:
-    sf::Sprite _introSprite;
-    sf::Text _text;
-    sf::Font _font;
+    std::vector<std::shared_ptr<BaseElement>> _elements;
 };

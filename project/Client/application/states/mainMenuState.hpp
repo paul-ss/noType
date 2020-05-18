@@ -3,7 +3,7 @@
 #include "baseState.hpp"
 #include "eventManager.hpp"
 #include "stateManager.hpp"
-#include "button.hpp"
+#include "label.hpp"
 
 class MainMenuState : public BaseState {
 public:
@@ -27,13 +27,4 @@ public:
 
 private:
     std::vector<std::shared_ptr<BaseElement>> _elements;
-    //sf::Font m_font;
-    //sf::Text m_text;
-//
-    //sf::Vector2f m_buttonSize;
-    //sf::Vector2f m_buttonPos;
-    //unsigned int m_buttonPadding;
-//
-    //sf::RectangleShape m_rects[3];
-    //sf::Text m_labels[3];
 };

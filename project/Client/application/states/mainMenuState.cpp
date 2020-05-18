@@ -1,50 +1,13 @@
 #include "mainMenuState.hpp"
 #include "logger.hpp"
 
+#define ELEM_MARGIN_X 80
+#define ELEM_MARGIN_Y 100
+
 MainMenuState::MainMenuState(std::weak_ptr<StateManager> stateManager)
     : BaseState(stateManager) {}
 
 void MainMenuState::OnCreate() {
-    /*m_font.loadFromFile("assets/media/fonts/arcade.ttf");
-    m_text.setFont(m_font);
-    m_text.setString(sf::String("MAIN MENU"));
-    m_text.setCharacterSize(18);
-
-    sf::FloatRect textRect = m_text.getLocalBounds();
-    m_text.setOrigin(textRect.left + textRect.width / 2.0f,
-    textRect.top + textRect.height / 2.0f);
-
-    m_text.setPosition(400,100);
-
-    m_buttonSize = sf::Vector2f(300.0f,32.0f);
-    m_buttonPos = sf::Vector2f(400,200);
-    m_buttonPadding = 4;
-
-    std::string str[3];
-    str[0] = "PLAY";
-    str[1] = "CREDITS";
-    str[2] = "EXIT";
-
-    for(int i = 0; i < 3; ++i) {
-        sf::Vector2f buttonPosition(m_buttonPos.x,m_buttonPos.y + 
-            (i * (m_buttonSize.y + m_buttonPadding)));
-        _rect->setSize(m_buttonSize);
-        _rect->setFillColor(sf::Color::Red);
-
-        _rect->setOrigin(m_buttonSize.x / 2.0f, m_buttonSize.y / 2.0f);
-        _rect->setPosition(buttonPosition);
-
-        _label->setFont(m_font);
-        _label->setString(sf::String(t->);
-        _label->setCharacterSize(12);
-
-        sf::FloatRect rect = _label->getLocalBounds();
-        _label->setOrigin(rect.left + rect.width / 2.0f,
-            rect.top + rect.height / 2.0f);
-
-        _label->setPosition(buttonPosition);
-    }*/
-
     try {
         std::shared_ptr<StateManager> stateMgr(_stateMgr);
         std::shared_ptr<SharedContext> context(stateMgr->GetContext());
@@ -52,13 +15,27 @@ void MainMenuState::OnCreate() {
         std::shared_ptr<Window>window(context->window);
         std::shared_ptr<sf::RenderWindow>renderWindow(window->GetRenderWindow());
 
-        sf::Vector2u windowSize = renderWindow->getSize();
-        sf::Vector2f pos(windowSize.x / 2.0f, windowSize.y / 2.0f);
-        auto quit = std::make_shared<Button>(context, pos, "button.json");
+        auto windowSize = renderWindow->getSize();
+        auto filler = std::make_shared<Label>(context, sf::Vector2f(0, 0), "filler.json");
+        _elements.push_back(filler);
+
+        auto play = std::make_shared<Label>(context, sf::Vector2f(0, 0), "button.json");
+        auto playSize = play->GetSize();
+        sf::Vector2f playPosition((windowSize.x * 0.5f - playSize.x * 0.5),
+                            (windowSize.y * 0.5f - playSize.y * 0.5) + ELEM_MARGIN_Y);
+        play->SetText("Play");
+        play->SetPosition(playPosition);
+        _elements.push_back(play);
+
+        auto quit = std::make_shared<Label>(context, sf::Vector2f(0, 0), "button.json");
+        auto quitSize = play->GetSize();
+        sf::Vector2f quitPosition((windowSize.x * 0.5f - playSize.x * 0.5),
+                            (windowSize.y * 0.5f - playSize.y * 0.5) - ELEM_MARGIN_Y);
         quit->SetText("Quit");
+        quit->SetPosition(quitPosition);
         _elements.push_back(quit);
 
-        auto lambdaQuit = [this](EventDetails& l_details) { this->Quit(l_details); };
+        auto lambdaQuit = [this](EventDetails& l_details) { this->MouseClick(l_details); };
         eMgr->AddCallback(StateType::MainMenu, "Key_Escape", lambdaQuit);
 
         auto lambdaClick = [this](EventDetails& l_details) { this->MouseClick(l_details); };
@@ -74,7 +51,7 @@ void MainMenuState::OnCreate() {
 }
 
 void MainMenuState::TextEntered(EventDetails& l_details) {
-    std::cout<< static_cast<char>(l_details.textEntered) << "\n";
+    //std::cout<< static_cast<char>(l_details.textEntered) << "\n";
 }
 
 void MainMenuState::OnDestroy() {
@@ -110,17 +87,20 @@ void MainMenuState::MouseClick(EventDetails& l_details) {
         std::shared_ptr<Window>window(context->window);
         std::shared_ptr<sf::Window>renderWindow(window->GetRenderWindow());
 
-        for(auto& element : _elements) {
-            float halfX = element->GetSize().x / 2.0f;
-            float halfY = element->GetSize().y / 2.0f;
-            if (mousePos.x >= element->GetPosition().x - halfX &&
-                mousePos.x <= element->GetPosition().x + halfX &&
-                mousePos.y >= element->GetPosition().y - halfY &&
-                mousePos.y <= element->GetPosition().y + halfY) {
-
-                window->Close();
-            }
-        }
+        //for (size_t i = 0; i < _elements.size(); ++i) {
+        //    float halfX = _elements[i]->GetSize().x / 2.0f;
+        //    float halfY = _elements[i]->GetSize().y / 2.0f;
+        //    if (mousePos.x >= _elements[i]->GetPosition().x - halfX &&
+        //        mousePos.x <= _elements[i]->GetPosition().x + halfX &&
+        //        mousePos.y >= _elements[i]->GetPosition().y - halfY &&
+        //        mousePos.y <= _elements[i]->GetPosition().y + halfY) {
+        //        if(i == 1) {
+                    stateMgr->SwitchTo(StateType::Game);
+        //        } else if(i == 2) {
+        //            window->Close();
+        //        }
+        //    }
+        //}
 
     } catch (const std::bad_weak_ptr &e) {
         // log
@@ -136,7 +116,6 @@ void MainMenuState::Quit(EventDetails& details) {
         std::shared_ptr<SharedContext>context(stateMgr->GetContext());
         std::shared_ptr<Window>window(context->window);
         window->Close();
-
     } catch (const std::bad_weak_ptr &e) {
         BOOST_LOG_TRIVIAL(error) << "[menu - quit] " << e.what();
     }
@@ -145,25 +124,9 @@ void MainMenuState::Quit(EventDetails& details) {
 void MainMenuState::Activate() {}
 
 void MainMenuState::Draw() {
-    /*try {
-        std::shared_ptr<StateManager>stateMgr(_stateMgr);
-        std::shared_ptr<SharedContext>context(stateMgr->GetContext());
-        std::shared_ptr<EventManager>eMgr(context->eventManager);
-        std::shared_ptr<Window>window(context->window);
-        std::shared_ptr<sf::RenderWindow>renderWindow(window->GetRenderWindow());
-
-        renderWindow->draw(m_text);
-        for(int i = 0; i < 3; ++i) {
-            renderWindow->draw(_rect->;
-            renderWindow->draw(_label->;
-        }
-    } catch (const std::bad_weak_ptr &e) {
-        //log
-    }*/
     for (auto& element : _elements) {
         element->Draw();
     }
-
 }
 
 void MainMenuState::Update(const sf::Time& dT) {}

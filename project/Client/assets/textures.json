@@ -1,7 +1,6 @@
 {
     "textures" : {
         "Rose" : "assets/media/textures/rose.png",
-        "Circle" : "assets/media/textures/circle.png",
         "Pockemon" : "assets/media/textures/pockemon.png"
     }
 }
