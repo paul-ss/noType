@@ -23,7 +23,6 @@ public:
     void MouseRelease(EventDetails& l_details);
     void Play(EventDetails& l_details);
     void Quit(EventDetails& l_details);
-    void TextEntered(EventDetails& l_details);
 
 private:
     std::vector<std::shared_ptr<BaseElement>> _elements;

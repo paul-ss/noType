@@ -32,6 +32,10 @@
             "Text_Delete" : {
                 "eventType" : 5,
                 "keyCode" : 59
+            },
+            "Key_Enter" : {
+                "eventType" : 5,
+                "keyCode" : 58
             }
         }
     }

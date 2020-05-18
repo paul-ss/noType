@@ -25,8 +25,8 @@ ADD_LIBRARY(animation STATIC
 
 ADD_LIBRARY(progressBar STATIC
     ${SOURCE_THIRD_PARTY}/progressBar/Common.hpp
-    ${SOURCE_THIRD_PARTY}/progressBar/ProgressBar.hpp
-    ${SOURCE_THIRD_PARTY}/progressBar/ProgressBar.cpp
+    ${SOURCE_THIRD_PARTY}/progressBar/selbaProgressBar.hpp
+    ${SOURCE_THIRD_PARTY}/progressBar/selbaProgressBar.cpp
 )
 
 ADD_LIBRARY(colorString STATIC
@@ -41,7 +41,7 @@ SET(ALL_HEADERS
     ${SOURCE_DIR}/exceptions
     ${SOURCE_DIR}/game
     ${SOURCE_DIR}/logger
-    #${SOURCE_DIR}/soundManager
+    ${SOURCE_DIR}/soundManager
     ${SOURCE_DIR}/resources
     ${SOURCE_DIR}/sharedContext
     ${SOURCE_DIR}/stateManager
@@ -57,7 +57,7 @@ SET(ALL_SOURCES
     ${SOURCE_DIR}/exceptions/exceptions.hpp
     ${SOURCE_DIR}/game/game.cpp
     ${SOURCE_DIR}/logger/logger.cpp
-    #${SOURCE_DIR}/soundManager/soundManager.cpp
+    ${SOURCE_DIR}/soundManager/soundManager.cpp
     ${SOURCE_DIR}/stateManager/stateManager.cpp
     ${SOURCE_DIR}/states/introState.cpp
     ${SOURCE_DIR}/states/gameState.hpp

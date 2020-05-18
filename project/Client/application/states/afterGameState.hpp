@@ -8,7 +8,7 @@
 class AfterGameState : public BaseState {
 public:
     explicit AfterGameState(std::weak_ptr<StateManager> l_stateManager);
-    ~AfterGameState();
+    ~AfterGameState() = default;
 
     void OnCreate() override;
     void OnDestroy() override;

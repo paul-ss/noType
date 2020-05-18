@@ -154,7 +154,7 @@ void EventManager::Update() {
 void EventManager::loadBindings() {
     try {
         boost::property_tree::ptree root;
-        boost::property_tree::read_json(BINDINGS_FILE_PATH, root);
+        boost::property_tree::read_json(std::filesystem::absolute(BINDINGS_FILE_PATH), root);
 
         for (boost::property_tree::ptree::value_type& keyEvent : root.get_child("events.keys")) {
             auto bind = std::make_shared<Binding>(keyEvent.first.data());

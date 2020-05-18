@@ -25,11 +25,9 @@ public:
 
 protected:
     std::shared_ptr<T> load(const std::string& l_path);
-
-private:
     void loadPaths(const std::string& l_pathFile, const std::string& l_key);
 
-private:
+protected:
     std::unordered_map<std::string, std::shared_ptr<T>> _resources;
     std::unordered_map<std::string, std::string> _paths;
 };
@@ -78,12 +76,12 @@ void ResourceManager<Derived, T>::loadPaths(const std::string& l_pathFile,
         const std::string& l_key) {
     try {
         boost::property_tree::ptree root;
-        boost::property_tree::read_json(l_pathFile, root);
+        boost::property_tree::read_json(std::filesystem::absolute(l_pathFile), root);
 
         for (boost::property_tree::ptree::value_type& currPath : root.get_child(l_key)) {
             _paths.emplace(currPath.first.data(), currPath.second.data());
         }
     } catch (const boost::property_tree::ptree_error& e) {
-    BOOST_LOG_TRIVIAL(error) << e.what() << " " << l_pathFile;
+        BOOST_LOG_TRIVIAL(error) << e.what() << " " << l_pathFile;
     }
 }

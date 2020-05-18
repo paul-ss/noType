@@ -1,6 +1,6 @@
 #include "logger.hpp"
 
-#define LOG_FILE "notype.log"
+#define LOG_FILE "logNoType.txt"
 
 void init_logger() {
     boost::log::register_simple_formatter_factory<boost::log::trivial::severity_level, char>("Severity");
