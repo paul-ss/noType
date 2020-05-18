@@ -37,7 +37,7 @@ ADD_LIBRARY(colorString STATIC
 SET(ALL_HEADERS
     ${SOURCE_DIR}/utils
     ${SOURCE_DIR}/eventManager
-    ${SOURCE_DIR}/gui
+    ${SOURCE_DIR}/ui
     ${SOURCE_DIR}/exceptions
     ${SOURCE_DIR}/game
     ${SOURCE_DIR}/logger
@@ -47,12 +47,16 @@ SET(ALL_HEADERS
     ${SOURCE_DIR}/stateManager
     ${SOURCE_DIR}/states
     ${SOURCE_DIR}/window
+    ${SOURCE_DIR}/Network/QueueManager
+    ${SOURCE_DIR}/Network/NetworkManager
+    ${SOURCE_DIR}/Network/Message
+    ${SOURCE_DIR}/Network/MessageParser
 )
 
 SET(ALL_SOURCES
-    ${SOURCE_DIR}/gui/baseElement.cpp
-    ${SOURCE_DIR}/gui/smartString.cpp
-    ${SOURCE_DIR}/gui/label.cpp
+    ${SOURCE_DIR}/ui/baseElement.cpp
+    ${SOURCE_DIR}/ui/smartString.cpp
+    ${SOURCE_DIR}/ui/label.cpp
     ${SOURCE_DIR}/eventManager/eventManager.cpp
     ${SOURCE_DIR}/exceptions/exceptions.hpp
     ${SOURCE_DIR}/game/game.cpp
@@ -67,6 +71,8 @@ SET(ALL_SOURCES
     ${SOURCE_DIR}/states/afterGameState.cpp
     ${SOURCE_DIR}/states/beforeGameState.cpp
     ${SOURCE_DIR}/window/window.cpp
+    ${SOURCE_DIR}/Network/QueueManager/QueueManager.cpp
+    ${SOURCE_DIR}/Network/NetworkManager/NetworkManager.cpp
 )
 
 SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
@@ -91,8 +97,10 @@ TARGET_LINK_LIBRARIES(notype
     ${SFML_LIBRARIES}
     ${SFML_DEPENDENCIES}
     ${Boost_LIBRARIES}
+    NetworkManagerLib
     colorString
     progressBar
     animation)
 
+ADD_SUBDIRECTORY(${SOURCE_DIR}/Network)
 #ADD_SUBDIRECTORY(tests)

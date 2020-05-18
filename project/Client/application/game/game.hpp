@@ -32,4 +32,7 @@ private:
     std::shared_ptr<AudioManager> _audioManager;
     std::shared_ptr<SoundManager> _soundManager;
     std::shared_ptr<StateManager> _stateManager;
+
+    std::shared_ptr<Network::Client::IQueueManager> _queueManager;
+    std::shared_ptr<Network::INetworkManager> _networkManager;
 };

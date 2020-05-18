@@ -27,6 +27,9 @@ Game::Game() {
     _fontManager->RequireResource("Main");
     _context->fontManager = _fontManager;
 
+    _queueManager = std::make_shared<Network::QueueManager>();
+    _networkManager = std::make_shared<Network::INetworkManager>(_queueManager);
+
     _stateManager = std::make_shared<StateManager>(_context);
     _stateManager->SwitchTo(StateType::Intro);
 }
@@ -57,6 +60,7 @@ void Game::lateUpdate() {
 }
 
 void Game::Run() {
+    _networkManager->Run();
     while (!_window->IsDone()) {
         update();
         render();
