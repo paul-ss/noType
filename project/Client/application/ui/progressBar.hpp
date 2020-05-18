@@ -1,14 +1,18 @@
 #pragma once
 
+#include "selbaProgressBar.hpp"
+#include "Common.hpp"
+
 #include "baseElement.hpp"
 
-class Button : public BaseElement {
+class ProgressBar : public BaseElement {
 public:
-    explicit Button(std::weak_ptr<SharedContext> l_sharedContext,
+    ProgressBar(std::weak_ptr<SharedContext> l_sharedContext,
             const sf::Vector2f& l_position,
-            const std::string& l_style);
+            const std::string& l_style,
+            const std::string& l_reference);
 
-    ~Button() override;
+    ~ProgressBar() = default;
 
     void Update(float l_dT) override;
     void Draw() override;
@@ -19,5 +23,5 @@ public:
     void OnLeave() override;
 
 private:
-    void draw(const std::shared_ptr<Style> l_style);
+    sw::ProgressBar _progressBar;
 };
