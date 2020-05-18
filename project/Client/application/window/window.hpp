@@ -7,8 +7,9 @@
 class Window {
     public:
         Window();
-        Window(const std::string& title, const sf::Vector2u& size);
+        explicit Window(const std::string& title, const sf::Vector2u& size);
         ~Window();
+
         void BeginDraw();
         void Draw(sf::Drawable& drawable);
         void EndDraw();

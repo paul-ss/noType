@@ -1,10 +1,11 @@
 #pragma once
+
 #include "baseState.hpp"
 #include "eventManager.hpp"
 
 class GameState : public BaseState {
     public:
-        GameState(StateManager* stateManager);
+        explicit GameState(StateManager* stateManager);
         ~GameState();
 
         void OnCreate() override;

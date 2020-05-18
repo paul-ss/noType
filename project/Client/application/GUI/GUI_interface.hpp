@@ -15,7 +15,7 @@ class GUI_Interface : public GUI_Element{
     friend class GUI_Element;
     friend class GUI_Manager;
 public:
-    GUI_Interface(const std::string& name, GUI_Manager* guiManager);
+    explicit GUI_Interface(const std::string& name, GUI_Manager* guiManager);
     ~GUI_Interface();
 
     void SetPosition(const sf::Vector2f& pos);

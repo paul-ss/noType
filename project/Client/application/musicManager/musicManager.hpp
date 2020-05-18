@@ -14,7 +14,7 @@ using SoundID = int;
 enum class StateType;
 
 struct SoundInfo{
-    SoundInfo(const std::string& name): _name(name), _manualPaused(false) {}
+    explicit SoundInfo(const std::string& name): _name(name), _manualPaused(false) {}
     std::string _name;
     bool _manualPaused;
 };
@@ -23,7 +23,7 @@ using MusicContainer = std::unordered_map<StateType, std::pair<SoundInfo, sf::Mu
 
 class SoundManager {
     public:
-        SoundManager(AudioManager* audioMgr) : _audioManager{audioMgr} {};
+        explicit SoundManager(AudioManager* audioMgr) : _audioManager{audioMgr} {};
         ~SoundManager() = default;
 
         void ChangeState(const StateType& state);

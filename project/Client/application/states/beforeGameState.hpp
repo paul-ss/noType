@@ -3,10 +3,10 @@
 #include "baseState.hpp"
 #include "eventManager.hpp"
 
-class MainMenuState : public BaseState{
+class BeforeGameState : public BaseState {
     public:
-        explicit MainMenuState(StateManager* stateManager);
-        ~MainMenuState();
+        explicit BeforeGameState(StateManager* stateManager);
+        ~BeforeGameState();
 
         void OnCreate() override;
         void OnDestroy() override;
@@ -17,7 +17,10 @@ class MainMenuState : public BaseState{
         void Update(const sf::Time& time) override;
         void Draw() override;
 
-        void MouseClick(EventDetails* details);
-        void Play(EventDetails* details);
-        void Quit(EventDetails* details);
+        void MainMenu(EventDetails* details);
+
+    private:
+        sf::Texture _texture;
+        sf::Sprite _sprite;
+        sf::Vector2f _increment;
 };

@@ -10,10 +10,11 @@ class BaseState {
     friend class StateManager;
 
     public:
-        BaseState(StateManager* stateManager) :
+        explicit BaseState(StateManager* stateManager) :
                 _stateMgr(stateManager),
                 _transparent(false),
                 _transcendent(false) {}
+
         virtual ~BaseState() = default;
 
         virtual void OnCreate() = 0;
