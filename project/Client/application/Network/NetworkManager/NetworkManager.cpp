@@ -11,10 +11,10 @@
 
 namespace Network {
 
-NetworkManager::NetworkManager(const std::shared_ptr<Connector::IQueueManager>& queueManager) :
+NetworkManager::NetworkManager(std::shared_ptr<Connector::IQueueManager> queueManager) :
                                             NetworkManager(queueManager, std::string(kServerIp), kServerPort)  {}
 
-NetworkManager::NetworkManager(const std::shared_ptr<Connector::IQueueManager>& queueManager,
+NetworkManager::NetworkManager(std::shared_ptr<Connector::IQueueManager> queueManager,
                                std::string serverIp,
                                std::uint32_t port) :
                                  _queueManager{queueManager},

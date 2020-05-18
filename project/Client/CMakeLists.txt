@@ -47,10 +47,12 @@ SET(ALL_HEADERS
     ${SOURCE_DIR}/stateManager
     ${SOURCE_DIR}/states
     ${SOURCE_DIR}/window
+    ${SOURCE_DIR}/Network/
     ${SOURCE_DIR}/Network/QueueManager
     ${SOURCE_DIR}/Network/NetworkManager
     ${SOURCE_DIR}/Network/Message
     ${SOURCE_DIR}/Network/MessageParser
+    ${SOURCE_DIR}/Network/PlayerInfo
 )
 
 SET(ALL_SOURCES
@@ -73,6 +75,8 @@ SET(ALL_SOURCES
     ${SOURCE_DIR}/window/window.cpp
     ${SOURCE_DIR}/Network/QueueManager/QueueManager.cpp
     ${SOURCE_DIR}/Network/NetworkManager/NetworkManager.cpp
+    ${SOURCE_DIR}/Network/Message/Message.cpp
+    ${SOURCE_DIR}/Network/MessageParser/MessageParser.cpp
 )
 
 SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
@@ -93,6 +97,8 @@ SET_TARGET_PROPERTIES(notype
     RUNTIME_OUTPUT_DIRECTORY "${SOURCE_DIR}/.."
 )
 
+ADD_SUBDIRECTORY(${SOURCE_DIR}/Network)
+
 TARGET_LINK_LIBRARIES(notype
     ${SFML_LIBRARIES}
     ${SFML_DEPENDENCIES}
@@ -102,5 +108,5 @@ TARGET_LINK_LIBRARIES(notype
     progressBar
     animation)
 
-ADD_SUBDIRECTORY(${SOURCE_DIR}/Network)
+
 #ADD_SUBDIRECTORY(tests)

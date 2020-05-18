@@ -27,8 +27,17 @@ Game::Game() {
     _fontManager->RequireResource("Main");
     _context->fontManager = _fontManager;
 
-    _queueManager = std::make_shared<Network::QueueManager>();
-    _networkManager = std::make_shared<Network::INetworkManager>(_queueManager);
+    // NOTE(vendroid): Надо было делать сначала ОТДЕЛЬНЫЙ объект типа std::shared_ptr<Network::QueueManager>
+    //                 с помощью std::make_shared<Network::QueueManager>(), а потом уже им инициализировать
+    //                 поле класса и передавать НЕ ПОЛЕ, а объект класса :)
+    //                 Я сам обосрался в контруктуре NetworkManager'a -- написал там шаренный указатель
+    //                 по ссылке константной ссылке на Connector::IQueueManager. Конечно же он должен
+    //                 принимать обычный указатель, что бы прокнул полиморфизм.
+    // -------------->*
+    auto queueManager = std::make_shared<Network::QueueManager>();
+    _queueManager = queueManager;
+
+    _networkManager = std::make_shared<Network::NetworkManager>(queueManager);
 
     _stateManager = std::make_shared<StateManager>(_context);
     _stateManager->SwitchTo(StateType::Intro);

@@ -7,6 +7,7 @@ set(NETWORK_MANAGER_INCLUDE_DIRS
                                 ../PlayerInfo/
                                 ../MessageParser/
                                 ../QueueManager/
+                                ../
                                 ${CMAKE_INCLUDE_CURRENT_DIR})
 
 set(NETWORK_MANAGER_HEADERS
@@ -15,7 +16,7 @@ set(NETWORK_MANAGER_HEADERS
                                 ../MessageParser/MessageParser.hpp
                                 ../MessageParser/MessageParserConfig.hpp
                                 ../QueueManager/QueueManager.hpp
-                                NetworkManager.Hpp
+                                NetworkManager.hpp
                                 NetworkManagerConfig.hpp)
 
 set(NETWORK_MANAGER_SRCS
@@ -32,9 +33,9 @@ add_library(NetworkManagerLib STATIC
 target_include_directories(NetworkManagerLib PUBLIC
                                 ${NETWORK_MANAGER_INCLUDE_DIRS})
 
-#add_executable(test_MessageParser test_MessageParser.cpp)
-#
-#target_link_libraries(test_Message
-#                                    ${GTEST_LIBRARIES}
-#                                    MessageParserLib
-#                                    pthread)
+add_executable(test_NetworkManager test_NetworkManager.cpp)
+
+target_link_libraries(test_NetworkManager
+                                    ${GTEST_LIBRARIES}
+                                    NetworkManagerLib
+                                    pthread)

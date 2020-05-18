@@ -2,8 +2,7 @@
 
 #include <memory>
 
-#include "QueueManager.hpp"
-#include "NetworkManager.hpp"
+//#include "Network.hpp"
 
 #include "window.hpp"
 #include "eventManager.hpp"
@@ -20,6 +19,6 @@ struct SharedContext {
     std::weak_ptr<TextureManager> textureManager;
     std::weak_ptr<FontManager> fontManager;
 
-    std::weak_ptr<Network::INetworkManager> networkManager;
-    std::weak_ptr<Network::Client::IQueueManager> queueManager;
+//    std::weak_ptr<Network::INetworkManager> networkManager;
+//    std::weak_ptr<Network::Client::IQueueManager> queueManager;
 };

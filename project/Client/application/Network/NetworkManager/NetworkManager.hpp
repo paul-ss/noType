@@ -26,8 +26,8 @@ class IQueueManager;
 
 class NetworkManager : public INetworkManager {
 public:
-  NetworkManager(const std::shared_ptr<Connector::IQueueManager>& _queueManager);
-  NetworkManager(const std::shared_ptr<Connector::IQueueManager>& _queueManager,
+  NetworkManager(std::shared_ptr<Connector::IQueueManager> queueManager);
+  NetworkManager(std::shared_ptr<Connector::IQueueManager> queueManager,
                  std::string serverIp,
                  std::uint32_t port);
 

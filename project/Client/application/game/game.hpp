@@ -4,6 +4,10 @@
 #include "stateManager.hpp"
 #include "sharedContext.hpp"
 
+#include "Network.hpp"
+
+#include <memory>
+
 class Game : public sf::NonCopyable {
 public:
     Game();
