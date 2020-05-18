@@ -1,0 +1,15 @@
+#pragma once
+
+#include <string>
+
+struct PlayerInfo {
+  std::string name;
+  std::uint16_t position;
+  double speed;
+  enum class Status {
+    Play,
+    Wait,
+    Win
+  };
+  Status status;
+};
