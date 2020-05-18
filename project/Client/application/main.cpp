@@ -1,9 +1,11 @@
-//#include "fileLogger.hpp"
+#include "logger.hpp"
 #include "game.hpp"
 
 int main() {
-    //FileLogger::getInstance();
+    init_logger();
+    BOOST_LOG_TRIVIAL(info) << "notype start";
     Game game;
     game.Run();
+    BOOST_LOG_TRIVIAL(info) << "notype end";
     return 0;
 }

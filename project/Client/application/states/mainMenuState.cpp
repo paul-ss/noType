@@ -1,52 +1,129 @@
 #include "mainMenuState.hpp"
-#include "stateManager.hpp"
+#include "logger.hpp"
 
-MainMenuState::MainMenuState(StateManager* stateManager)
+#define ELEM_MARGIN_X 80
+#define ELEM_MARGIN_Y 100
+
+MainMenuState::MainMenuState(std::weak_ptr<StateManager> stateManager)
     : BaseState(stateManager) {}
 
-MainMenuState::~MainMenuState() {}
-
 void MainMenuState::OnCreate() {
-    GUI_Manager* gui = _stateMgr->GetContext()->_guiManager;
-    gui->LoadInterface(StateType::MainMenu, "MainMenu.interface", "MainMenu");
-    gui->GetInterface(StateType::MainMenu, "MainMenu")->SetPosition(sf::Vector2f(250.f, 168.f));
+    try {
+        std::shared_ptr<StateManager> stateMgr(_stateMgr);
+        std::shared_ptr<SharedContext> context(stateMgr->GetContext());
+        std::shared_ptr<EventManager> eMgr(context->eventManager);
+        std::shared_ptr<Window>window(context->window);
+        std::shared_ptr<sf::RenderWindow>renderWindow(window->GetRenderWindow());
 
-    EventManager* eMgr = _stateMgr->GetContext()->_eventManager;
+        //Background
+        auto windowSize = renderWindow->getSize();
+        auto filler = std::make_shared<Label>(context, sf::Vector2f(0, 0), "filler.json");
+        _elements.push_back(filler);
 
-    auto lambdaPlay = [this](EventDetails& details) { this->Play(&details); };
-    eMgr->AddCallback(StateType::MainMenu, "MainMenu_Play", lambdaPlay);
+        //Play button
+        auto play = std::make_shared<Label>(context, sf::Vector2f(0, 0), "button.json");
+        auto playSize = play->GetSize();
+        sf::Vector2f playPosition((windowSize.x * 0.5f - playSize.x * 0.5),
+                (windowSize.y * 0.5f - playSize.y * 0.5) - ELEM_MARGIN_Y);
+        play->SetText("Play");
+        play->SetPosition(playPosition);
+        _elements.push_back(play);
 
-    auto lambdaQuit = [this](EventDetails& details) { this->Quit(&details); };
-    eMgr->AddCallback(StateType::MainMenu, "MainMenu_Quit", lambdaQuit);
-}
+        //Quit button
+        auto quit = std::make_shared<Label>(context, sf::Vector2f(0, 0), "button.json");
+        auto quitSize = play->GetSize();
+        sf::Vector2f quitPosition((windowSize.x * 0.5f - playSize.x * 0.5),
+                (windowSize.y * 0.5f - playSize.y * 0.5) + ELEM_MARGIN_Y);
+        quit->SetText("Quit");
+        quit->SetPosition(quitPosition);
+        _elements.push_back(quit);
 
-void MainMenuState::OnDestroy() {
-    _stateMgr->GetContext()->_guiManager->RemoveInterface(StateType::MainMenu, "MainMenu");
-    EventManager* eMgr = _stateMgr->GetContext()->_eventManager;
-    eMgr->RemoveCallback(StateType::MainMenu, "MainMenu_Play");
-    eMgr->RemoveCallback(StateType::MainMenu, "MainMenu_Quit");
-}
+        //Binding keys
+        auto lambdaQuit = [this](EventDetails& l_details) { this->Quit(l_details); };
+        eMgr->AddCallback(StateType::MainMenu, "Key_Escape", lambdaQuit);
 
-void MainMenuState::Activate() {
-    auto& play = *_stateMgr->GetContext()->_guiManager->
-        GetInterface(StateType::MainMenu, "MainMenu")->GetElement("Play");
-    if (_stateMgr->HasState(StateType::Game)) {
-        // Resume
-        play.SetText("Resume");
-    } else {
-        // Play
-        play.SetText("Play");
+        auto lambdaClick = [this](EventDetails& l_details) { this->MouseClick(l_details); };
+        eMgr->AddCallback(StateType::MainMenu, "Mouse_Left", lambdaClick);
+
+        auto lambdaPlay = [this](EventDetails& l_details) { this->Play(l_details); };
+        eMgr->AddCallback(StateType::MainMenu, "Key_Enter", lambdaPlay);
+
+    } catch (const std::bad_weak_ptr &e) {
+        BOOST_LOG_TRIVIAL(error) << "[menu - oncreate] " << e.what();
     }
 }
 
-void MainMenuState::Play(EventDetails* details) {
-    _stateMgr->SwitchTo(StateType::Game);
+void MainMenuState::OnDestroy() {
+    try {
+        std::shared_ptr<StateManager>stateMgr(_stateMgr);
+        std::shared_ptr<SharedContext>context(stateMgr->GetContext());
+        std::shared_ptr<EventManager>eMgr(context->eventManager);
+
+        eMgr->RemoveCallback(StateType::MainMenu, "Key_Escape");
+        eMgr->RemoveCallback(StateType::MainMenu, "Mouse_Left");
+        eMgr->RemoveCallback(StateType::MainMenu, "Text_Entered");
+    } catch(const std::bad_weak_ptr &e) {
+        BOOST_LOG_TRIVIAL(error) << "[mainMenu - ondestroy] " << e.what();
+    }
 }
 
-void MainMenuState::Quit(EventDetails* details) {
-    _stateMgr->GetContext()->_window->Close();
+void MainMenuState::Play(EventDetails& l_details) {
+    auto stateMgr = _stateMgr.lock();
+    if (!stateMgr) {
+        BOOST_LOG_TRIVIAL(error) << "Not valid state manager [menu - play]";
+        return;
+    }
+    stateMgr->SwitchTo(StateType::BeforeGame);
 }
 
-void MainMenuState::Draw() {}
+void MainMenuState::MouseClick(EventDetails& l_details) {
+    sf::Vector2i mousePos = l_details.mouse;
+
+    try {
+        std::shared_ptr<StateManager>stateMgr(_stateMgr);
+        std::shared_ptr<SharedContext>context(stateMgr->GetContext());
+        std::shared_ptr<EventManager>eMgr(context->eventManager);
+        std::shared_ptr<Window>window(context->window);
+        std::shared_ptr<sf::Window>renderWindow(window->GetRenderWindow());
+
+        for (size_t i = 0; i < _elements.size(); ++i) {
+            float halfX = _elements[i]->GetSize().x / 2.0f;
+            float halfY = _elements[i]->GetSize().y / 2.0f;
+            if (mousePos.x >= _elements[i]->GetPosition().x - halfX &&
+                mousePos.x <= _elements[i]->GetPosition().x + halfX &&
+                mousePos.y >= _elements[i]->GetPosition().y - halfY &&
+                mousePos.y <= _elements[i]->GetPosition().y + halfY) {
+                if (i == 1) {
+                    Play(l_details);
+                } else if (i == 2) {
+                    Quit(l_details);
+                }
+            }
+        }
+
+    } catch (const std::bad_weak_ptr &e) {
+        BOOST_LOG_TRIVIAL(error) << "[menu - mouseclick] " << e.what();
+    }
+}
+
+void MainMenuState::Quit(EventDetails& details) {
+    try {
+        std::shared_ptr<StateManager>stateMgr(_stateMgr);
+        std::shared_ptr<SharedContext>context(stateMgr->GetContext());
+        std::shared_ptr<Window>window(context->window);
+        window->Close();
+
+    } catch (const std::bad_weak_ptr &e) {
+        BOOST_LOG_TRIVIAL(error) << "[menu - quit] " << e.what();
+    }
+}
+
+void MainMenuState::Draw() {
+    for (auto& element : _elements) {
+        element->Draw();
+    }
+}
+
+void MainMenuState::Activate() {}
 void MainMenuState::Update(const sf::Time& dT) {}
 void MainMenuState::Deactivate() {}

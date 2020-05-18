@@ -1,0 +1,42 @@
+{
+    "events" : {
+        "keys" : {
+            "Window_close" : {
+                "eventType" : 0,
+                "keyCode" : 0
+            },
+            "Mute" : {
+                "eventType" : 5,
+                "keyCode" : 89
+            },
+            "Intro_Continue" : {
+                "eventType" : 5,
+                "keyCode" : 57
+            },
+            "Mouse_Left" : {
+                "eventType" : 9,
+                "keyCode" : 0
+            },
+            "Mouse_Left_Release" : {
+                "eventType" : 0,
+                "keyCode" : 0
+            },
+            "Key_Escape" : {
+                "eventType" : 5,
+                "keyCode" : 36
+            },
+            "Text_Entered" : {
+                "eventType" : 4,
+                "keyCode" : 0
+            },
+            "Text_Delete" : {
+                "eventType" : 5,
+                "keyCode" : 59
+            },
+            "Key_Enter" : {
+                "eventType" : 5,
+                "keyCode" : 58
+            }
+        }
+    }
+}

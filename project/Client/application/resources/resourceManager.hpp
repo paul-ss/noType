@@ -1,138 +1,87 @@
 #pragma once
 
-#include "utils.hpp"
-
 #include <string>
 #include <unordered_map>
-#include <iostream>
-#include <fstream>
-#include <sstream>
+#include <memory>
+#include <filesystem>
+
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+
+#include "logger.hpp"
 
 template <typename Derived, typename T>
 class ResourceManager {
-    public:
-        explicit ResourceManager(const std::string& pathsFile) {
-            loadPaths(pathsFile);
-        }
+public:
+    explicit ResourceManager(const std::string& l_pathsFile, const std::string& l_key) {
+        loadPaths(l_pathsFile, l_key);
+    }
 
-        virtual ~ResourceManager() {
-            PurgeResources();
-        }
+    virtual ~ResourceManager() = default;
 
-        T* GetResource(const std::string& id);
-        std::string GetPath(const std::string& id);
-        bool RequireResource(const std::string& id);
-        bool ReleaseResource(const std::string& id);
-        void PurgeResources();
+    std::weak_ptr<T> GetResource(const std::string& l_id);
+    std::string GetPath(const std::string& l_id);
+    bool RequireResource(const std::string& l_id);
 
-    protected:
-        T* load(const std::string& path);
+protected:
+    std::shared_ptr<T> load(const std::string& l_path);
+    void loadPaths(const std::string& l_pathFile, const std::string& l_key);
 
-    private:
-        std::pair<T*, unsigned int>* find(const std::string& id);
-        bool unload(const std::string& id);
-        void loadPaths(const std::string& pathFile);
-
-    private:
-        std::unordered_map<std::string,
-                std::pair<T*, unsigned int>> _resources;
-        std::unordered_map<std::string, std::string> _paths;
+protected:
+    std::unordered_map<std::string, std::shared_ptr<T>> _resources;
+    std::unordered_map<std::string, std::string> _paths;
 };
 
 template <typename Derived, typename T>
-T* ResourceManager<Derived, T>::GetResource(const std::string& id) {
-    auto res = find(id);
-    return(res ? res->first : nullptr);
+std::weak_ptr<T> ResourceManager<Derived, T>::GetResource(const std::string& l_id) {
+    auto res = _resources.find(l_id);
+    if (res == _resources.end()) {
+        return {};
+    }
+    return res->second;
 }
 
 template <typename Derived, typename T>
-std::string ResourceManager<Derived, T>::GetPath(const std::string& id) {
-    auto path = _paths.find(id);
-    return(path != _paths.end() ? path->second : "");
+std::string ResourceManager<Derived, T>::GetPath(const std::string& l_id) {
+    auto path = _paths.find(l_id);
+    return(path != _paths.end() ? path->second : std::string());
 }
 
 template <typename Derived, typename T>
-bool ResourceManager<Derived, T>::RequireResource(const std::string& id) {
-    auto res = find(id);
-    if(res) {
-        ++res->second;
+bool ResourceManager<Derived, T>::RequireResource(const std::string& l_id) {
+    auto res = _resources.find(l_id);
+    if(res != _resources.end()) {
         return true;
     }
-    auto path = _paths.find(id);
-    if (path == _paths.end()){ return false; }
-    T* resource = load(path->second);
+
+    auto path = _paths.find(l_id);
+    if (path == _paths.end()) {
+        return false;
+    }
+    auto resource = load(path->second);
     if (!resource) {
         return false;
     }
-    _resources.emplace(id, std::make_pair(resource, 1));
+    _resources.emplace(l_id, resource);
     return true;
-}
-
-template <typename Derived, typename T>
-bool ResourceManager<Derived, T>::ReleaseResource(const std::string& id) {
-    auto res = find(id);
-    if (!res) {
-        return false;
-    }
-    --res->second;
-    if (!res->second) {
-        unload(id);
-    }
-    return true;
-}
-
-template <typename Derived, typename T>
-void ResourceManager<Derived, T>::PurgeResources() {
-    std::cout << "Purging all resources:" << std::endl;
-    while(_resources.begin() != _resources.end()){
-        std::cout << "Removing: " 
-            << _resources.begin()->first << std::endl;
-        delete _resources.begin()->second.first;
-        _resources.erase(_resources.begin());
-    }
-    std::cout << "Purging finished." << std::endl;
 }
 
 template <typename Derived, class T>
-T* ResourceManager<Derived, T>::load(const std::string& path) {
-    return static_cast<Derived*>(this)->Load(path);
+std::shared_ptr<T> ResourceManager<Derived, T>::load(const std::string& l_path) {
+    return static_cast<Derived*>(this)->load(l_path);
 }
 
 template <typename Derived, typename T>
-std::pair<T*, unsigned int>* ResourceManager<Derived, T>::find(const std::string& id) {
-    auto itr = _resources.find(id);
-    return (itr != _resources.end() ? &itr->second : nullptr);
-}
+void ResourceManager<Derived, T>::loadPaths(const std::string& l_pathFile,
+        const std::string& l_key) {
+    try {
+        boost::property_tree::ptree root;
+        boost::property_tree::read_json(std::filesystem::absolute(l_pathFile), root);
 
-template <typename Derived, typename T>
-bool ResourceManager<Derived, T>::unload(const std::string& id) {
-    auto itr = _resources.find(id);
-    if (itr == _resources.end()) {
-        return false;
-    }
-    delete itr->second.first;
-    _resources.erase(itr);
-    return true;
-}
-
-template <typename Derived, typename T>
-void ResourceManager<Derived, T>::loadPaths(const std::string& pathFile) {
-    std::ifstream paths;
-    paths.open(utils::GetWorkingDirectory() + pathFile);
-    if(paths.is_open()){
-        std::string line;
-        while(std::getline(paths, line)){
-            std::stringstream keystream(line);
-            std::string pathName;
-            std::string path;
-            keystream >> pathName;
-            keystream >> path;
-            _paths.emplace(pathName, path);
+        for (boost::property_tree::ptree::value_type& currPath : root.get_child(l_key)) {
+            _paths.emplace(currPath.first.data(), currPath.second.data());
         }
-        paths.close();
-        return;
+    } catch (const boost::property_tree::ptree_error& e) {
+        BOOST_LOG_TRIVIAL(error) << e.what() << " " << l_pathFile;
     }
-    std::cerr <<
-        "! Failed loading the path file: "
-        << pathFile << std::endl;
 }

@@ -1,19 +1,31 @@
 #pragma once
 
-#include "resourceManager.hpp"
-#include "utils.hpp"
+#include <filesystem>
 
 #include <SFML/Audio.hpp>
 
-class AudioManager : public ResourceManager<AudioManager, sf::SoundBuffer> {
+#include "resourceManager.hpp"
+
+#define AUDIO_FILE_PATH "assets/audio.json"
+
+class AudioManager : public ResourceManager<AudioManager, sf::Music> {
 public:
-    AudioManager() : ResourceManager("resources/audio.cfg") {}
-    sf::SoundBuffer* Load(const std::string& path) {
-        sf::SoundBuffer* sound = new sf::SoundBuffer();
-        if (!sound->loadFromFile(utils::GetWorkingDirectory() + path)) {
-            delete sound;
+    AudioManager() : ResourceManager(AUDIO_FILE_PATH, "audio") {}
+
+    std::vector<std::string> getNames() {
+        std::vector<std::string> allTracks;
+        for (auto& music : _paths) {
+            allTracks.push_back(music.first);
+        }
+        return allTracks;
+    }
+
+    std::shared_ptr<sf::Music> load(const std::string& l_path) {
+        auto sound = std::make_shared<sf::Music>();
+        if (!sound->openFromFile(std::filesystem::absolute(l_path))) {
+            sound.reset();
             sound = nullptr;
-            std::cerr << "! Failed to load sound: " << path << std::endl;
+            BOOST_LOG_TRIVIAL(error) << "Failed to load audio file: " << l_path;
         }
         return sound;
     }

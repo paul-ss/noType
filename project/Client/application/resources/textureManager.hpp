@@ -1,20 +1,22 @@
 #pragma once
-#include "resourceManager.hpp"
+
 #include <SFML/Graphics/Texture.hpp>
 
-class TextureManager: public ResourceManager<TextureManager, sf::Texture> {
-    public:
-        TextureManager(): ResourceManager("resources/textures.cfg") {}
+#include "resourceManager.hpp"
 
-        sf::Texture* Load(const std::string& path) {
-            sf::Texture* texture = new sf::Texture();
-            if(!texture->loadFromFile(
-                utils::GetWorkingDirectory() + path))
-            {
-                delete texture;
-                texture = nullptr;
-                std::cerr << "! Failed to load texture: " << path << std::endl;
-            }
-            return texture;
+#define TEXTURES_FILE_PATH "assets/textures.json"
+
+class TextureManager: public ResourceManager<TextureManager, sf::Texture> {
+public:
+    TextureManager(): ResourceManager(TEXTURES_FILE_PATH, "textures") {}
+
+    std::shared_ptr<sf::Texture> load(const std::string& l_path) {
+        auto texture = std::make_shared<sf::Texture>();
+        if(!texture->loadFromFile(std::filesystem::absolute(l_path))) {
+            texture.reset();
+            texture = {};
+            BOOST_LOG_TRIVIAL(error) << "Failed to load texture file: " << l_path;
         }
+        return texture;
+    }
 };

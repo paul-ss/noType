@@ -1,0 +1,16 @@
+{
+    "Neutral" : {
+        "size" : [0, 0],
+        "fullScreen" : "false",
+        "bgColor" : [0, 0, 0, 0],
+        "bgImage" : "Rose",
+        "bgImgColor" : [255, 255, 0, 255],
+        "textColor" : [0, 0, 255, 255],
+        "textFont" : "Main",
+        "textPadding" : [150, 16],
+        "textSize" : 30,
+        "textOriginCenter" : "true",
+        "glyph" : "",
+        "glyphPadding" : [150, 16]
+    }
+}

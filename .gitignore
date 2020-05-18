@@ -34,7 +34,7 @@
 #IDE
 .idea
 project/Server/cmake-build-debug/*
-project/Server/cmake-build-clang/*
+cmake-build-debug
 .vscode
 cmake-build-debug
 
@@ -42,4 +42,5 @@ cmake-build-debug
 .DS_Store
 build
 notype
-notype.log
+logNoType.txt
+Dockerfile

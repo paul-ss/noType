@@ -2,25 +2,26 @@
 
 #include "baseState.hpp"
 #include "eventManager.hpp"
+#include "stateManager.hpp"
+#include "smartString.hpp"
 
 class GameState : public BaseState {
-    public:
-        explicit GameState(StateManager* stateManager);
-        ~GameState();
+public:
+    explicit GameState(std::weak_ptr<StateManager> stateManager);
+    ~GameState() = default;
 
-        void OnCreate() override;
-        void OnDestroy() override;
+    void OnCreate() override;
+    void OnDestroy() override;
 
-        void Activate() override;
-        void Deactivate() override;
+    void Activate() override;
+    void Deactivate() override;
 
-        void Update(const sf::Time& time) override;
-        void Draw() override;
+    void Update(const sf::Time& l_time) override;
+    void Draw() override;
 
-        void MainMenu(EventDetails* details);
+    void TextEntered(EventDetails& l_details);
+    void MainMenu(EventDetails& l_details);
 
-    private:
-        sf::Texture _texture;
-        sf::Sprite _sprite;
-        sf::Vector2f _increment;
+private:
+    std::vector<std::shared_ptr<BaseElement>> _elements;
 };

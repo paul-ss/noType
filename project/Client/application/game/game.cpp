@@ -1,17 +1,34 @@
 #include "game.hpp"
 
-Game::Game() : _window("noType", sf::Vector2u(800,600)), _context{},
-        _stateManager(&_context), _audioManager{}, _soundManager(&_audioManager) {
+#define GAME_NAME "noType"
+#define MUSIC_VOLUME 50.0f
+
+Game::Game() {
 
     _clock.restart();
     srand(time(nullptr));
 
-    _context._window = &_window;
-    _context._eventManager = _window.GetEventManager();
-    _context._audioManager = &_audioManager;
-    _context._soundManager = &_soundManager;
+    _context = std::make_shared<SharedContext>();
 
-    _stateManager.SwitchTo(StateType::Intro);
+    _window = std::make_shared<Window>(GAME_NAME);
+    _context->window = _window;
+    _context->eventManager = _window->GetEventManager();
+
+    _audioManager = std::make_shared<AudioManager>();
+    _context->audioManager = _audioManager;
+
+    _soundManager = std::make_shared<SoundManager>(_context, MUSIC_VOLUME);
+    _context->soundManager = _soundManager;
+
+    _textureManager = std::make_shared<TextureManager>();
+    _context->textureManager = _textureManager;
+
+    _fontManager = std::make_shared<FontManager>();
+    _fontManager->RequireResource("Main");
+    _context->fontManager = _fontManager;
+
+    _stateManager = std::make_shared<StateManager>(_context);
+    _stateManager->SwitchTo(StateType::Intro);
 }
 
 sf::Time Game::getElapsed() {
@@ -23,27 +40,27 @@ void Game::restartClock() {
 }
 
 void Game::update() {
-    _window.Update();
-    _stateManager.Update(_elapsed);
-    _soundManager.Update(_elapsed.asSeconds());
+    _window->Update();
+    _stateManager->Update(_elapsed);
+    _soundManager->Update(_elapsed);
 }
 
 void Game::render() {
-    _window.BeginDraw();
-    _stateManager.Draw();
-    _window.EndDraw();
+    _window->BeginDraw();
+    _stateManager->Draw();
+    _window->EndDraw();
 }
 
 void Game::lateUpdate() {
-    _stateManager.ProcessRequests();
+    _stateManager->ProcessRequests();
     restartClock();
 }
 
 void Game::Run() {
-    while (!_window.IsDone()) {
+    while (!_window->IsDone()) {
         update();
         render();
         lateUpdate();
-        //sf::sleep(sf::seconds(0.2));
+        //sf::sleep(sf::milliseconds(500));
     }
 }

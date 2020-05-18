@@ -1,39 +1,34 @@
 #pragma once
 
-#include "eventManager.hpp"
-
 #include <SFML/Graphics.hpp>
 
+#include "eventManager.hpp"
+
 class Window {
-    public:
-        Window();
-        explicit Window(const std::string& title, const sf::Vector2u& size);
-        ~Window();
+public:
+    Window() = delete;
+    explicit Window(const std::string& l_title);
+    ~Window();
 
-        void BeginDraw();
-        void Draw(sf::Drawable& drawable);
-        void EndDraw();
-        void Update();
-        void Close();
-        void ToggleFullscreen();
-        bool IsDone();
-        bool IsFocused();
-        bool IsFullScreen();
-        sf::Vector2u GetWindowSize();
-        EventManager* GetEventManager();
-        sf::RenderWindow* GetRenderWindow();
+    void BeginDraw();
+    void Draw(sf::Drawable& l_drawable);
+    void EndDraw();
+    void Update();
+    void Close();
+    bool IsDone();
+    bool IsFocused();
+    std::weak_ptr<EventManager> GetEventManager();
+    std::weak_ptr<sf::RenderWindow> GetRenderWindow();
 
-    private:
-        void setup(const std::string& title, const sf::Vector2u& size);
-        void destroy();
-        void create();
+private:
+    void setup(const std::string& l_title);
+    void destroy();
+    void create();
 
-    private:
-        sf::RenderWindow _window;
-        sf::Vector2u _windowSize;
-        std::string _windowTitle;
-        EventManager _eventManager;
-        bool _isFocused;
-        bool _isDone;
-        bool _isFullScreen;
+private:
+    std::shared_ptr<sf::RenderWindow> _window;
+    std::string _windowTitle;
+    std::shared_ptr<EventManager> _eventManager;
+    bool _isFocused;
+    bool _isDone;
 };

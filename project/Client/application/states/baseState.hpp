@@ -9,44 +9,45 @@ class StateManager;
 class BaseState {
     friend class StateManager;
 
-    public:
-        explicit BaseState(StateManager* stateManager) :
-                _stateMgr(stateManager),
-                _transparent(false),
-                _transcendent(false) {}
+public:
+    explicit BaseState(std::weak_ptr<StateManager> l_stateManager) :
+            _stateMgr(l_stateManager),
+            _transparent(false),
+            _transcendent(false) {}
 
-        virtual ~BaseState() = default;
+    virtual ~BaseState() = default;
 
-        virtual void OnCreate() = 0;
-        virtual void OnDestroy() = 0;
+    virtual void OnCreate() = 0;
+    virtual void OnDestroy() = 0;
 
-        virtual void Activate() = 0;
-        virtual void Deactivate() = 0;
+    virtual void Activate() = 0;
+    virtual void Deactivate() = 0;
 
-        virtual void Update(const sf::Time& time) = 0;
-        virtual void Draw() = 0;
+    virtual void Update(const sf::Time& l_time) = 0;
+    virtual void Draw() = 0;
 
-        void SetTransparent(const bool& transparent) {
-            _transparent = transparent;
-        }
-        bool IsTransparent()const {
-            return _transparent;
-        }
+    void SetTransparent(const bool& l_transparent) {
+        _transparent = l_transparent;
+    }
 
-        void SetTranscendent(const bool& transcendence) {
-        _transcendent = transcendence;
-        }
+    bool IsTransparent()const {
+        return _transparent;
+    }
 
-        bool IsTranscendent() const {
-            return _transcendent;
-        }
+    void SetTranscendent(const bool& l_transcendence) {
+    _transcendent = l_transcendence;
+    }
 
-        StateManager* GetStateManager() {
-            return _stateMgr;
-        }
+    bool IsTranscendent() const {
+        return _transcendent;
+    }
 
-    protected:
-        StateManager* _stateMgr;
-        bool _transparent;
-        bool _transcendent;
+    std::weak_ptr<StateManager> GetStateManager() {
+        return _stateMgr;
+    }
+
+protected:
+    std::weak_ptr<StateManager> _stateMgr;
+    bool _transparent;
+    bool _transcendent;
 };

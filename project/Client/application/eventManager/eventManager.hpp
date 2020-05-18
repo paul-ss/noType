@@ -1,14 +1,11 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
-
 #include <functional>
 #include <unordered_map>
-#include <iostream>
-#include <fstream>
-#include <sstream>
 #include <memory>
+
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
 
 enum class EventType {
 KeyDown = sf::Event::KeyPressed,
@@ -27,58 +24,53 @@ Keyboard = sf::Event::Count + 1, Mouse, Joystick
 };
 
 struct EventInfo {
-    EventInfo() {
-        _code = 0;
-    }
-
-    explicit EventInfo(int event) {
-        _code = event;
-    }
-
-    union{
-        int _code;
+    EventInfo() : code(0) {}
+    EventInfo(int l_event) : code(l_event) {}
+    ~EventInfo() {}
+    union {
+        int code;
     };
 };
 
 struct EventDetails {
-    explicit EventDetails(const std::string& bindName) : _name(bindName) {
+    EventDetails(const std::string& l_bindName) : name(l_bindName) {
         Clear();
     }
 
-    void Clear() {
-        _size = sf::Vector2i(0, 0);
-        _textEntered = 0;
-        _mouse = sf::Vector2i(0, 0);
-        _mouseWheelDelta = 0;
-        _keyCode = -1;
-    }
+    std::string name;
 
-    std::string _name;
-    sf::Vector2i _size;
-    sf::Uint32 _textEntered;
-    sf::Vector2i _mouse;
-    int _mouseWheelDelta;
-    int _keyCode;
+    sf::Vector2i size;
+    sf::Uint32 textEntered;
+    sf::Vector2i mouse;
+    int mouseWheelDelta;
+    int keyCode;
+
+    void Clear() {
+        size = sf::Vector2i(0, 0);
+        textEntered = 0;
+        mouse = sf::Vector2i(0, 0);
+        mouseWheelDelta = 0;
+        keyCode = -1;
+    }
 };
 
 using Events = std::vector<std::pair<EventType, EventInfo> >;
 struct Binding {
-    explicit Binding(const std::string& name) : _name(name),
-                                        _details(name),
-                                        _count(0) {
+    Binding(const std::string& l_name): name(l_name), count(0), details(l_name) {}
+    ~Binding() {}
+
+    void BindEvent(EventType l_type, EventInfo l_info = EventInfo()) {
+        events.emplace_back(l_type, l_info);
     }
 
-    void BindEvent(EventType type, EventInfo info = EventInfo()) {
-        _events.emplace_back(type, info);
-    }
+    Events events;
+    std::string name;
+    int count;
 
-    Events _events;
-    std::string _name;
-    EventDetails _details;
-    size_t _count;
+    EventDetails details;
 };
 
-using Bindings = std::unordered_map<std::string, std::shared_ptr<Binding> >;
+using Bindings = std::unordered_map<std::string, std::shared_ptr<Binding>>;
 
 using CallbackContainer = std::unordered_map<std::string,
         std::function<void(EventDetails&)> >;
@@ -86,32 +78,35 @@ enum class StateType;
 using Callbacks = std::unordered_map<StateType, CallbackContainer>;
 
 class EventManager {
-    public:
-        EventManager();
-        ~EventManager() = default;
+public:
+    EventManager();
+    ~EventManager() = default;
 
-        bool AddBinding(std::shared_ptr<Binding> binding);
-        bool RemoveBinding(std::string name);
+    bool AddBinding(std::shared_ptr<Binding> binding);
+    bool RemoveBinding(std::string l_name);
 
-        void SetCurrentState(StateType state);
-        void SetFocus(const bool& focus);
+    void SetCurrentState(StateType l_state);
+    void SetFocus(bool l_focus);
 
-        void HandleEvent(const sf::Event& event);
-        void Update();
+    bool AddCallback(StateType l_state,
+                    const std::string& l_name,
+                    const std::function<void(EventDetails&)>& l_func) {
+        auto itr = _callbacks.emplace(l_state, CallbackContainer()).first;
+        return itr->second.emplace(l_name, l_func).second;
+    }
+    bool RemoveCallback(StateType l_state, const std::string& l_name);
 
-        bool AddCallback(StateType state,
-                        const std::string& name,
-                        const std::function<void(EventDetails&)>& func);
-        bool RemoveCallback(StateType state, const std::string& name);
+    void HandleEvent(const sf::Event& l_event);
+    void Update();
 
-        sf::Vector2i GetMousePos(const sf::RenderWindow* wind = nullptr);
+    sf::Vector2i GetMousePos(std::weak_ptr<sf::RenderWindow> l_window);
 
-    private:
-        void LoadBindings();
+private:
+    void loadBindings();
 
-    private:
-        Bindings _bindings;
-        Callbacks _callbacks;
-        StateType _currentState;
-        bool _hasFocus;
+private:
+    Bindings _bindings;
+    Callbacks _callbacks;
+    StateType _currentState;
+    bool _hasFocus;
 };

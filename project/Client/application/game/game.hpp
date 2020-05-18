@@ -5,27 +5,31 @@
 #include "sharedContext.hpp"
 
 class Game : public sf::NonCopyable {
-    public:
-        Game();
-        ~Game() = default;
+public:
+    Game();
+    ~Game() = default;
 
-        void Run();
+    void Run();
 
-    private:
-        void update();
-        void render();
-        void lateUpdate();
+private:
+    void update();
+    void render();
+    void lateUpdate();
 
-    private:
-        sf::Time getElapsed();
-        void restartClock();
+private:
+    sf::Time getElapsed();
+    void restartClock();
 
-    private:
-        Window _window;
-        SharedContext _context;
-        StateManager _stateManager;
-        AudioManager _audioManager;
-        SoundManager _soundManager;
-        sf::Clock _clock;
-        sf::Time _elapsed;
+private:
+    sf::Clock _clock;
+    sf::Time _elapsed;
+
+private:
+    std::shared_ptr<SharedContext> _context;
+    std::shared_ptr<Window> _window;
+    std::shared_ptr<TextureManager> _textureManager;
+    std::shared_ptr<FontManager> _fontManager;
+    std::shared_ptr<AudioManager> _audioManager;
+    std::shared_ptr<SoundManager> _soundManager;
+    std::shared_ptr<StateManager> _stateManager;
 };

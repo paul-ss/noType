@@ -1,17 +1,17 @@
 #include "stateManager.hpp"
-#include "introState.hpp"
-#include "mainMenuState.hpp"
 
-StateManager::StateManager(SharedContext* shared) : _shared(shared) {
+StateManager::StateManager(std::weak_ptr<SharedContext> l_sharedContext) : _shared(l_sharedContext) {
     registerState<IntroState>(StateType::Intro);
     registerState<MainMenuState>(StateType::MainMenu);
+    registerState<BeforeGameState>(StateType::BeforeGame);
     registerState<GameState>(StateType::Game);
+    registerState<AfterGameState>(StateType::AfterGame);
 }
 
-StateManager::~StateManager(){
-    for (auto &itr : _states){
+StateManager::~StateManager() {
+    for (auto &itr : _states) {
         itr.second->OnDestroy();
-        delete itr.second;
+        itr.second.reset();
     }
 }
 
@@ -60,7 +60,7 @@ void StateManager::Update(const sf::Time& time) {
     }
 }
 
-SharedContext* StateManager::GetContext() {
+std::weak_ptr<SharedContext> StateManager::GetContext() {
     return _shared;
 }
 
@@ -83,16 +83,15 @@ void StateManager::Remove(const StateType& type) {
 
 void StateManager::ProcessRequests() {
     while (_toRemove.begin() != _toRemove.end()) {
-        removeState(*_toRemove.begin());
+        removeState(_toRemove.front());
         _toRemove.erase(_toRemove.begin());
     }
 }
 
 void StateManager::SwitchTo(const StateType& type) {
-    _shared->_eventManager->SetCurrentState(type);
-    _shared->_soundManager->ChangeState(type);
-
-    for (auto itr = _states.begin(); itr != _states.end(); ++itr) {
+    _shared.lock()->eventManager.lock()->SetCurrentState(type);
+    for (auto itr = _states.begin();
+        itr != _states.end(); ++itr) {
         if (itr->first == type) {
             _states.back().second->Deactivate();
             StateType tmp_type = itr->first;
@@ -103,6 +102,8 @@ void StateManager::SwitchTo(const StateType& type) {
             return;
         }
     }
+
+    // State with type wasn't found.
     if (!_states.empty()) {
         _states.back().second->Deactivate();
     }
@@ -113,6 +114,7 @@ void StateManager::SwitchTo(const StateType& type) {
 void StateManager::createState(const StateType& type) {
     auto newState = _stateFactory.find(type);
     if (newState == _stateFactory.end()) {
+        BOOST_LOG_TRIVIAL(error) << "Not register state";
         return;
     }
 
@@ -121,15 +123,13 @@ void StateManager::createState(const StateType& type) {
     state->OnCreate();
 }
 
-void StateManager::removeState(const StateType& l_type){
+void StateManager::removeState(const StateType& type) {
     for (auto itr = _states.begin();
-        itr != _states.end(); ++itr)
-    {
-        if (itr->first == l_type){
+        itr != _states.end(); ++itr) {
+        if (itr->first == type){
             itr->second->OnDestroy();
-            delete itr->second;
+            itr->second.reset();
             _states.erase(itr);
-            _shared->_soundManager->RemoveState(l_type);
             return;
         }
     }

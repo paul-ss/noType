@@ -1,0 +1,14 @@
+{
+    "audio" : {
+        "NoType" : "assets/media/audio/No_Type.ogg",
+        "BankAccount" : "assets/media/audio/No_Type.ogg",
+        "Hotline" : "assets/media/audio/Hotline_Bling.ogg",
+        "XO" : "assets/media/audio/XO.ogg",
+        "Sorry" : "assets/media/audio/Sorry.ogg",
+        "Box" : "assets/media/audio/The_Box.ogg",
+        "Magnolia" : "assets/media/audio/Magnolia.ogg",
+        "Panda" : "assets/media/audio/Panda.ogg",
+        "Look" : "assets/media/audio/Look.ogg",
+        "OldTown" : "assets/media/audio/Old_Town.ogg"
+    }
+}

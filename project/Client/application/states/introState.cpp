@@ -1,56 +1,65 @@
 #include "introState.hpp"
-#include "stateManager.hpp"
+#include "utils.hpp"
 
-IntroState::IntroState(StateManager* stateManager)
-    : BaseState(stateManager) {}
-
-IntroState::~IntroState() {}
+IntroState::IntroState(std::weak_ptr<StateManager> l_stateManager)
+    : BaseState(l_stateManager) {}
 
 void IntroState::OnCreate() {
-    sf::Vector2u windowSize = _stateMgr->GetContext()->_window->GetRenderWindow()->getSize();
+    try {
+        std::shared_ptr<StateManager>stateMgr(_stateMgr);
+        std::shared_ptr<SharedContext>context(stateMgr->GetContext());
+        std::shared_ptr<Window>window(context->window);
+        std::shared_ptr<sf::RenderWindow>renderWindow(window->GetRenderWindow());
 
-    TextureManager* textureMgr = _stateMgr->GetContext()->_textureManager;
-    textureMgr->RequireResource("Intro");
-    _introSprite.setTexture(*textureMgr->GetResource("Intro"));
-    _introSprite.setOrigin(textureMgr->GetResource("Intro")->getSize().x / 2.0f,
-                            textureMgr->GetResource("Intro")->getSize().y / 2.0f);
+        auto windowSize = renderWindow->getSize();
+        //auto filler = std::make_shared<Label>(context, sf::Vector2f(0, 0), "filler.json");
+        //_elements.push_back(filler);
 
-    _introSprite.setPosition(windowSize.x / 2.0f, windowSize.y / 2.0f);
+        sf::Vector2f introPosition(windowSize.x * 0.5f, windowSize.y * 0.5f);
+        auto introSprite = std::make_shared<Label>(context, introPosition, "introSprite.json");
+        introSprite->SetText("PRESS CONTINUE");
+        _elements.push_back(introSprite);
 
-    _text.setString(sf::String("Press SPACE to continue"));
-    _text.setCharacterSize(15);
-    sf::FloatRect textRect = _text.getLocalBounds();
-    _text.setOrigin(textRect.left + textRect.width / 2.0f,textRect.top + textRect.height / 2.0f);
-    _text.setPosition(_introSprite.getPosition().x, _introSprite.getPosition().y + textureMgr->GetResource("Intro")->getSize().y / 1.5f);
+        std::shared_ptr<EventManager>evMgr(context->eventManager);
+        auto lambdaContinue = [this](EventDetails& details) { this->Continue(details); };
+        evMgr->AddCallback(StateType::Intro, "Intro_Continue", lambdaContinue);
 
-    EventManager* evMgr = _stateMgr->GetContext()->_eventManager;
-
-    auto lambdaContinue = [this](EventDetails& details) { this->Continue(&details); };
-    evMgr->AddCallback(StateType::Intro, "Intro_Continue", lambdaContinue);
-
-    _stateMgr->GetContext()->_soundManager->PlayMusic("noType", 100.f, true);
+    } catch (const std::bad_weak_ptr &e) {
+        BOOST_LOG_TRIVIAL(error) << "[intro - oncreate] " << e.what();
+        return;
+    }
 }
 
 void IntroState::OnDestroy() {
-    TextureManager* textureMgr = _stateMgr->GetContext()->_textureManager;
-    textureMgr->ReleaseResource("Intro");
+    try {
+        std::shared_ptr<StateManager>stateMgr(_stateMgr);
+        std::shared_ptr<SharedContext>context(stateMgr->GetContext());
 
-    EventManager* evMgr = _stateMgr->GetContext()->_eventManager;
-    evMgr->RemoveCallback(StateType::Intro,"Intro_Continue");
+        std::shared_ptr<EventManager>evMgr(context->eventManager);
+        evMgr->RemoveCallback(StateType::Intro, "Intro_Continue");
+    } catch(const std::bad_weak_ptr &e) {
+        BOOST_LOG_TRIVIAL(error) << "[intro - ondestroy] " << e.what();
+    }
 }
 
 void IntroState::Draw() {
-    sf::RenderWindow* window = _stateMgr->GetContext()->_window->GetRenderWindow();
-
-    window->draw(_introSprite);
-    window->draw(_text);
+    for (size_t i = 0; i < _elements.size(); ++i) {
+        _elements[i]->Draw();
+    }
 }
 
-void IntroState::Continue(EventDetails* details) {
-    _stateMgr->SwitchTo(StateType::MainMenu);
-    _stateMgr->Remove(StateType::Intro);
+void IntroState::Continue(EventDetails& l_details) {
+    utils::unusedArgs(l_details);
+    auto stateMgr = _stateMgr.lock();
+    if (!stateMgr) {
+        BOOST_LOG_TRIVIAL(error) << "Not valid state manager [intro - continue]";
+        return;
+    }
+    stateMgr->SwitchTo(StateType::MainMenu);
+    stateMgr->Remove(StateType::Intro);
 }
 
 void IntroState::Update(const sf::Time& time) {}
+
 void IntroState::Activate() {}
 void IntroState::Deactivate() {}
