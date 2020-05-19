@@ -1,5 +1,7 @@
 #include "beforeGameState.hpp"
 
+#include <any>
+
 BeforeGameState::BeforeGameState(std::weak_ptr<StateManager> l_stateManager)
     : BaseState(l_stateManager) {}
 
@@ -7,10 +9,10 @@ BeforeGameState::~BeforeGameState() {}
 
 void BeforeGameState::OnCreate() {
     try {
-        std::shared_ptr<StateManager>stateMgr(_stateMgr);
-        std::shared_ptr<SharedContext>context(stateMgr->GetContext());
-        std::shared_ptr<Network::NetworkManager>networkManager(context->networkManager);
-        std::shared_ptr<Connector::Client::IQueueManager>queueManager(context->queueManager);
+        std::shared_ptr<StateManager> stateMgr(_stateMgr);
+        std::shared_ptr<SharedContext> context(stateMgr->GetContext());
+        std::shared_ptr<Network::INetworkManager> networkManager(context->networkManager);
+        std::shared_ptr<Network::Client::IQueueManager>queueManager(context->queueManager);
 
         networkManager->Connect();
         Network::InitRequest initRequest;
@@ -20,11 +22,18 @@ void BeforeGameState::OnCreate() {
 
         queueManager->PushToSendingData(std::move(sendMsg));
         Network::InitResponse initResponse;
-        std::any data 
-        auto sendMsg = std::make_unique<Network::Message>
-                (Network::MessageType::InitRequest, std::move(data));
+
+        std::unique_ptr<Network::Message> recvMsg = nullptr;
+        while (recvMsg = queueManager->PopReceivedData()) {}
+
+        if (recvMsg->GetMessageType() == Network::MessageType::InitResponse) {
+          auto data = recvMsg->ExtractData();
+          auto initResponse = std::any_cast<Network:::InitResponse>(data);
+        }
 
     } catch (const std::bad_weak_ptr &e) {
+        //log
+    } catch (const std::bad_any_cast &e) {
         //log
     }
 }
