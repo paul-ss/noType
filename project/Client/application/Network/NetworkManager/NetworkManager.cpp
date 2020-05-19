@@ -11,6 +11,9 @@
 
 namespace Network {
 
+static void eraseDelimiter(std::string& jsonData, const std::string_view& delimiter);
+
+
 NetworkManager::NetworkManager(std::shared_ptr<Connector::IQueueManager> queueManager) :
                                             NetworkManager(queueManager, std::string(kServerIp), kServerPort)  {}
 
@@ -41,7 +44,7 @@ void NetworkManager::Connect() {
 
 void NetworkManager::Disconnect() {
   std::unique_lock<std::mutex> lock(_networkManagerMutex);
-  _ioService.stop();
+  //_ioService.stop();
   _isWorking = false;
 }
 
@@ -68,10 +71,19 @@ void NetworkManager::loop() {
 
     boost::asio::streambuf buf;
     boost::asio::read_until(_socket, buf, kDelimiter);
-    std::string jsonData = boost::asio::buffer_cast<const char*>(buf.data());
+    std::string jsonData((std::istreambuf_iterator<char>(&buf)), std::istreambuf_iterator<char>());
+    eraseDelimiter(jsonData, kDelimiter);
 
     auto msg = _messageParser->ParseToMessage(jsonData);
     _queueManager->PushToReceivedData(std::move(msg));
+  }
+}
+
+static void eraseDelimiter(std::string& jsonData, const std::string_view& delimiter) {
+  if (jsonData.size() > delimiter.size()) {
+    jsonData = jsonData.substr(0,jsonData.size() - delimiter.size());
+
+    jsonData.shrink_to_fit();
   }
 }
 

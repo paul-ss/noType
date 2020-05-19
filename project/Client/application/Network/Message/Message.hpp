@@ -20,7 +20,8 @@ enum class MessageType {
   RoomStatusResponse,
   ValidateWrittenTextRequest,
   ValidateWrittenTextResponse,
-  Error
+  ErrorRequest,
+  ErrorResponse,
 };
 
 enum class Status {
@@ -90,9 +91,17 @@ struct ValidateWrittenTextResponse {
   std::string error;
 };
 
+struct ErrorRequest {
+  std::string id;
+};
+
+struct ErrorResponse {
+  std::string errorMsg;
+};
+
 class Message {
 public:
-  Message(MessageType msgType, std::any&& data);
+  Message(MessageType msgType, std::any data);
 
   const MessageType& GetMessageType();
 

@@ -89,8 +89,18 @@ ErrorResponse::ErrorResponse(const std::string &connectionUUID) :
 
 
 std::string ErrorResponse::parseToJSON() {
-  return "{\n \"" COMMAND_TYPE_JSON_PATH "\" : \"" + std::string(_commandType._to_string()) + "\",\n" +
-         "\"" ERROR_MSG_JSON_PATH "\" : \"" + _errorMsg + "\",\n }";
+  boost::property_tree::ptree pt;
+  pt.put(COMMAND_TYPE_JSON_PATH, _commandType._to_string());
+  pt.put(ERROR_MSG_JSON_PATH, _errorMsg);
+
+  std::stringstream oss;
+  boost::property_tree::write_json(oss, pt);
+
+  return oss.str();
+
+// BUG(vendroid): Ошибка при чтении на стороне клиента!
+//  return "{\n \"" COMMAND_TYPE_JSON_PATH "\" : \"" + std::string(_commandType._to_string()) + "\",\n" +
+//         "\"" ERROR_MSG_JSON_PATH "\" : \"" + _errorMsg + "\",\n }";
 }
 
 

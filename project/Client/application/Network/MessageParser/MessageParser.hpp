@@ -23,6 +23,7 @@ private:
   static std::string RoomStatusRequestToJson(std::unique_ptr<Message> msg);
   static std::string GetTextRequestToJson(std::unique_ptr<Message> msg);
   static std::string ValidateWrittenTextRequestToJson(std::unique_ptr<Message> msg);
+  static std::string ErrorRequestToJson(std::unique_ptr<Message> msg);
 
   // NOTE(vendroid): Response messages
   static std::unique_ptr<Message> InitResponseToMessage(boost::property_tree::ptree& pt);
@@ -31,6 +32,8 @@ private:
   static std::unique_ptr<Message> GetTextResponseToMessage(boost::property_tree::ptree& pt);
   static std::unique_ptr<Message> RoomStatusResponseToMessage(boost::property_tree::ptree& pt);
   static std::unique_ptr<Message> ValidateWrittenTextResponseToMessage(boost::property_tree::ptree& pt);
+  static std::unique_ptr<Message> ErrorResponseToMessage(boost::property_tree::ptree& pt);
+
 
 private:
   static std::pair<Status, std::string> ParseErrorAndStatus(boost::property_tree::ptree& pt);
