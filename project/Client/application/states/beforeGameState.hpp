@@ -20,8 +20,12 @@ public:
     void Draw() override;
 
 public:
+    void Init();
+    void Connect();
+    void StartGameSession();
     void Quit(EventDetails& l_details);
 
 private:
     std::vector<std::shared_ptr<BaseElement>> _elements;
+    double _waitTime;
 };

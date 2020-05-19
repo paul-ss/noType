@@ -18,3 +18,8 @@ class InvalidCmd : public ClientException {
     public:
         InvalidCmd() : ClientException("Invalid command in keys.cfg") {}
 };
+
+class InvalidResponse : public ClientException {
+    public:
+        InvalidResponse(const std::string& l_error) : ClientException(l_error) {}
+};

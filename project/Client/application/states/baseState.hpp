@@ -4,6 +4,9 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "exception.hpp"
+#include "logger.hpp"
+
 class StateManager;
 
 class BaseState {
@@ -44,6 +47,13 @@ public:
 
     std::weak_ptr<StateManager> GetStateManager() {
         return _stateMgr;
+    }
+
+protected:
+    void CheckNetStatus(const Network::Status l_status, const std::string& l_error) {
+        if (l_status == Network::Status::Fail) {
+            throw InvalidResponse(l_error);
+        }
     }
 
 protected:
