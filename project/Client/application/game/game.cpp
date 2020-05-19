@@ -17,8 +17,8 @@ Game::Game() {
     _audioManager = std::make_shared<AudioManager>();
     _context->audioManager = _audioManager;
 
-    _soundManager = std::make_shared<SoundManager>(_context, MUSIC_VOLUME);
-    _context->soundManager = _soundManager;
+    //_soundManager = std::make_shared<SoundManager>(_context, MUSIC_VOLUME);
+    //_context->soundManager = _soundManager;
 
     _textureManager = std::make_shared<TextureManager>();
     _context->textureManager = _textureManager;
@@ -54,7 +54,7 @@ void Game::restartClock() {
 void Game::update() {
     _window->Update();
     _stateManager->Update(_elapsed);
-    _soundManager->Update(_elapsed);
+    //_soundManager->Update(_elapsed);
 }
 
 void Game::render() {
@@ -69,11 +69,12 @@ void Game::lateUpdate() {
 }
 
 void Game::Run() {
-    _networkManager->Run();
+    //_networkManager->Run();
     while (!_window->IsDone()) {
         update();
         render();
         lateUpdate();
         //sf::sleep(sf::milliseconds(500));
     }
+    //_networkManager->Disconnect();
 }

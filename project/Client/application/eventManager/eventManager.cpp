@@ -9,7 +9,7 @@
 
 #define BINDINGS_FILE_PATH "assets/bindings.json"
 
-EventManager::EventManager(): _currentState(StateType(0)), _hasFocus(true) {
+EventManager::EventManager() : _currentState(StateType(0)), _hasFocus(true) {
     loadBindings();
 }
 

@@ -15,9 +15,11 @@ void IntroState::OnCreate() {
         //auto filler = std::make_shared<Label>(context, sf::Vector2f(0, 0), "filler.json");
         //_elements.push_back(filler);
 
-        sf::Vector2f introPosition(windowSize.x * 0.5f, windowSize.y * 0.5f);
-        auto introSprite = std::make_shared<Label>(context, introPosition, "introSprite.json");
-        introSprite->SetText("PRESS CONTINUE");
+        auto introSprite = std::make_shared<Label>(context, sf::Vector2f(0, 0), "introSprite.json");
+        sf::Vector2f introPosition(windowSize.x * 0.5f - introSprite->GetSize().x * 0.5,
+                windowSize.y * 0.5f);
+        introSprite->SetPosition(introPosition);
+        introSprite->SetText("PRESS SPACE TO CONTINUE");
         _elements.push_back(introSprite);
 
         std::shared_ptr<EventManager>evMgr(context->eventManager);

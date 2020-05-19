@@ -2,7 +2,7 @@
 
 #include <memory>
 
-//#include "Network.hpp"
+#include "Network.hpp"
 
 #include "window.hpp"
 #include "eventManager.hpp"
@@ -19,6 +19,10 @@ struct SharedContext {
     std::weak_ptr<TextureManager> textureManager;
     std::weak_ptr<FontManager> fontManager;
 
-//    std::weak_ptr<Network::INetworkManager> networkManager;
-//    std::weak_ptr<Network::Client::IQueueManager> queueManager;
+    //share common ui elements between states
+    std::unordered_map<std::string, std::shared_ptr<BaseElement>> elementContainer;
+
+    std::string uuid;
+    std::weak_ptr<Network::INetworkManager> networkManager;
+    std::weak_ptr<Network::Client::IQueueManager> queueManager;
 };

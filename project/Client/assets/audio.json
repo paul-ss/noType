@@ -1,7 +1,7 @@
 {
     "audio" : {
         "NoType" : "assets/media/audio/No_Type.ogg",
-        "BankAccount" : "assets/media/audio/No_Type.ogg",
+        "BankAccount" : "assets/media/audio/Bank_Account.ogg",
         "Hotline" : "assets/media/audio/Hotline_Bling.ogg",
         "XO" : "assets/media/audio/XO.ogg",
         "Sorry" : "assets/media/audio/Sorry.ogg",

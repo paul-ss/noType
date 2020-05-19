@@ -36,11 +36,6 @@ void Label::draw(const std::shared_ptr<Style>& l_style) {
         std::shared_ptr<Window>window(sharedContext->window);
         std::shared_ptr<sf::RenderWindow>renderWindow(window->GetRenderWindow());
 
-        // Background
-        //std::cout << _visual.backgroundSolid.getSize().x << "sx\n";
-        //std::cout << _visual.backgroundSolid.getSize().y << "sy\n";
-        //std::cout << _visual.backgroundSolid.getPosition().x << "pos\n";
-        //std::cout << _visual.backgroundSolid.getPosition().x << "pos\n";
         renderWindow->draw(_visual.backgroundSolid);
         if (!l_style->backgroundImage.empty()) {
             renderWindow->draw(_visual.backgroundImage);

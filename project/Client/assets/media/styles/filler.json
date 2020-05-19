@@ -4,7 +4,7 @@
         "fullScreen" : "true",
         "bgColor" : [59, 89, 151, 255],
         "bgImage" : "",
-        "bgImgColor" : [0, 0, 0, 0],
+        "bgImgColor" : [0, 0, 255, 255],
         "textColor" : [0, 0, 0, 0],
         "textFont" : "",
         "textPadding" : [150, 16],
