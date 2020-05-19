@@ -69,12 +69,13 @@ void Game::lateUpdate() {
 }
 
 void Game::Run() {
-    //_networkManager->Run();
+    _networkManager->Connect();
+    _networkManager->Run();
     while (!_window->IsDone()) {
         update();
         render();
         lateUpdate();
         //sf::sleep(sf::milliseconds(500));
     }
-    //_networkManager->Disconnect();
+    _networkManager->Disconnect();
 }

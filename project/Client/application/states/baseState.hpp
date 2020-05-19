@@ -4,7 +4,9 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "exception.hpp"
+#include "Network.hpp"
+
+#include "exceptions.hpp"
 #include "logger.hpp"
 
 class StateManager;

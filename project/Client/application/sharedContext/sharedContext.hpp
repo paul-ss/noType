@@ -10,6 +10,9 @@
 #include "textureManager.hpp"
 #include "audioManager.hpp"
 #include "soundManager.hpp"
+#include "baseElement.hpp"
+
+class BaseElement;
 
 struct SharedContext {
     std::weak_ptr<Window> window;

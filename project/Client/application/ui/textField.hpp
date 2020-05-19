@@ -2,14 +2,14 @@
 
 #include "baseElement.hpp"
 
-class String : public BaseElement {
+class TextField : public BaseElement {
 public:
-    String(std::weak_ptr<SharedContext> l_sharedContext,
+    TextField(std::weak_ptr<SharedContext> l_sharedContext,
             const sf::Vector2f& l_position,
             const std::string& l_style,
             const std::string& l_reference);
 
-    ~String() = default;
+    ~TextField() = default;
 
     void Update(float l_dT) override;
     void Draw() override;

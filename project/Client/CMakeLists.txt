@@ -59,6 +59,7 @@ SET(ALL_SOURCES
     ${SOURCE_DIR}/ui/baseElement.cpp
     ${SOURCE_DIR}/ui/smartString.cpp
     ${SOURCE_DIR}/ui/label.cpp
+    ${SOURCE_DIR}/ui/textField.cpp
     ${SOURCE_DIR}/eventManager/eventManager.cpp
     ${SOURCE_DIR}/exceptions/exceptions.hpp
     ${SOURCE_DIR}/game/game.cpp

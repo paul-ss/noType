@@ -4,6 +4,8 @@
 #include "eventManager.hpp"
 #include "stateManager.hpp"
 #include "label.hpp"
+#include "textField.hpp"
+#include "smartString.hpp"
 
 class BeforeGameState : public BaseState {
 public:
@@ -23,6 +25,8 @@ public:
     void Init();
     void Connect();
     void StartGameSession();
+    void GetText();
+    void Game();
     void Quit(EventDetails& l_details);
 
 private:
