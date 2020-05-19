@@ -36,3 +36,9 @@ public:
 };
 
 
+class GameControllerException: public ServerException {
+public:
+  explicit GameControllerException(const std::string& msg)
+      : ServerException("GameController-> " + msg) {}
+};
+

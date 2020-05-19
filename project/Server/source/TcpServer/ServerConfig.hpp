@@ -8,12 +8,12 @@
 struct ServerConfig {
 
   ServerConfig() :
-      _ip("127.0.0.0"),
+      _ip("0.0.0.0"),
       _port(8008),
       _listenCount(1024),
       _workerThreadsCount(2),
       _queueWorkersCount(1),
-      _delim("uuid") {}
+      _delim("delim") {}
 
   std::string _ip;
   unsigned int _port;

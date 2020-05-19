@@ -10,7 +10,7 @@ Player::Player(const std::string &clientUUID, const std::string &name) :
     playerID(randomUUID()),
     name(name),
     textPosition(0),
-    state(PLAYER_PLAY),
+    state(PlayerState::play),
     lastTextPosition(0),
     currentSpeed(0) {}
 
@@ -20,3 +20,4 @@ std::string Player::randomUUID() {
   boost::uuids::uuid uuid = gen();
   return to_string(uuid);
 }
+

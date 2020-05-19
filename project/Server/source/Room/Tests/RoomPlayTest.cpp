@@ -74,11 +74,11 @@ TEST_F(RoomPlayTest, validate_text) {
 
 
   ASSERT_EQ(players.at("uuid0").textPosition, 200);
-  ASSERT_EQ(players.at("uuid0").state, PLAYER_WIN);
+  ASSERT_EQ(players.at("uuid0").state._value, PlayerState::win);
   ASSERT_GT(players.at("uuid1").textPosition, 200);
-  ASSERT_EQ(players.at("uuid1").state, PLAYER_FINISH);
+  ASSERT_EQ(players.at("uuid1").state._value, PlayerState::finish);
   ASSERT_EQ(players.at("uuid2").textPosition, 0);
-  ASSERT_EQ(players.at("uuid2").state, PLAYER_PLAY);
+  ASSERT_EQ(players.at("uuid2").state._value, PlayerState::play);
 }
 
 
@@ -128,7 +128,7 @@ TEST_F(RoomPlayTest, get_text) {
 
 TEST_F(RoomPlayTest, get_room_status) {
   auto res = room->getRoomStatus();
-  ASSERT_TRUE(res.state == ROOM_PLAY);
+  ASSERT_EQ(res.state._to_string(), (+RoomState::play)._to_string());
 
   ASSERT_EQ(res.players.size(), 5);
 

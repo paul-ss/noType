@@ -16,6 +16,6 @@ fi
 ${CPPCHECK} project --enable=all --error-exitcode=1 -I source/* --suppress=missingIncludeSystem  --check-config
 
 print_header "RUN cpplint.py"
-python2.7 ./linters/cpplint/cpplint.py --extensions=c,cpp --headers=h,hpp --filter=-runtime/references source/Controller/* source/QueueManager/* source/Room/* source/TcpServer/*  source/Command/* source/main.cpp
+python2.7 ./linters/cpplint/cpplint.py --extensions=c,cpp --headers=h,hpp --filter=-runtime/references source/Controller/* source/Command/* source/Parser/Test/testparsefrom.cpp
 
 print_header "SUCCESS"

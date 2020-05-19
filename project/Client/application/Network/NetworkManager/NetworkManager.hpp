@@ -52,7 +52,7 @@ private:
   std::unique_ptr<std::thread> _thread;
   std::mutex _networkManagerMutex;
 
-  bool _isWorking = true;
+  bool _isWorking;
 
 };
 

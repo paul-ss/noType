@@ -71,7 +71,7 @@ ExpectedRoom<size_t> RoomWait::validateWrittenText(std::shared_ptr<Room> room,
 
 GetRoomStatusResp RoomWait::getRoomStatus(std::shared_ptr<Room> room) {
   std::unique_lock<std::mutex> lock(room->_roomMutex);  // ??
-  return GetRoomStatusResp(room->_players, ROOM_WAIT);
+  return GetRoomStatusResp(room->_players, RoomState::wait);
 }
 
 

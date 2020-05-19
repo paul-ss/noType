@@ -94,7 +94,7 @@ TEST_F(RoomWaitTest, get_room_status) {
   }
 
   auto res = room->getRoomStatus();
-  ASSERT_TRUE(res.state == ROOM_WAIT);
+  ASSERT_EQ(res.state._to_string(), (+RoomState::wait)._to_string());
 
   ASSERT_EQ(res.players.size(), 5);
 

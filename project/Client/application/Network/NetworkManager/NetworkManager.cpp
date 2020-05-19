@@ -20,10 +20,13 @@ NetworkManager::NetworkManager(std::shared_ptr<Connector::IQueueManager> queueMa
                                  _queueManager{queueManager},
                                  _ioService{},
                                  _endPoint(boost::asio::ip::address::from_string(serverIp), port),
-                                 _socket(_ioService) {}
+                                 _socket{_ioService},
+                                 _isWorking{false} {}
 
 NetworkManager::~NetworkManager() {
-  _thread->join();
+  if (_isWorking) {
+    _thread->join();
+  }
 }
 
 void NetworkManager::Connect() {
