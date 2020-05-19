@@ -36,7 +36,7 @@ ExpectedRoom<size_t> RoomEnd::validateWrittenText(std::shared_ptr<Room> room,
 
 GetRoomStatusResp RoomEnd::getRoomStatus(std::shared_ptr<Room> room) {
   std::unique_lock<std::mutex> lock(room->_roomMutex);  // ??
-  return GetRoomStatusResp(room->_players, ROOM_END);
+  return GetRoomStatusResp(room->_players, RoomState::end);
 }
 
 

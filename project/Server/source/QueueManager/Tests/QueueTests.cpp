@@ -12,6 +12,7 @@
 class FakeCommand : public Command {
 public:
   explicit FakeCommand(const std::string &data) : importantData(data) {}
+
   std::string importantData;
 };
 

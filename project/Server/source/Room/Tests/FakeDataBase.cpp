@@ -10,14 +10,16 @@ FakeDataBase::FakeDataBase(const std::string &text) :
     text(text) {}
 
 void FakeDataBase::InsertPlayerInfo(std::unique_ptr<DataBase::External::PlayerInfo> playerInfo) {
+  playerInfo->name.size();
 }
 
 void FakeDataBase::UpadatePlayerInfo(std::unique_ptr<DataBase::External::PlayerInfo> playerInfo) {
-
+  playerInfo->name.size();
 }
 
 std::unique_ptr<DataBase::External::PlayerInfo> FakeDataBase::FindPlayerInfoByUuid(const std::string& uuid) {
-
+  uuid.size();
+  return std::make_unique<DataBase::External::PlayerInfo>("");
 }
 
 std::unique_ptr<DataBase::External::TextInfo> FakeDataBase::GetRandomText() {

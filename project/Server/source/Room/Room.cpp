@@ -173,12 +173,17 @@ void Room::removeSelf() {
 
 void Room::sendStatistic() {
   for (auto &player : _players) {
-    if (player.second.state == PLAYER_WIN) {
-      updatePlayerInfo(player.second, 1, (int) player.second.textPosition / 3);
-    } else if (player.second.state == PLAYER_FINISH) {
-      updatePlayerInfo(player.second, 0, (int) player.second.textPosition / 4);
-    } else {
-      updatePlayerInfo(player.second, 0, (int) player.second.textPosition / 5);
+    switch (player.second.state) {
+      case (PlayerState::win) :
+        updatePlayerInfo(player.second, 1, (int) player.second.textPosition / 3);
+        break;
+
+      case (PlayerState::finish) :
+        updatePlayerInfo(player.second, 0, (int) player.second.textPosition / 4);
+        break;
+
+      default:
+        updatePlayerInfo(player.second, 0, (int) player.second.textPosition / 5);
     }
   }
 }

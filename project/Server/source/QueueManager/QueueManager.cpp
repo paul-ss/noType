@@ -7,23 +7,30 @@
 QueueManager::QueueManager() :
     _queueToServer(std::make_shared<Queue>()),
     _queueToBasicController(std::make_shared<Queue>()),
-    _queueToGameController(std::make_shared<Queue>()) {}
+    _queueToGameController(std::make_shared<Queue>()),
+    _commandFactory(std::make_shared<CommandFactory>()) {}
 
 
 QueueManager::QueueManager(const std::shared_ptr<Queue> &qToServer,
                             const std::shared_ptr<Queue> &qToBasic,
-                            const std::shared_ptr<Queue> &qToGame) :
+                            const std::shared_ptr<Queue> &qToGame,
+                            const std::shared_ptr<CommandFactory> &commandFactory) :
     _queueToServer(qToServer),
     _queueToBasicController(qToBasic),
-    _queueToGameController(qToGame) {}
+    _queueToGameController(qToGame),
+    _commandFactory(commandFactory) {}
 
 void QueueManager::serverPush(const std::string &data, const std::string &connectionUUID) {
   // command.factory ...
   // choose queue to push
+  // TODO !!!! catch exceptions
 
-  // todo remove
-  auto command = std::make_shared<Command>(data, connectionUUID);
-  _queueToServer->push(command);
+  auto command = _commandFactory->createCommand(connectionUUID, data);
+  if (command->getControllerType() == ControllerType::game) {
+    _queueToGameController->push(command);
+  } else {
+    _queueToBasicController->push(command);
+  }
 }
 
 

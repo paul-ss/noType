@@ -8,6 +8,13 @@
 #include "RoomManager.hpp"
 #include "DataBaseFacade.hpp"
 
+#include "Init.hpp"
+#include "Connect.hpp"
+#include "GetRoomStatus.hpp"
+#include "GetText.hpp"
+#include "StartGameSession.hpp"
+#include "ValidateWrittenText.hpp"
+
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <memory>
@@ -20,7 +27,8 @@ class GameController {
 public:
 
   GameController(const std::shared_ptr<QueueManager> &queueManager,
-                  const std::shared_ptr<IDataBaseFacade> &dataBaseFacade);
+                  const std::shared_ptr<IDataBaseFacade> &dataBaseFacade,
+                  const RoomConfig &roomConfig = RoomConfig());
   ~GameController();
   void startController();
   void stopController();
@@ -28,10 +36,14 @@ public:
 
 private:
   void commandDistributor(const std::shared_ptr<Command> &command);
-  void startGameSessionHandler(const std::shared_ptr<Command> &command);
-  void getTextHandler(const std::shared_ptr<Command> &command);
-  void getRoomStatusHandler(const std::shared_ptr<Command> &command);
-  void sendWrittenTextHandler(const std::shared_ptr<Command> &command);
+
+  template <class RequestCommand, class ResponseCommand, typename CommandHandler>
+  void handlerExceptionCatcher(const std::shared_ptr<Command> &command, CommandHandler handler);
+
+  void startGameSessionHandler(const std::shared_ptr<StartGameSessionRequest> &command);
+  void getTextHandler(const std::shared_ptr<GetTextRequest> &command);
+  void getRoomStatusHandler(const std::shared_ptr<RoomStatusRequest> &command);
+  void validateWrittenTextHandler(const std::shared_ptr<ValidateWrittenTextRequest> &command);
 
   void runGameSessions();
   void runQueueWorker();
@@ -40,13 +52,12 @@ private:
 private:
   std::shared_ptr<QueueManager> _queueManager ;
   std::shared_ptr<IDataBaseFacade> _dataBaseFacade;
+  RoomConfig _roomConfig;
 
-  RoomManager _roomManager;
+  std::shared_ptr<RoomManager> _roomManager;
   boost::asio::io_service _service;
   boost::asio::io_service::work _work;
   std::mutex _gameControllerMutex;
   GameControllerState _state;
   std::vector<std::thread> _threads;
 };
-
-
