@@ -8,7 +8,10 @@ TEST(NetworkManager, NetworkManagerCheck) {
   auto queueManager
     = std::make_shared<Network::QueueManager>();
 
-  std::shared_ptr<Network::INetworkManager> _networkManager = std::make_shared<Network::NetworkManager>(queueManager);
+  std::shared_ptr<Network::INetworkManager> networkManager = std::make_shared<Network::NetworkManager>(queueManager);
+
+  networkManager->Connect();
+
 }
 
 int main(int argc, char *argv[]) {
