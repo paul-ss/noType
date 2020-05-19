@@ -16,19 +16,20 @@ void BeforeGameState::OnCreate() {
 
         networkManager->Connect();
         Network::InitRequest initRequest;
-        std::any data = initRequest;
+        std::any sendData = initRequest;
         auto sendMsg = std::make_unique<Network::Message>
                 (Network::MessageType::InitRequest, std::move(data));
 
         queueManager->PushToSendingData(std::move(sendMsg));
-        Network::InitResponse initResponse;
 
         std::unique_ptr<Network::Message> recvMsg = nullptr;
-        while (recvMsg = queueManager->PopReceivedData()) {}
+        while (!recvMsg) {
+          recvMsg = queueManager->PopReceivedData()
+        }
 
         if (recvMsg->GetMessageType() == Network::MessageType::InitResponse) {
           auto data = recvMsg->ExtractData();
-          auto initResponse = std::any_cast<Network:::InitResponse>(data);
+          auto initResponse = std::any_cast<Network::InitResponse>(data);
         }
 
     } catch (const std::bad_weak_ptr &e) {

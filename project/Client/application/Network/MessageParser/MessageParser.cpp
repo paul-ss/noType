@@ -182,7 +182,7 @@ std::unique_ptr<Message> MessageParser::ConnectResponseToMessage(boost::property
 
 std::unique_ptr<Message> MessageParser::StartGameSessionResponseToMessage(boost::property_tree::ptree &pt) {
   auto id = pt.get<std::string>(JsonFields::ClientUuid);
-  auto waitTime = pt.get<double>(JsonFields::WaitTime);
+  auto waitTime = pt.get<size_t>(JsonFields::WaitTime);
   auto errorData = ParseErrorAndStatus(pt);
 
   StartGameSessionResponse startGameSessionResponse = {id, waitTime, errorData.first, errorData.second};
