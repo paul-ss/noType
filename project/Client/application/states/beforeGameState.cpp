@@ -101,7 +101,7 @@ void BeforeGameState::Init() {
 
         networkManager->Connect();
         Network::InitRequest initRequest;
-        std::any data = initRequest;
+        std::any sendData = initRequest;
         auto sendMsg = std::make_unique<Network::Message>
                 (Network::MessageType::InitRequest, std::move(data));
         queueManager->PushToSendingData(std::move(sendMsg));

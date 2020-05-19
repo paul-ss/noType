@@ -53,7 +53,7 @@ struct StartGameSessionRequest {
 
 struct StartGameSessionResponse {
   std::string id;
-  double waitTime;
+  size_t waitTime;
   Status status;
   std::string error;
 };
