@@ -2,7 +2,7 @@
 
 #define LOG_FILE "/var/log/notype/server.log"
 
-void initLogger(boost::log::trivial::severity_level l_severity) {
+void initLogger(boost::log::trivial::severity_level l_severity = boost::log::trivial::info) {
     boost::log::register_simple_formatter_factory<boost::log::trivial::severity_level, char>("Severity");
 
     boost::log::add_file_log(

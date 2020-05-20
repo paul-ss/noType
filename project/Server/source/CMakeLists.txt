@@ -23,7 +23,16 @@ FIND_PACKAGE(Threads REQUIRED)
 SET(Boost_USE_STATIC_LIBS OFF)
 SET(Boost_USE_MULTITHREAD ON)
 
-FIND_PACKAGE(Boost 1.42.0 REQUIRED COMPONENTS system thread regex log log_setup program_options)
+FIND_PACKAGE(Boost 1.42.0 REQUIRED COMPONENTS
+        system
+        thread
+        regex
+        log
+        log_setup
+        program_options
+        signal_set
+)
+
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 

@@ -10,13 +10,12 @@ Setup::~Setup() {
   for (auto &t : _threads) {
     t.join();
   }
-  stop();
 }
 
 
 
 void Setup::parseConfig() {
- // todo imlement it
+  // todo imlement it
 }
 
 
