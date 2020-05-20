@@ -23,7 +23,8 @@ target_include_directories(RandomNameLib PRIVATE    ../${MONGOCXX_INIT_DIR}
                                                        ${LIBBSONCXX_INCLUDE_DIR})
 
 target_link_libraries(RandomNameLib PkgConfig::LIBMONGOCXX
-                                    PkgConfig::LIBBSONCXX)
+                                    PkgConfig::LIBBSONCXX
+                                    Logger)
 
 # Тест test_TextInfoMapper.out
 add_executable(test_RandomNameImpl.out test_RandomNameImpl.cpp)
