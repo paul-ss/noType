@@ -37,7 +37,7 @@ set(DATA_BASE_FACADE_SOURCE   ../DataBaseException/DataBaseException.cpp
 add_library(DataBaseFacadeLib STATIC ${DATA_BASE_FACADE_HEADERS} ${DATA_BASE_FACADE_SOURCE})
 target_include_directories(DataBaseFacadeLib PUBLIC ${DATA_BASE_FACADE_INCLUDE_DIRS})
 target_link_libraries(DataBaseFacadeLib PkgConfig::LIBMONGOCXX
-                                        PkgConfig::LIBBSONCXX)
+                                        PkgConfig::LIBBSONCXX
                                         LoggerLib)
 
 #PavelS:
