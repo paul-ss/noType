@@ -42,7 +42,6 @@ int main(int argc, const char *argv[]) {
   } catch (const boost::program_options::error &ex) {
     std::cerr << ex.what() << '\n';
   }
-}
 
 //  boost::asio::io_service service;
 //  auto rm = std::make_shared<RoomManager>();

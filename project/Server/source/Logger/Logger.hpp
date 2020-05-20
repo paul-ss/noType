@@ -6,4 +6,4 @@
 #include <boost/log/utility/setup/file.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
 
-void initLogger();
+void initLogger(boost::log::trivial::severity_level l_severity);
