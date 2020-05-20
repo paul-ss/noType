@@ -27,14 +27,13 @@ ExpectedRoom<AddPlayerResp> RoomWait::addPlayer(std::shared_ptr<Room> room, cons
     return RoomError("addPlayer (WAIT) : Attempt to add player "
                       + player.clientUUID + " to filled room " + room->_roomUUID);
   }
-  
 
   // TODO check insertion return value
   if (!room->_players.emplace(player.clientUUID, player).second) {
     throw RoomException("addPlayer (WAIT) : Can't add player " + room->_roomUUID);
   }
   //std::cout << "PLayer " << player.clientUUID << " added" << std::endl;
-  BOOST_LOG_TRIVIAL(info) << "PLayer " << player.clientUUID << " added"
+  BOOST_LOG_TRIVIAL(info) << "PLayer " << player.clientUUID << " added";
 
 
   if (room->_players.size() == 1) {
