@@ -1,4 +1,4 @@
-#include "logger.hpp"
+#include "Logger.hpp"
 
 #define LOG_FILE "/var/log/notype/server.log"
 
