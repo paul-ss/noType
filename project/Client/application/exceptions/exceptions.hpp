@@ -23,3 +23,8 @@ class InvalidResponse : public ClientException {
     public:
         InvalidResponse(const std::string& l_error) : ClientException(l_error) {}
 };
+
+class ConnectionFailure : public ClientException {
+public:
+  ConnectionFailure(const std::string& l_error) : ClientException(l_error) {}
+};

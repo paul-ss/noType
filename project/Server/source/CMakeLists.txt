@@ -20,7 +20,7 @@ INCLUDE_DIRECTORIES("${GTEST_INCLUDE_DIRS}")
 FIND_PACKAGE(Threads REQUIRED)
 
 
-SET(Boost_USE_STATIC_LIBS OFF)
+SET(Boost_USE_STATIC_LIBS ON)
 SET(Boost_USE_MULTITHREAD ON)
 
 FIND_PACKAGE(Boost 1.42.0 REQUIRED COMPONENTS system thread regex log log_setup)
@@ -30,8 +30,11 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 ADD_LIBRARY(Logger STATIC
         Logger/Logger.hpp
-        Logger/Logger.cpp
-)
+        Logger/Logger.cpp)
+
+TARGET_INCLUDE_DIRECTORIES(Logger PUBLIC Logger/ ${Boost_INCLUDE_DIRS})
+
+TARGET_LINK_LIBRARIES(Logger ${Boost_LIBRARIES})
 
 ADD_SUBDIRECTORY(DataBase/)
 ADD_SUBDIRECTORY(TcpServer/)
@@ -57,8 +60,8 @@ ADD_LIBRARY(RoomLib STATIC
         Utils/Expected.hpp
         Utils/Error.hpp)
 
-TARGET_LINK_LIBRARIES(RoomLib DataBaseFacadeLib)
 
+TARGET_LINK_LIBRARIES(RoomLib DataBaseFacadeLib Logger)
 
 
 ADD_LIBRARY(CommandLib STATIC
@@ -82,7 +85,8 @@ ADD_LIBRARY(CommandLib STATIC
         Command/Init.cpp
         Command/Init.hpp
         Command/Connect.cpp
-        Command/Connect.hpp)
+        Command/Connect.hpp
+        Utils/Error.hpp)
 
 
 
@@ -112,6 +116,7 @@ ADD_EXECUTABLE(server
 TARGET_LINK_LIBRARIES(server
         ${Boost_SYSTEM_LIBRARY}
         ${CMAKE_THREAD_LIBS_INIT}
+        ${Boost_LIBRARIES}
         DataBaseFacadeLib
         ServerLib
         RoomLib

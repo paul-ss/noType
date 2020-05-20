@@ -1,6 +1,8 @@
 #include "Message.hpp"
 #include "QueueManager.hpp"
 
+#include <iostream>
+
 namespace Network {
 
 QueueManager::QueueManager()
@@ -24,10 +26,10 @@ std::unique_ptr<Message> QueueManager::PopReceivedData() {
 }
 
 void QueueManager::PushToSendingData(std::unique_ptr<Message> msg) {
-  std::unique_lock<std::mutex> lock(_sendingMessagesMutex);
+  //std::unique_lock<std::mutex> lock(_sendingMessagesMutex);
   _sendingMessages.push(std::move(msg));
   _sendingMessagesNotified = true;
-  _sendingMessagesCheck.notify_all();
+  _sendingMessagesCheck.notify_one();
 }
 
 std::unique_ptr<Message> QueueManager::PopSendingData() {
@@ -35,7 +37,7 @@ std::unique_ptr<Message> QueueManager::PopSendingData() {
   _sendingMessagesNotified = false;
 
   if (_sendingMessages.empty()) {
-    _sendingMessagesCheck.wait_for(lock, std::chrono::milliseconds(500), [&](){
+    _sendingMessagesCheck.wait(lock, [&](){
       if (_sendingMessagesNotified) {
         return true;
       }
@@ -56,7 +58,7 @@ std::unique_ptr<Message> QueueManager::PopSendingData() {
 void QueueManager::Notify() {
   std::unique_lock<std::mutex> lock(_sendingMessagesMutex);
   _sendingMessagesNotified = true;
-  _sendingMessagesCheck.notify_all();
+  _sendingMessagesCheck.notify_one();
 }
 
 }  // namespace Network

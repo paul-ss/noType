@@ -92,7 +92,6 @@ std::unique_ptr<Message> MessageParser::ParseToMessage(std::string rawData) {
 std::string MessageParser::InitRequestToJson(std::unique_ptr<Message> msg) {
   auto anyData = msg->ExtractData();
   auto initRequestData = std::any_cast<InitRequest>(anyData);
-  std::cout << "initRequestData.name: " << initRequestData.name << std::endl;
 
   boost::property_tree::ptree pt;
   pt.put(JsonFields::CommandType, StringMessageType::InitRequest);

@@ -4,6 +4,8 @@
 #include <mutex>
 #include <boost/asio.hpp>
 
+#include <future>
+
 namespace Network {
 
 class INetworkManager {
@@ -11,6 +13,7 @@ public:
   virtual void Connect() = 0;
   virtual void Disconnect() = 0;
   virtual void Run() = 0;
+  virtual void Stop() = 0;
 
   virtual ~INetworkManager() = default;
 
@@ -31,9 +34,11 @@ public:
                  std::string serverIp,
                  std::uint32_t port);
 
-  virtual void Connect() override;
-  virtual void Disconnect() override;
-  virtual void Run() override;
+  void Connect() override;
+  void Disconnect() override;
+  void Run() override;
+  void Stop() override;
+
 
   ~NetworkManager();
 
@@ -53,6 +58,7 @@ private:
   std::mutex _networkManagerMutex;
 
   bool _isWorking;
+  bool _isStoped = false;
 
 };
 

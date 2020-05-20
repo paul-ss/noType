@@ -9,10 +9,12 @@ TEST(NetworkManager, NetworkManagerCheck) {
     = std::make_shared<Network::QueueManager>();
 
   std::shared_ptr<Network::INetworkManager> networkManager = std::make_shared<Network::NetworkManager>(queueManager);
-
-  networkManager->Connect();
-  networkManager->Run();
-
+  try {
+    networkManager->Connect();
+    networkManager->Run();
+  } catch (const boost::system::system_error& e) {
+    std::cout << e.what() << std::endl;
+  }
   Network::InitRequest initRequest;
 
   {
@@ -29,13 +31,14 @@ TEST(NetworkManager, NetworkManagerCheck) {
     try {
       auto data = msg->ExtractData();
       auto initResponse = std::any_cast<Network::InitResponse>(data);
-      std::cout << initResponse.id << std::endl;
+     // std::cout << initResponse.id << std::endl;
     } catch (const std::bad_any_cast& e) {
       std::cout << e.what() << std::endl;
     }
   }
 
   networkManager->Disconnect();
+  networkManager->Stop();
 }
 
 int main(int argc, char *argv[]) {

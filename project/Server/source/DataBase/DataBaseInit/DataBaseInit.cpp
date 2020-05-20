@@ -9,6 +9,8 @@
 #include <mongocxx/client.hpp>
 #include <mongocxx/instance.hpp>
 
+#include "Logger.hpp"
+
 static const std::string testArg = "test";
 
 std::vector<bsoncxx::document::value> loadAnimalsNames(const std::string& root) {

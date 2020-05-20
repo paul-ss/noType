@@ -67,6 +67,8 @@ void BeforeGameState::GetText() {
         BOOST_LOG_TRIVIAL(error) << "[beforeGameState - getText] " << e.what();
     } catch (const InvalidResponse& e) {
         BOOST_LOG_TRIVIAL(error) << "[beforeGameState - getText] " << e.what();
+    } catch (const ConnectionFailure& e) {
+      BOOST_LOG_TRIVIAL(error) << "[beforeGameState - init] " << e.what();
     }
 }
 
@@ -114,6 +116,8 @@ void BeforeGameState::StartGameSession() {
         BOOST_LOG_TRIVIAL(error) << "[beforeGameState - startgamesession] " << e.what();
     } catch (const InvalidResponse& e) {
         BOOST_LOG_TRIVIAL(error) << "[beforeGameState - startgamesession] " << e.what();
+    } catch (const ConnectionFailure& e) {
+      BOOST_LOG_TRIVIAL(error) << "[beforeGameState - init] " << e.what();
     }
 }
 
@@ -148,6 +152,8 @@ void BeforeGameState::Connect() {
         BOOST_LOG_TRIVIAL(error) << "[beforeGameState - connect] " << e.what();
     } catch (const InvalidResponse& e) {
         BOOST_LOG_TRIVIAL(error) << "[beforeGameState - connect] " << e.what();
+    } catch (const ConnectionFailure& e) {
+      BOOST_LOG_TRIVIAL(error) << "[beforeGameState - init] " << e.what();
     }
 }
 
@@ -182,6 +188,8 @@ void BeforeGameState::Init() {
     } catch (const std::bad_any_cast& e) {
         BOOST_LOG_TRIVIAL(error) << "[beforeGameState - init] " << e.what();
     } catch (const InvalidResponse& e) {
+        BOOST_LOG_TRIVIAL(error) << "[beforeGameState - init] " << e.what();
+    } catch (const ConnectionFailure& e) {
         BOOST_LOG_TRIVIAL(error) << "[beforeGameState - init] " << e.what();
     }
 }

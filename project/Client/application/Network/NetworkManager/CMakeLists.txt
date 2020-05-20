@@ -7,7 +7,7 @@ set(NETWORK_MANAGER_INCLUDE_DIRS
                                 ../PlayerInfo/
                                 ../MessageParser/
                                 ../QueueManager/
-                                ../
+                                ../../exceptions/
                                 ${CMAKE_INCLUDE_CURRENT_DIR})
 
 set(NETWORK_MANAGER_HEADERS
@@ -16,6 +16,7 @@ set(NETWORK_MANAGER_HEADERS
                                 ../MessageParser/MessageParser.hpp
                                 ../MessageParser/MessageParserConfig.hpp
                                 ../QueueManager/QueueManager.hpp
+                                ../../exceptions/exceptions.hpp
                                 NetworkManager.hpp
                                 NetworkManagerConfig.hpp)
 
