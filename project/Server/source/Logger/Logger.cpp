@@ -1,8 +1,13 @@
 #include "Logger.hpp"
 
-#define LOG_FILE "/var/log/notype/server.log"
+#define LOG_FILE "server.log"
+
+#include <mutex>
+
+std::mutex loggerMutex;
 
 void initLogger(boost::log::trivial::severity_level l_severity = boost::log::trivial::info) {
+    std::unique_lock<std::mutex> lock(loggerMutex);
     boost::log::register_simple_formatter_factory<boost::log::trivial::severity_level, char>("Severity");
 
     boost::log::add_file_log(

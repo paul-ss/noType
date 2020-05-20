@@ -7,6 +7,16 @@
 #include "Setup.hpp"
 #include "Logger.hpp"
 
+void handler(const boost::system::error_code& error, int signal_number) {
+  if (!error) {
+    //serverSetup.stop();
+    std::cout << "Signal number occured " << signal_number << std::endl;
+    BOOST_LOG_TRIVIAL(debug) << "Signal number occured " << signal_number;
+  }
+  //io_service.stop();
+  std::cout << "error"  << std::endl;
+};
+
 
 int main(int argc, const char *argv[]) {
   try {
@@ -25,7 +35,8 @@ int main(int argc, const char *argv[]) {
     notify(vm);
 
     if (vm.count("help")) {
-      std::cout << desc << '\n';
+      std::cout << desc << std::endl;
+      return EXIT_SUCCESS;
     } else if (vm.count("trace")) {
       initLogger(boost::log::trivial::trace);
     } else if (vm.count("debug")) {
@@ -38,24 +49,33 @@ int main(int argc, const char *argv[]) {
       initLogger(boost::log::trivial::error);
     } else if (vm.count("fatal")) {
       initLogger(boost::log::trivial::fatal);
+    } else {
+      std::cout << desc << std::endl;
+      return EXIT_FAILURE;
     }
-
   } catch (const boost::program_options::error &ex) {
-    std::cerr << ex.what() << '\n';
+    std::cerr << ex.what() << std::endl;
   }
 
-  Setup serverSetup;
   boost::asio::io_service io_service;
   boost::asio::signal_set signals(io_service, SIGINT, SIGTERM);
+
+  std::thread thread([&] {
+    io_service.run();
+  });
+
+  Setup serverSetup;
   signals.async_wait([&](const boost::system::error_code& error, int signal_number) {
-      if (!error) {
-        serverSetup.stop();
-        BOOST_LOG_TRIVIAL(debug) << "Signal number occured " << signal_number;
-      }
+    if (!error) {
+      serverSetup.stop();
+      BOOST_LOG_TRIVIAL(debug) << "Signal number occured " << signal_number;
+    }
   });
 
   serverSetup.setup();
   serverSetup.start();
+
+  thread.join();
 
   return 0;
 }
