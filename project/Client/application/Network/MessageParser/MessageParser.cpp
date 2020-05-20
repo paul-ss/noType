@@ -284,9 +284,9 @@ std::unique_ptr<Message> MessageParser::ValidateWrittenTextResponseToMessage(boo
 }
 
 std::unique_ptr<Message> MessageParser::ErrorResponseToMessage(boost::property_tree::ptree& pt) {
-  auto errorMsg = pt.get<std::string>(JsonFields::ErrorMessage);
+  auto error = pt.get<std::string>(JsonFields::ErrorMessage);
 
-  ErrorResponse errorResponse = {errorMsg};
+  ErrorResponse errorResponse = {error};
 
   std::any data = errorResponse;
   return std::make_unique<Message>(MessageType::ErrorResponse, std::move(data));

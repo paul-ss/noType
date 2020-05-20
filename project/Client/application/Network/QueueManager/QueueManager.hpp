@@ -26,6 +26,7 @@ class IQueueManager {
 public:
   virtual std::unique_ptr<Message> PopSendingData() = 0;
   virtual void PushToReceivedData(std::unique_ptr<Message> msg) = 0;
+  virtual void Notify() = 0;
   virtual ~IQueueManager() = default;
 };
 
@@ -41,6 +42,8 @@ public:
   std::unique_ptr<Message> PopSendingData() override;
   void PushToReceivedData(std::unique_ptr<Message> msg) override;
 
+  void Notify() override;
+
 private:
   std::queue<std::unique_ptr<Message>> _receivedMessages;
   std::queue<std::unique_ptr<Message>> _sendingMessages;
@@ -49,7 +52,7 @@ private:
   std::mutex _receivedMessagesMutex;
   std::mutex _sendingMessagesMutex;
 
-  std::condition_variable _receivedMessagesCheck;
+  [[maybe_unused]] std::condition_variable _receivedMessagesCheck;
   std::condition_variable _sendingMessagesCheck;
 
   [[maybe_unused]] bool _receivedMessagesNotified;

@@ -96,7 +96,7 @@ struct ErrorRequest {
 };
 
 struct ErrorResponse {
-  std::string errorMsg;
+  std::string error;
 };
 
 class Message {

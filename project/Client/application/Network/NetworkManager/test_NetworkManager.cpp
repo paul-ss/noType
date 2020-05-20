@@ -13,11 +13,29 @@ TEST(NetworkManager, NetworkManagerCheck) {
   networkManager->Connect();
   networkManager->Run();
 
-  Network::InitRequest initRequest = {};
+  Network::InitRequest initRequest;
 
-  auto msg = std::make_unique<Network::Message>(Network::MessageType::InitRequest, initRequest);
-  queueManager->PushToSendingData(std::move(msg));
+  {
+    auto msg = std::make_unique<Network::Message>(Network::MessageType::InitRequest, initRequest);
+    queueManager->PushToSendingData(std::move(msg));
+  }
 
+  {
+    std::unique_ptr<Network::Message> msg = nullptr;
+    while (!msg) {
+      msg = queueManager->PopReceivedData();
+    }
+
+    try {
+      auto data = msg->ExtractData();
+      auto initResponse = std::any_cast<Network::InitResponse>(data);
+      std::cout << initResponse.id << std::endl;
+    } catch (const std::bad_any_cast& e) {
+      std::cout << e.what() << std::endl;
+    }
+  }
+
+  networkManager->Disconnect();
 }
 
 int main(int argc, char *argv[]) {
