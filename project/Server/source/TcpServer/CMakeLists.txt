@@ -20,4 +20,5 @@ TARGET_LINK_LIBRARIES(tcpServerTests
         ServerLib
         QueueLib
         CommandLib
+        Logger
         -lgmock)

@@ -16,4 +16,5 @@ TARGET_LINK_LIBRARIES(queueTests
         ${Boost_SYSTEM_LIBRARY}
         QueueLib
         CommandLib
+        Logger
         -lgmock)

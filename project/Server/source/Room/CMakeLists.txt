@@ -13,4 +13,5 @@ TARGET_LINK_LIBRARIES(roomTests
         ${CMAKE_THREAD_LIBS_INIT}
         ${Boost_SYSTEM_LIBRARY}
         RoomLib
+        Logger
         -lgmock)

@@ -28,6 +28,11 @@ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 
+ADD_LIBRARY(Logger STATIC
+        Logger/Logger.hpp
+        Logger.Logger.cpp
+)
+
 ADD_SUBDIRECTORY(DataBase/)
 ADD_SUBDIRECTORY(TcpServer/)
 ADD_SUBDIRECTORY(Room/)
@@ -101,9 +106,7 @@ ADD_EXECUTABLE(server
         Controller/GameController.hpp
         Exceptions/Exceptions.hpp
         Setup/Setup.cpp
-        Setup/Setup.hpp
-        Logger/Logger.cpp
-        Logger/Logger.hpp)
+        Setup/Setup.hpp)
 
 
 TARGET_LINK_LIBRARIES(server
@@ -113,7 +116,8 @@ TARGET_LINK_LIBRARIES(server
         ServerLib
         RoomLib
         QueueLib
-        CommandLib)
+        CommandLib
+        Logger)
 
 
 
