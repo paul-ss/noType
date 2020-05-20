@@ -3,6 +3,7 @@
 //
 
 #include "StartGameSession.hpp"
+#include "Logger.hpp"
 
 
 
@@ -49,14 +50,16 @@ std::string StartGameSessionResponse::parseToJSON() {
     return internalParseToJSON();
 
   } catch (const pt::ptree_error &exc) {
-    std::cout << "StartGameSessionResponse::parseToJSON :" + std::string(exc.what()) << std::endl;
+    //std::cout << "StartGameSessionResponse::parseToJSON :" + std::string(exc.what()) << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "StartGameSessionResponse::parseToJSON :" + std::string(exc.what());
     auto resp = ErrorResponse(_connectionUUID,
                               "StartGameSessionResponse::parseToJSON :" + std::string(exc.what()));
     return resp.parseToJSON();
 
 
   } catch (...) {
-    std::cout << "StartGameSessionResponse::parseToJSON : unknown exception" << std::endl;
+    //std::cout << "StartGameSessionResponse::parseToJSON : unknown exception" << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "StartGameSessionResponse::parseToJSON : unknown exception";
     auto resp = ErrorResponse(_connectionUUID,
                               "StartGameSessionResponse::parseToJSON : unknown exception");
     return resp.parseToJSON();

@@ -2,8 +2,11 @@
 
 #define PATH_TO_STYLES "assets/media/styles/"
 
-BaseElement::BaseElement(std::weak_ptr<SharedContext> l_sharedContext,
-        const sf::Vector2f& l_position, const std::string& l_style) :
+BaseElement::BaseElement(const ElementName l_name,
+        std::weak_ptr<SharedContext> l_sharedContext,
+        const sf::Vector2f& l_position,
+        const std::string& l_style,) :
+        _name(l_name),
         _position(l_position),
         _state(ElementState::Neutral),
         _sharedContext(l_sharedContext) {

@@ -3,6 +3,7 @@
 //
 
 #include "CommandFactory.hpp"
+#include "Logger.hpp"
 
 
 
@@ -13,17 +14,20 @@ std::shared_ptr<ClientCommand> CommandFactory::createCommand(
     return createCommandInternal(connectionUUID, data);
 
   } catch (const pt::ptree_error &exc) {
-    std::cout << "CommandFactory exception: " + std::string(exc.what()) << std::endl;
+    //std::cout << "CommandFactory exception: " + std::string(exc.what()) << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "CommandFactory exception: " + std::string(exc.what());
     return std::make_shared<ErrorRequest>(connectionUUID,
         "CommandFactory exception: " + std::string(exc.what()));
     
   } catch (std::runtime_error &exc) {
-    std::cout << "CommandFactory exception: " + std::string(exc.what()) << std::endl;
+    //std::cout << "CommandFactory exception: " + std::string(exc.what()) << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "CommandFactory exception: " + std::string(exc.what());
     return std::make_shared<ErrorRequest>(connectionUUID,
         "CommandFactory exception: " +  std::string(exc.what()));
     
   } catch (...) {
-    std::cout << "CommandFactory : unknown exception" << std::endl;
+    //std::cout << "CommandFactory : unknown exception" << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "CommandFactory : unknown exception";
     return std::make_shared<ErrorRequest>(connectionUUID,
         "CommandFactory : unknown exception");
     

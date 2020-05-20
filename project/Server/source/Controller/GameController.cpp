@@ -3,6 +3,7 @@
 //
 
 #include "GameController.hpp"
+#include "Logger.hpp"
 
 
 GameController::GameController(const std::shared_ptr<QueueManager> &queueManager,
@@ -78,7 +79,8 @@ void GameController::commandDistributor(const std::shared_ptr<Command> &command)
         break;
 
       default:
-        std::cout << "GC : invalid command type" << std::endl;
+        //std::cout << "GC : invalid command type" << std::endl;
+        BOOST_LOG_TRIVIAL(error) << "GC : invalid command type";
 
         auto commandResp = std::make_shared<ErrorResponse>(
             command->getConnectionUUID(),
@@ -87,7 +89,8 @@ void GameController::commandDistributor(const std::shared_ptr<Command> &command)
     }
 
   } catch (...) {
-    std::cout << "GC : exception : unknown, unexpected, mysterious... (like James Bond)" << std::endl;
+    //std::cout << "GC : exception : unknown, unexpected, mysterious... (like James Bond)" << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "GC : exception : unknown, unexpected, mysterious... (like James Bond)";
 
     auto commandResp = std::make_shared<ErrorResponse>(
         command->getConnectionUUID(),
@@ -104,8 +107,10 @@ template <class RequestCommand, class ResponseCommand, typename CommandHandler>
 void GameController::handlerExceptionCatcher(const std::shared_ptr<Command> &command, CommandHandler handler) {
   auto castedCmd = std::dynamic_pointer_cast<RequestCommand>(command);
   if (!castedCmd) {
-    std::cout <<"Can't cast command " + std::string(typeid(command).name()) << std::endl;
-    std::cout <<"handler type: " + std::string(typeid(handler).name()) << std::endl;
+    //std::cout <<"Can't cast command " + std::string(typeid(command).name()) << std::endl;
+    //std::cout <<"handler type: " + std::string(typeid(handler).name()) << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "Can't cast command " + std::string(typeid(command).name())
+    << "handler type: " + std::string(typeid(handler).name());
 
     auto commandResp = std::make_shared<ErrorResponse>(
         castedCmd->getConnectionUUID(),
@@ -268,6 +273,7 @@ void GameController::runQueueWorker() {
     }
   }
 
-  std::cout << "QueueWorker (GC) stopped" << std::endl;
+  //std::cout << "QueueWorker (GC) stopped" << std::endl;
+  BOOST_LOG_TRIVIAL(info) << "QueueWorker (GC) stopped";
 }
 

@@ -1,11 +1,12 @@
 #include "textField.hpp"
 #include "logger.hpp"
 
-TextField::TextField(std::weak_ptr<SharedContext> l_sharedContext,
+TextField::TextField(const ElementName l_name, std::weak_ptr<SharedContext> l_sharedContext,
         const sf::Vector2f& l_position,
         const std::string& l_style,
         const std::string& l_text) :
-        BaseElement(l_sharedContext, l_position, l_style) {
+        BaseElement(l_sharedContext, l_position, l_style),
+        _name(l_name) {
 
     _visual.text.setString(l_text);
 }
@@ -25,7 +26,7 @@ void TextField::Draw() {
 }
 
 void TextField::ReadIn(const std::string& l_stream) {}
-void TextField::OnClick(const sf::Vector2f& l_mousePos) {}
+ElementName TextField::OnClick(const sf::Vector2f& l_mousePos) {}
 void TextField::OnRelease() {}
 void TextField::OnHover(const sf::Vector2f& l_mousePos) {}
 void TextField::OnLeave() {}

@@ -3,6 +3,7 @@
 //
 
 #include "TcpServer.hpp"
+#include "Logger.hpp"
 
 TcpServer::TcpServer(const std::shared_ptr<QueueManager> &queueManager, const ServerConfig &config) :
     _acceptor(_service),
@@ -66,12 +67,14 @@ void TcpServer::startAccept() {
 void TcpServer::handleAccept(std::shared_ptr<Client> client, const boost::system::error_code& ec) {
   if (!ec) {
     if (!_clients->insert(client)) {
-      std::cout << "Map error, client was not added" << std::endl; // todo log
+      //std::cout << "Map error, client was not added" << std::endl; // todo log
+      BOOST_LOG_TRIVIAL(error) << "Map error, client was not added";
     }
     client->read();
 
   } else {
-    std::cout << ec.value() << " " << ec.message() << std::endl; // todo log
+    //std::cout << ec.value() << " " << ec.message() << std::endl; // todo log
+    BOOST_LOG_TRIVIAL(error) << ec.value() << " " << ec.message();
   }
 
 
@@ -110,17 +113,20 @@ void TcpServer::runQueueWorker() {
 
         } else {
           // TODO throw bad cast
-          std::cout << "Bad cast" << std::endl;
+          //std::cout << "Bad cast" << std::endl;
+          BOOST_LOG_TRIVIAL(error) << "Bad cast";
         }
 
       } catch(const std::out_of_range& exc) {
         // todo log
-        std::cout << exc.what() << std::endl;
+        //std::cout << exc.what() << std::endl;
+        BOOST_LOG_TRIVIAL(error) << exc.what() << std::endl;
       }
     }
   }
 
-  std::cout << "Queue Worker stopped" << std::endl; // todo log
+  //std::cout << "Queue Worker stopped" << std::endl; // todo log
+  BOOST_LOG_TRIVIAL(info) << "Queue Worker stopped";
 }
 
 std::string TcpServer::randomUUID() {

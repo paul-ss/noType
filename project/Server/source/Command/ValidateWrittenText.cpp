@@ -3,6 +3,7 @@
 //
 
 #include "ValidateWrittenText.hpp"
+#incldue "Logger.hpp"
 
 ValidateWrittenTextRequest::ValidateWrittenTextRequest(const std::string &connectionUUID, pt::ptree &&pTree) :
     ClientCommand(CommandType::ValidateWrittenTextRequest, connectionUUID) {
@@ -50,14 +51,16 @@ std::string ValidateWrittenTextResponse::parseToJSON() {
     return internalParseToJSON();
 
   } catch (const pt::ptree_error &exc) {
-    std::cout << "ValidateWrittenTextResponse::parseToJSON :" + std::string(exc.what()) << std::endl;
+    //std::cout << "ValidateWrittenTextResponse::parseToJSON :" + std::string(exc.what()) << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "ValidateWrittenTextResponse::parseToJSON :" + std::string(exc.what());
     auto resp = ErrorResponse(_connectionUUID,
                               "ValidateWrittenTextResponse::parseToJSON :" + std::string(exc.what()));
     return resp.parseToJSON();
 
 
   } catch (...) {
-    std::cout << "ValidateWrittenTextResponse::parseToJSON : unknown exception" << std::endl;
+    //std::cout << "ValidateWrittenTextResponse::parseToJSON : unknown exception" << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "ValidateWrittenTextResponse::parseToJSON : unknown exception";
     auto resp = ErrorResponse(_connectionUUID,
                               "ValidateWrittenTextResponse::parseToJSON : unknown exception");
     return resp.parseToJSON();

@@ -10,6 +10,7 @@
 #include "BasicController.hpp"
 #include "GameController.hpp"
 #include "DataBaseFacade.hpp"
+#include "Logger.hpp"
 
 
 

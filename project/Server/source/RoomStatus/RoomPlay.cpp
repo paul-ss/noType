@@ -5,6 +5,7 @@
 #include "RoomPlay.hpp"
 #include "RoomEnd.hpp"
 #include "Room.hpp"
+#include "Logger.hpp"
 
 
 
@@ -16,7 +17,10 @@ RoomPlay::RoomPlay(const RoomConfig &roomConfig) :
 
 ExpectedRoom<AddPlayerResp> RoomPlay::addPlayer(std::shared_ptr<Room> room, const Player &player) {
   std::unique_lock<std::mutex> lock(room->_roomMutex);
-  std::cout << "PLayer " << player.clientUUID << " was not added" << std::endl;
+  //std::cout << "PLayer " << player.clientUUID << " was not added" << std::endl;
+  BOOST_LOG_TRIVIAL(info) << "PLayer " << player.clientUUID << " was not added";
+
+
   return RoomError("Room status is 'PLAY'. Can't add player with UUID " + player.clientUUID);
 }
 
@@ -63,7 +67,8 @@ ExpectedRoom<size_t> RoomPlay::validateWrittenText(std::shared_ptr<Room> room,
         room->startAsyncEvent();
       } else {
        // throw RoomException("addPlayer (WAIT) : No one async wait canceled. Maybe, that shouldn't be an exception.");
-        std::cout << "addPlayer (WAIT) : No one async wait canceled in room " + room->_roomUUID << std::endl;
+        //std::cout << "addPlayer (WAIT) : No one async wait canceled in room " + room->_roomUUID << std::endl;
+        BOOST_LOG_TRIVIAL(info) << "addPlayer (WAIT) : No one async wait canceled in room " + room->_roomUUID;
       }
     }
   }
@@ -103,10 +108,12 @@ void RoomPlay::startAsyncEvent(std::shared_ptr<Room> room) {
 
 void RoomPlay::deadlineHandler(std::shared_ptr<Room> room, const boost::system::error_code& ec) {
   if (ec) {
-    std::cout << "RoomPlay handler error: " << ec.message() << std::endl;
+    //std::cout << "RoomPlay handler error: " << ec.message() << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "RoomPlay handler error: " << ec.message();
     return;
   }
-  std::cout << "RoomPlay handler" << std::endl;
+  //std::cout << "RoomPlay handler" << std::endl;
+  BOOST_LOG_TRIVIAL(debug) << "RoomPlay handler";
 
   std::unique_lock<std::mutex> lock(room->_roomMutex);
 

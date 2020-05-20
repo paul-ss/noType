@@ -11,6 +11,18 @@ enum class ElementState {
     TextEntered
 };
 
+// Contains all ui instances.
+enum class ElementName {
+    None = -1,
+    Filler,
+    IntroSprite,
+    PlayButton,
+    QuitButton,
+    MenuButton,
+    MuteButton,
+    SmartString,
+};
+
 struct Style {
     explicit Style():
             backgroundImageColor(255, 255, 255, 255),
@@ -53,7 +65,7 @@ using ElementStyles = std::unordered_map<ElementState, std::shared_ptr<Style>>;
 struct SharedContext;
 class BaseElement {
 public:
-    BaseElement(std::weak_ptr<SharedContext> l_sharedContext,
+    BaseElement(const ElementName l_name, std::weak_ptr<SharedContext> l_sharedContext,
             const sf::Vector2f& l_position, const std::string& l_style);
 
     virtual ~BaseElement() = default;
@@ -61,7 +73,7 @@ public:
     virtual void Draw() = 0;
     virtual void Update(float l_dT) = 0;
     virtual void ReadIn(const std::string& l_stream) = 0;
-    virtual void OnClick(const sf::Vector2f& l_mousePos) = 0;
+    virtual ElementName OnClick(const sf::Vector2f& l_mousePos) = 0;
     virtual void OnRelease() = 0;
     virtual void OnHover(const sf::Vector2f& l_mousePos) = 0;
     virtual void OnLeave() = 0;
@@ -78,14 +90,14 @@ protected:
     void loadStyle(const std::string& l_path);
 
 protected:
+    ElementName _name;
     sf::Vector2f _position;
     ElementStyles _style;
     Visual _visual;
     ElementState _state;
-
     std::weak_ptr<SharedContext> _sharedContext;
 
-    bool _needsRedraw;
-    bool _active;
-    bool _isControl;
+    //bool _needsRedraw;
+    //bool _active;
+    //bool _isControl;
 };

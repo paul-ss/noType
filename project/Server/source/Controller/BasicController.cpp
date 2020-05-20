@@ -3,6 +3,7 @@
 //
 
 #include "BasicController.hpp"
+#include "Logger.hpp"
 
 
 
@@ -73,7 +74,8 @@ void BasicController::commandDistributor(const std::shared_ptr<Command> &command
         break;
 
       default:
-        std::cout << "BC : invalid command type" << std::endl;
+        //std::cout << "BC : invalid command type" << std::endl;
+        BOOST_LOG_TRIVIAL(error) << "BC : invalid command type";
 
         auto commandResp = std::make_shared<ErrorResponse>(
             command->getConnectionUUID(),
@@ -83,7 +85,8 @@ void BasicController::commandDistributor(const std::shared_ptr<Command> &command
     }
 
   } catch (...) {
-    std::cout << "BC : exception : unknown, unexpected, mysterious... (like James Bond)" << std::endl;
+    //std::cout << "BC : exception : unknown, unexpected, mysterious... (like James Bond)" << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "BC : exception : unknown, unexpected, mysterious... (like James Bond)";
 
     auto commandResp = std::make_shared<ErrorResponse>(
         command->getConnectionUUID(),
@@ -99,8 +102,11 @@ template <class RequestCommand, class ResponseCommand, typename CommandHandler>
 void BasicController::handlerExceptionCatcher(const std::shared_ptr<Command> &command, CommandHandler handler) {
   auto castedCmd = std::dynamic_pointer_cast<RequestCommand>(command);
   if (!castedCmd) {
-    std::cout <<"Can't cast command " + std::string(typeid(command).name()) << std::endl;
-    std::cout <<"handler type: " + std::string(typeid(handler).name()) << std::endl;
+    //std::cout <<"Can't cast command " + std::string(typeid(command).name()) << std::endl;
+    //std::cout <<"handler type: " + std::string(typeid(handler).name()) << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "Can't cast command " + std::string(typeid(command).name()) << std::endl
+    << "handler type: " + std::string(typeid(handler).name());
+
 
     auto commandResp = std::make_shared<ErrorResponse>(
         castedCmd->getConnectionUUID(),
@@ -180,7 +186,8 @@ void BasicController::runQueueWorker() {
     }
   }
 
-  std::cout << "QueueWorker (BC) stopped" << std::endl;
+  //std::cout << "QueueWorker (BC) stopped" << std::endl;
+  BOOST_LOG_TRIVIAL(info) << "QueueWorker (BC) stopped";
 }
 
 

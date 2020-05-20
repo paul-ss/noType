@@ -4,11 +4,12 @@
 #define TEXT_BLOCK 10
 #define ASCII_BACKSPACE 8
 
-SmartString::SmartString(std::weak_ptr<SharedContext> l_sharedContext,
+SmartString::SmartString(const ElementName l_name, std::weak_ptr<SharedContext> l_sharedContext,
             const sf::Vector2f& l_position,
             const std::string& l_style,
             const std::string& l_reference) :
             BaseElement(l_sharedContext, l_position, l_style),
+            _name(l_name),
             _isValid(true),
             _textPosition(0),
             _reference(l_reference) {
@@ -37,9 +38,6 @@ void SmartString::Draw() {
         std::shared_ptr<SharedContext>sharedContext(_sharedContext);
         std::shared_ptr<Window>window(sharedContext->window);
         std::shared_ptr<sf::RenderWindow>renderWindow(window->GetRenderWindow());
-        //sf::Vector2f txtSz(_coloredText.getGlobalBounds().width,
-        //        _coloredText.getGlobalBounds().height);
-        //_visual.backgroundSolid.setSize(txtSz);
 
         renderWindow->draw(_coloredText);
     } catch (std::bad_weak_ptr& e) {
@@ -101,7 +99,7 @@ std::string SmartString::Validate(const char l_char) {
 }
 
 void SmartString::ReadIn(const std::string& l_stream) {}
-void SmartString::OnClick(const sf::Vector2f& l_mousePos) {}
+ElementName SmartString::OnClick(const sf::Vector2f& l_mousePos) {}
 void SmartString::OnRelease() {}
 void SmartString::OnHover(const sf::Vector2f& l_mousePos) {}
 void SmartString::OnLeave() {}

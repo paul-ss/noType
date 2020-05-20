@@ -4,16 +4,26 @@
 #include "label.hpp"
 #include "logger.hpp"
 
-Label::Label(std::weak_ptr<SharedContext> l_sharedContext,
+Label::Label(const ElementName l_name, std::weak_ptr<SharedContext> l_sharedContext,
         const sf::Vector2f& l_position, const std::string& l_style) :
-        BaseElement(l_sharedContext, l_position, l_style) {}
+        BaseElement(l_name, l_sharedContext, l_position, l_style) {}
 
 Label::~Label() {}
 
 void Label::ReadIn(const std::string& l_stream) {}
 
-void Label::OnClick(const sf::Vector2f& l_mousePos) {
-    _state = ElementState::Clicked;
+ElementName Label::OnClick(const sf::Vector2f& l_mousePos) {
+    float halfX = GetSize().x / 2.0f;
+    float halfY = GetSize().y / 2.0f;
+    if (mousePos.x >= GetPosition().x - halfX &&
+        mousePos.x <= GetPosition().x + halfX &&
+        mousePos.y >= GetPosition().y - halfY &&
+        mousePos.y <= GetPosition().y + halfY) {
+        _state = ElementState::Clicked;
+        return _name;
+    }
+    return -1;
+
 }
 
 void Label::OnRelease() {

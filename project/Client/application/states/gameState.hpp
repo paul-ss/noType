@@ -23,5 +23,5 @@ public:
     void MainMenu(EventDetails& l_details);
 
 private:
-    std::vector<std::shared_ptr<BaseElement>> _elements;
+    std::unordered_map<std::string, std::shared_ptr<BaseElement>> _elements;
 };

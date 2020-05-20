@@ -12,10 +12,14 @@ void GameState::OnCreate() {
         std::shared_ptr<sf::RenderWindow>renderWindow(window->GetRenderWindow());
 
         auto windowSize = renderWindow->getSize();
-        auto filler = std::make_shared<Label>(context,
-                sf::Vector2f(0, 0),
-                "filler.json");
-        _elements.push_back(filler);
+        auto filler = std::make_shared<Label>(context, sf::Vector2f(0, 0), "filler.json");
+        sf::Vector2f fillerPosition(windowSize.x * 0.5f - filler->GetSize().x * 0.5,
+                                    windowSize.y * 0.5f);
+        filler->SetPosition(fillerPosition);
+        //_elements.push_back(filler);
+        _elements.emplace()
+
+        _elements.push_back();
 
         //auto play = std::make_shared<Label>(context, sf::Vector2f(0, 0), "button.json");
         //auto playSize = play->GetSize();

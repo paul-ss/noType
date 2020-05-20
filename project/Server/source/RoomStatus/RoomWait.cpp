@@ -5,6 +5,7 @@
 #include "RoomWait.hpp"
 #include "RoomPlay.hpp"
 #include "Room.hpp"
+#include "Logger.hpp"
 
 
 
@@ -32,7 +33,8 @@ ExpectedRoom<AddPlayerResp> RoomWait::addPlayer(std::shared_ptr<Room> room, cons
   if (!room->_players.emplace(player.clientUUID, player).second) {
     throw RoomException("addPlayer (WAIT) : Can't add player " + room->_roomUUID);
   }
-  std::cout << "PLayer " << player.clientUUID << " added" << std::endl;
+  //std::cout << "PLayer " << player.clientUUID << " added" << std::endl;
+  BOOST_LOG_TRIVIAL(info) << "PLayer " << player.clientUUID << " added"
 
 
   if (room->_players.size() == 1) {
@@ -85,10 +87,12 @@ void RoomWait::startAsyncEvent(std::shared_ptr<Room> room) {
 
 void RoomWait::deadlineHandler(std::shared_ptr<Room> room, const boost::system::error_code& ec) {
   if (ec /*&& ec != boost::asio::error::operation_aborted*/) {
-    std::cout << "RoomWait handler error: " << ec.message() << std::endl;
+    //std::cout << "RoomWait handler error: " << ec.message() << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "RoomWait handler error: " << ec.message();
     return;
   }
-  std::cout << "handler" << std::endl;
+  //std::cout << "handler" << std::endl;
+  BOOST_LOG_TRIVIAL(debug) << "handler";
 
   std::unique_lock<std::mutex> lock(room->_roomMutex);
 

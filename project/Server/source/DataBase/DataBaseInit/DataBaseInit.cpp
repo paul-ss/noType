@@ -78,7 +78,8 @@ void insertCollectionToDataBase(const mongocxx::database& db, const std::string&
     mongocxx::collection collection = db[collectionName];
 
     if (std::int64_t doc_count = collection.count_documents({}); doc_count != 0) {
-        std::cout << "Collection \"" << collectionName << "\" is up to date!" << std::endl;
+        //std::cout << "Collection \"" << collectionName << "\" is up to date!" << std::endl;
+        BOOST_LOG_TRIVIAL(info) << "Collection \"" << collectionName << "\" is up to date!";
         return;
     }
 

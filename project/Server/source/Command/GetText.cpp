@@ -3,6 +3,7 @@
 //
 
 #include "GetText.hpp"
+#include "Logger.hpp"
 
 GetTextRequest::GetTextRequest(const std::string &connectionUUID, pt::ptree &&pTree) :
     ClientCommand(CommandType::GetTextRequest, connectionUUID) {
@@ -44,14 +45,16 @@ std::string GetTextResponse::parseToJSON() {
     return internalParseToJSON();
 
   } catch (const pt::ptree_error &exc) {
-    std::cout << "GetTextResponse::parseToJSON :" + std::string(exc.what()) << std::endl;
+    //std::cout << "GetTextResponse::parseToJSON :" + std::string(exc.what()) << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "GetTextResponse::parseToJSON :" + std::string(exc.what());
     auto resp = ErrorResponse(_connectionUUID,
                               "GetTextResponse::parseToJSON :" + std::string(exc.what()));
     return resp.parseToJSON();
 
 
   } catch (...) {
-    std::cout << "GetTextResponse::parseToJSON : unknown exception" << std::endl;
+    //std::cout << "GetTextResponse::parseToJSON : unknown exception" << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "GetTextResponse::parseToJSON : unknown exception";
     auto resp = ErrorResponse(_connectionUUID,
                               "GetTextResponse::parseToJSON : unknown exception");
     return resp.parseToJSON();

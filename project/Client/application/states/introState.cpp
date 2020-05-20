@@ -16,14 +16,15 @@ void IntroState::OnCreate() {
         sf::Vector2f fillerPosition(windowSize.x * 0.5f - filler->GetSize().x * 0.5,
                 windowSize.y * 0.5f);
         filler->SetPosition(fillerPosition);
-        _elements.push_back(filler);
+        context->sharedElements.emplace("Filler", filler);
+        _elements.emplace("Filler", filler);
 
         auto introSprite = std::make_shared<Label>(context, sf::Vector2f(0, 0), "introSprite.json");
         sf::Vector2f introPosition(windowSize.x * 0.5f - introSprite->GetSize().x * 0.5,
                 windowSize.y * 0.5f);
         introSprite->SetPosition(introPosition);
         introSprite->SetText("PRESS SPACE TO CONTINUE");
-        _elements.push_back(introSprite);
+        _elements.emplace("IntroSprite", introSprite);
 
         std::shared_ptr<EventManager>evMgr(context->eventManager);
         auto lambdaContinue = [this](EventDetails& details) { this->Continue(details); };
@@ -48,8 +49,8 @@ void IntroState::OnDestroy() {
 }
 
 void IntroState::Draw() {
-    for (size_t i = 0; i < _elements.size(); ++i) {
-        _elements[i]->Draw();
+    for (auto& element : _elements) {
+        element.second->Draw();
     }
 }
 

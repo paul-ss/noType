@@ -5,7 +5,7 @@
 
 
 BeforeGameState::BeforeGameState(std::weak_ptr<StateManager> l_stateManager)
-    : BaseState(l_stateManager) {}
+    : BaseState(l_stateManager), _waitTime(0) {}
 
 BeforeGameState::~BeforeGameState() {}
 
@@ -13,27 +13,11 @@ void BeforeGameState::OnCreate() {
     try {
         std::shared_ptr<StateManager> stateMgr(_stateMgr);
         std::shared_ptr<SharedContext> context(stateMgr->GetContext());
-        std::shared_ptr<Window>window(context->window);
-        std::shared_ptr<sf::RenderWindow>renderWindow(window->GetRenderWindow());
 
-        Connect();
         Init();
+        Connect();
         StartGameSession();
         GetText();
-
-        auto windowSize = renderWindow->getSize();
-        auto filler = std::make_shared<Label>(context,
-                sf::Vector2f(0, 0),
-                "filler.json");
-        _elements.push_back(filler);
-
-        auto timeToStart = std::make_shared<TextField>(context, sf::Vector2f(0, 0),
-                "textField.json", std::to_string(_waitTime));
-        timeToStart->SetText(std::to_string(_waitTime));
-        auto timeSize = timeToStart->GetSize();
-        sf::Vector2f timePosition((windowSize.x * 0.5) - timeSize.x * 0.5, (windowSize.y * 0.5f));
-        timeToStart->SetPosition(timePosition);
-        _elements.push_back(timeToStart);
 
     } catch (const std::bad_weak_ptr& e) {
         BOOST_LOG_TRIVIAL(error) << "[beforeGameState - oncreate] " << e.what();
@@ -74,7 +58,7 @@ void BeforeGameState::GetText() {
 
             sf::Vector2f smartStrPosition((windowSize.x * 0.5), (windowSize.y * 0.5f));
             smartString->SetPosition(smartStrPosition);
-            context->elementContainer.emplace("SmartString", smartString);
+            context->sharedElements.emplace("SmartString", smartString);
         }
 
     } catch (const std::bad_weak_ptr& e) {
@@ -92,6 +76,8 @@ void BeforeGameState::StartGameSession() {
         std::shared_ptr<SharedContext> context(stateMgr->GetContext());
         std::shared_ptr<Network::INetworkManager> networkManager(context->networkManager);
         std::shared_ptr<Network::Client::IQueueManager>queueManager(context->queueManager);
+        std::shared_ptr<Window>window(context->window);
+        std::shared_ptr<sf::RenderWindow>renderWindow(window->GetRenderWindow());
 
         Network::StartGameSessionRequest startGameRequest;
         std::any data = startGameRequest;
@@ -111,6 +97,16 @@ void BeforeGameState::StartGameSession() {
             CheckNetStatus(startGameSessionResponse.status, startGameSessionResponse.error);
             _waitTime = startGameSessionResponse.waitTime;
         }
+
+        auto windowSize = renderWindow->getSize();
+        auto timeToStart = std::make_shared<TextField>(context, sf::Vector2f(0, 0),
+                "textField.json", std::to_string(_waitTime));
+
+        timeToStart->SetText(std::to_string(_waitTime));
+        auto timeSize = timeToStart->GetSize();
+        sf::Vector2f timePosition((windowSize.x * 0.5) - timeSize.x * 0.5, (windowSize.y * 0.5f));
+        timeToStart->SetPosition(timePosition);
+        _elements.emplace("TimeToStart", timeToStart);
 
     } catch (const std::bad_weak_ptr& e) {
         BOOST_LOG_TRIVIAL(error) << "[beforeGameState - startgamesession] " << e.what();
@@ -162,7 +158,6 @@ void BeforeGameState::Init() {
         std::shared_ptr<Network::INetworkManager> networkManager(context->networkManager);
         std::shared_ptr<Network::Client::IQueueManager>queueManager(context->queueManager);
 
-        networkManager->Connect();
         Network::InitRequest initRequest;
         std::any data = initRequest;
         auto sendMsg = std::make_unique<Network::Message>
@@ -205,13 +200,17 @@ void BeforeGameState::Update(const sf::Time& l_time) {
     if (_waitTime <= 0) {
         Game();
     } else {
-        _elements[1]->SetText(std::to_string(_waitTime));
+        auto itr = _elements.find("TimeToStart");
+        if (itr == _elements.end()) {
+            return;
+        }
+        itr->second->SetText(std::to_string(_waitTime));
     }
 }
 
 void BeforeGameState::Draw() {
     for (auto& element : _elements) {
-        element->Draw();
+        element.second->Draw();
     }
 }
 

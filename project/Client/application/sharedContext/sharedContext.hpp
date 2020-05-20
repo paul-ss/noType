@@ -13,6 +13,7 @@
 #include "baseElement.hpp"
 
 class BaseElement;
+enum class ElementName;
 
 struct SharedContext {
     std::weak_ptr<Window> window;
@@ -22,8 +23,8 @@ struct SharedContext {
     std::weak_ptr<TextureManager> textureManager;
     std::weak_ptr<FontManager> fontManager;
 
-    //share common ui elements between states
-    std::unordered_map<std::string, std::shared_ptr<BaseElement>> elementContainer;
+    //To share common ui elements between states
+    std::unordered_map<ElementName, std::shared_ptr<BaseElement>> sharedElements;
 
     std::string uuid;
     std::weak_ptr<Network::INetworkManager> networkManager;

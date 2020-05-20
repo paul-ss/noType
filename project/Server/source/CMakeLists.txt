@@ -9,7 +9,8 @@ INCLUDE_DIRECTORIES(
         Utils
         Exceptions
         Setup
-        Parser)
+        Parser
+        Logger)
 
 
 FIND_PACKAGE(GTest REQUIRED)
@@ -100,7 +101,9 @@ ADD_EXECUTABLE(server
         Controller/GameController.hpp
         Exceptions/Exceptions.hpp
         Setup/Setup.cpp
-        Setup/Setup.hpp)
+        Setup/Setup.hpp
+        Logger/Logger.cpp
+        Logger/Logger.hpp)
 
 
 TARGET_LINK_LIBRARIES(server

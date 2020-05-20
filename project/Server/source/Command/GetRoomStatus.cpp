@@ -3,6 +3,7 @@
 //
 
 #include "GetRoomStatus.hpp"
+#include "Logger.hpp"
 
 RoomStatusRequest::RoomStatusRequest(const std::string &connectionUUID, pt::ptree &&pTree) :
     ClientCommand(CommandType::RoomStatusRequest, connectionUUID) {
@@ -46,14 +47,16 @@ std::string RoomStatusResponse::parseToJSON() {
     return internalParseToJSON();
 
   } catch (const pt::ptree_error &exc) {
-    std::cout << "RoomStatusResponse::parseToJSON :" + std::string(exc.what()) << std::endl;
+    //std::cout << "RoomStatusResponse::parseToJSON :" + std::string(exc.what()) << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "RoomStatusResponse::parseToJSON :" + std::string(exc.what());
     auto resp = ErrorResponse(_connectionUUID,
                               "RoomStatusResponse::parseToJSON :" + std::string(exc.what()));
     return resp.parseToJSON();
 
 
   } catch (...) {
-    std::cout << "RoomStatusResponse::parseToJSON : unknown exception" << std::endl;
+    //std::cout << "RoomStatusResponse::parseToJSON : unknown exception" << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "RoomStatusResponse::parseToJSON : unknown exception";
     auto resp = ErrorResponse(_connectionUUID,
                               "RoomStatusResponse::parseToJSON : unknown exception");
     return resp.parseToJSON();

@@ -30,6 +30,7 @@ public:
     void Quit(EventDetails& l_details);
 
 private:
-    std::vector<std::shared_ptr<BaseElement>> _elements;
+    //std::vector<std::shared_ptr<BaseElement>> _elements;
+    std::unordered_map<std::string, std::shared_ptr<BaseElement>> _elements;
     double _waitTime;
 };

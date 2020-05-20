@@ -71,7 +71,6 @@ void Game::Run() {
         update();
         render();
         lateUpdate();
-        //sf::sleep(sf::milliseconds(500));
     }
     _networkManager->Disconnect();
 }

@@ -22,5 +22,5 @@ public:
     void Continue(EventDetails& details);
 
 private:
-    std::vector<std::shared_ptr<BaseElement>> _elements;
+    std::unordered_map<std::string, std::shared_ptr<BaseElement>> _elements;
 };
