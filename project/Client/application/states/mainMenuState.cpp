@@ -18,6 +18,9 @@ void MainMenuState::OnCreate() {
         //Background
         auto windowSize = renderWindow->getSize();
         auto filler = std::make_shared<Label>(context, sf::Vector2f(0, 0), "filler.json");
+        sf::Vector2f fillerPosition(windowSize.x * 0.5f - filler->GetSize().x * 0.5,
+                windowSize.y * 0.5f);
+        filler->SetPosition(fillerPosition);
         _elements.push_back(filler);
 
         //Play button

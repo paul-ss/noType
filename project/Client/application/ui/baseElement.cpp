@@ -16,17 +16,24 @@ void BaseElement::applyStyle(const std::shared_ptr<Style>& l_style) {
         std::shared_ptr<SharedContext>sharedContext(_sharedContext);
 
         // Background
-        if (l_style->backgroundImage.empty()) {
+        if (!l_style->backgroundImage.empty()) {
             std::shared_ptr<TextureManager>tMgr(sharedContext->textureManager);
             if (tMgr->RequireResource(l_style->backgroundImage)) {
                 std::shared_ptr<sf::Texture>tempTexture(tMgr->GetResource(l_style->backgroundImage));
                 _visual.backgroundImage.setTexture(*tempTexture);
                 _visual.backgroundImage.setColor(l_style->backgroundImageColor);
+                sf::FloatRect rectImage = _visual.backgroundImage.getLocalBounds();
+                _visual.backgroundImage.setOrigin(rectImage.left + rectImage.width / 2.0f,
+                        rectImage.top + rectImage.height / 2.0f);
                 _visual.backgroundImage.setPosition(_position);
             }
         }
+
         _visual.backgroundSolid.setFillColor(l_style->backgroundColor);
         _visual.backgroundSolid.setSize(l_style->size);
+        sf::FloatRect rectSolid = _visual.backgroundSolid.getLocalBounds();
+        _visual.backgroundSolid.setOrigin(rectSolid.left + rectSolid.width / 2.0f,
+                rectSolid.top + rectSolid.height / 2.0f);
         _visual.backgroundSolid.setPosition(_position);
 
         // Text

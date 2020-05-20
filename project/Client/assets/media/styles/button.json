@@ -7,8 +7,8 @@
         "bgImgColor" : [255, 0, 0, 255],
         "textColor" : [0, 0, 255, 255],
         "textFont" : "Main",
-        "textPadding" : [150, 16],
-        "textSize" : 14,
+        "textPadding" : [0, 0],
+        "textSize" : 30,
         "textOriginCenter" : "true",
         "glyph" : "",
         "glyphPadding" : [150, 16]
@@ -21,8 +21,8 @@
         "bgImgColor" : [255, 0, 0, 255],
         "textColor" : [0, 0, 255, 255],
         "textFont" : "Main",
-        "textPadding" : [150, 16],
-        "textSize" : 14,
+        "textPadding" : [0, 0],
+        "textSize" : 30,
         "textOriginCenter" : "true",
         "glyph" : "",
         "glyphPadding" : [150, 16]
@@ -35,8 +35,8 @@
         "bgImgColor" : [255, 0, 0, 255],
         "textColor" : [0, 0, 255, 255],
         "textFont" : "Main",
-        "textPadding" : [150, 16],
-        "textSize" : 14,
+        "textPadding" : [0, 0],
+        "textSize" : 30,
         "textOriginCenter" : "true",
         "glyph" : "",
         "glyphPadding" : [150, 16]
