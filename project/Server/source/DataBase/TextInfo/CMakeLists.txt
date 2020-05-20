@@ -24,7 +24,7 @@ target_include_directories(TextInfoLib PRIVATE   ../${MONGOCXX_INIT_DIR}
 
 target_link_libraries(TextInfoLib PkgConfig::LIBMONGOCXX
                                   PkgConfig::LIBBSONCXX
-                                  Logger)
+                                  LoggerLib)
 
 # Тест test_TextInfoMapper.out
 add_executable(test_TextInfo.out test_TextInfoImpl.cpp)
