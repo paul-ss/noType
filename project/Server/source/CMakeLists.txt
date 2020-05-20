@@ -20,7 +20,7 @@ INCLUDE_DIRECTORIES("${GTEST_INCLUDE_DIRS}")
 FIND_PACKAGE(Threads REQUIRED)
 
 
-SET(Boost_USE_STATIC_LIBS ON)
+SET(Boost_USE_STATIC_LIBS OFF)
 SET(Boost_USE_MULTITHREAD ON)
 
 FIND_PACKAGE(Boost 1.42.0 REQUIRED COMPONENTS system thread regex log log_setup)
@@ -28,13 +28,13 @@ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 
-ADD_LIBRARY(Logger STATIC
+ADD_LIBRARY(LoggerLib STATIC
         Logger/Logger.hpp
         Logger/Logger.cpp)
 
-TARGET_INCLUDE_DIRECTORIES(Logger PUBLIC Logger/ ${Boost_INCLUDE_DIRS})
+TARGET_INCLUDE_DIRECTORIES(LoggerLib PUBLIC Logger/ ${Boost_INCLUDE_DIRS})
 
-TARGET_LINK_LIBRARIES(Logger ${Boost_LIBRARIES})
+TARGET_LINK_LIBRARIES(LoggerLib PUBLIC ${Boost_LIBRARIES})
 
 ADD_SUBDIRECTORY(DataBase/)
 ADD_SUBDIRECTORY(TcpServer/)
@@ -61,7 +61,7 @@ ADD_LIBRARY(RoomLib STATIC
         Utils/Error.hpp)
 
 
-TARGET_LINK_LIBRARIES(RoomLib DataBaseFacadeLib Logger)
+TARGET_LINK_LIBRARIES(RoomLib DataBaseFacadeLib LoggerLib)
 
 
 ADD_LIBRARY(CommandLib STATIC
@@ -87,6 +87,9 @@ ADD_LIBRARY(CommandLib STATIC
         Command/Connect.cpp
         Command/Connect.hpp
         Utils/Error.hpp)
+
+
+TARGET_LINK_LIBRARIES(CommandLib LoggerLib ${Boost_LIBRARIES})
 
 
 
@@ -122,7 +125,7 @@ TARGET_LINK_LIBRARIES(server
         RoomLib
         QueueLib
         CommandLib
-        Logger)
+        LoggerLib)
 
 
 

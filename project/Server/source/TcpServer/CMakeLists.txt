@@ -7,6 +7,8 @@ ADD_LIBRARY(ServerLib STATIC
         TcpServer.hpp
         ServerConfig.hpp)
 
+TARGET_LINK_LIBRARIES(ServerLib LoggerLib)
+
 
 ADD_EXECUTABLE(tcpServerTests
         ../mainTest.cpp
@@ -20,5 +22,5 @@ TARGET_LINK_LIBRARIES(tcpServerTests
         ServerLib
         QueueLib
         CommandLib
-        Logger
+        LoggerLib
         -lgmock)

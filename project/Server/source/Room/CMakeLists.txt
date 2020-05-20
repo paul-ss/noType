@@ -8,10 +8,11 @@ ADD_EXECUTABLE(roomTests
         Tests/FakeDataBase.cpp
         Tests/InteractionTest.cpp)
 
+
 TARGET_LINK_LIBRARIES(roomTests
         ${GTEST_LIBRARIES}
         ${CMAKE_THREAD_LIBS_INIT}
         ${Boost_SYSTEM_LIBRARY}
-        Logger
+        LoggerLib
         RoomLib
         -lgmock)
