@@ -30,7 +30,7 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 ADD_LIBRARY(Logger STATIC
         Logger/Logger.hpp
-        Logger.Logger.cpp
+        Logger/Logger.cpp
 )
 
 ADD_SUBDIRECTORY(DataBase/)
