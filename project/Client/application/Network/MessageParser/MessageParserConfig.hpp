@@ -18,7 +18,9 @@ static const std::string RoomStatusRequest            ("RoomStatusRequest");
 static const std::string RoomStatusResponse           ("RoomStatusResponse");
 static const std::string ValidateWrittenTextRequest   ("ValidateWrittenTextRequest");
 static const std::string ValidateWrittenTextResponse  ("ValidateWrittenTextResponse");
-static const std::string Error                        ("Error");
+static const std::string ErrorRequest                 ("ErrorRequest");
+static const std::string ErrorResponse                ("ErrorResponse");
+
 
 }  // namespace StringMessageType
 
@@ -27,12 +29,12 @@ namespace JsonFields {
 static const std::string CommandType       ("commandType");
 static const std::string Status            ("status");
 static const std::string ErrorMessage      ("errorMsg");
-static const std::string Success           ("Success");
-static const std::string Fail              ("Fail");
+static const std::string Success           ("success");
+static const std::string Fail              ("fail");
 
 // NOTE(vendroid): Основные поля
 static const std::string ClientUuid        ("clientUUID");
-static const std::string Name              ("name");
+static const std::string Name              ("clientName");
 static const std::string WaitTime          ("waitTime");
 static const std::string Text              ("text");
 static const std::string TimeFromStart     ("timeFromStart");
@@ -49,8 +51,8 @@ static const std::string Position        ("position");
 static const std::string Speed           ("speed");
 static const std::string Status          ("status");
 static const std::string Play            ("play");
-static const std::string Win             ("Win");
-static const std::string Wait            ("Wait");
+static const std::string Win             ("win");
+static const std::string Wait            ("wait");
 
 }  // namespace PlayerInfoFields
 

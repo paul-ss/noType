@@ -80,15 +80,15 @@ ADD_LIBRARY(CommandLib STATIC
 
 
 
-ADD_EXECUTABLE(commandTests
-        Command/Tests/ParseFromTests.cpp
-        mainTest.cpp)
-
-TARGET_LINK_LIBRARIES(commandTests
-        ${GTEST_LIBRARIES}
-        ${CMAKE_THREAD_LIBS_INIT}
-        ${Boost_SYSTEM_LIBRARY}
-        CommandLib)
+#ADD_EXECUTABLE(commandTests
+#        Command/Tests/ParseFromTests.cpp
+#        mainTest.cpp)
+#
+#TARGET_LINK_LIBRARIES(commandTests
+#        ${GTEST_LIBRARIES}
+#        ${CMAKE_THREAD_LIBS_INIT}
+#        ${Boost_SYSTEM_LIBRARY}
+#        CommandLib)
 
 
 
@@ -124,17 +124,17 @@ TARGET_LINK_LIBRARIES(server
 #enable_testing()
 #add_test(tests "./tests")
 
-# TODO (PavelS) : make Gtests
-ADD_EXECUTABLE(parsingfrom Parser/Test/testparsefrom.cpp)
-
-TARGET_LINK_LIBRARIES(parsingfrom
-        ${Boost_SYSTEM_LIBRARY}
-        ${CMAKE_THREAD_LIBS_INIT}
-        CommandLib)
-
-ADD_EXECUTABLE(parsingto Parser/Test/testparseto.cpp)
-
-TARGET_LINK_LIBRARIES(parsingto
-        ${Boost_SYSTEM_LIBRARY}
-        ${CMAKE_THREAD_LIBS_INIT}
-        CommandLib)
+## TODO (PavelS) : make Gtests
+#ADD_EXECUTABLE(parsingfrom Parser/Test/testparsefrom.cpp)
+#
+#TARGET_LINK_LIBRARIES(parsingfrom
+#        ${Boost_SYSTEM_LIBRARY}
+#        ${CMAKE_THREAD_LIBS_INIT}
+#        CommandLib)
+#
+#ADD_EXECUTABLE(parsingto Parser/Test/testparseto.cpp)
+#
+#TARGET_LINK_LIBRARIES(parsingto
+#        ${Boost_SYSTEM_LIBRARY}
+#        ${CMAKE_THREAD_LIBS_INIT}
+#        CommandLib)

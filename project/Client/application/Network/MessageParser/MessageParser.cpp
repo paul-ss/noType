@@ -21,24 +21,35 @@ std::string MessageParser::ParseToJson(std::unique_ptr<Message> msg) {
     switch (msg->GetMessageType()) {
       case MessageType::InitRequest: {
         res = InitRequestToJson(std::move(msg));
+        break;
       }
       case MessageType::ConnectRequest: {
         res = ConnectRequestToJson(std::move(msg));
+        break;
       }
       case MessageType::StartGameSessionRequest:{
         res = StartGameSessionRequestToJson(std::move(msg));
+        break;
       }
       case MessageType::GetTextRequest: {
         res = GetTextRequestToJson(std::move(msg));
+        break;
       }
       case MessageType::RoomStatusRequest: {
         res = RoomStatusRequestToJson(std::move(msg));
+        break;
       }
       case MessageType::ValidateWrittenTextRequest: {
         res = ValidateWrittenTextRequestToJson(std::move(msg));
+        break;
+      }
+      case MessageType::ErrorRequest: {
+        res = ErrorRequestToJson(std::move(msg));
+        break;
       }
       default: {
         std::cerr << "Invalid request type" << std::endl;
+        break;
       }
     }
   } catch (const boost::property_tree::ptree_error& error) {
@@ -68,6 +79,8 @@ std::unique_ptr<Message> MessageParser::ParseToMessage(std::string rawData) {
       return RoomStatusResponseToMessage(pt);
     } else if (stringMessageType == StringMessageType::ValidateWrittenTextResponse) {
       return ValidateWrittenTextResponseToMessage(pt);
+    } else if (stringMessageType == StringMessageType::ErrorResponse) {
+      return ErrorResponseToMessage(pt);
     }
   } catch (const boost::property_tree::ptree_error& error) {
     std::cout << "[MessageParser::ParseToMessage]: " << error.what() << std::endl;
@@ -79,6 +92,7 @@ std::unique_ptr<Message> MessageParser::ParseToMessage(std::string rawData) {
 std::string MessageParser::InitRequestToJson(std::unique_ptr<Message> msg) {
   auto anyData = msg->ExtractData();
   auto initRequestData = std::any_cast<InitRequest>(anyData);
+  std::cout << "initRequestData.name: " << initRequestData.name << std::endl;
 
   boost::property_tree::ptree pt;
   pt.put(JsonFields::CommandType, StringMessageType::InitRequest);
@@ -154,6 +168,19 @@ std::string MessageParser::ValidateWrittenTextRequestToJson(std::unique_ptr<Mess
   pt.put(JsonFields::CommandType, StringMessageType::ValidateWrittenTextRequest);
   pt.put(JsonFields::ClientUuid, validateWrittenTextRequestData.id);
   pt.put(JsonFields::WrittenText, validateWrittenTextRequestData.writtenText);
+
+  std::stringstream oss;
+  boost::property_tree::write_json(oss, pt);
+
+  return oss.str();
+}
+
+std::string MessageParser::ErrorRequestToJson(std::unique_ptr<Message> msg) {
+  auto anyData = msg->ExtractData();
+  auto validateWrittenTextRequestData = std::any_cast<ValidateWrittenTextRequest>(anyData);
+
+  boost::property_tree::ptree pt;
+  pt.put(JsonFields::ClientUuid, validateWrittenTextRequestData.id);
 
   std::stringstream oss;
   boost::property_tree::write_json(oss, pt);
@@ -254,6 +281,15 @@ std::unique_ptr<Message> MessageParser::ValidateWrittenTextResponseToMessage(boo
   ValidateWrittenTextResponse validateWrittenTextResponse = {rightCount, errorData.first, errorData.second};
   std::any data = validateWrittenTextResponse;
   return std::make_unique<Message>(MessageType::ValidateWrittenTextResponse, std::move(data));
+}
+
+std::unique_ptr<Message> MessageParser::ErrorResponseToMessage(boost::property_tree::ptree& pt) {
+  auto error = pt.get<std::string>(JsonFields::ErrorMessage);
+
+  ErrorResponse errorResponse = {error};
+
+  std::any data = errorResponse;
+  return std::make_unique<Message>(MessageType::ErrorResponse, std::move(data));
 }
 
 std::pair<Status, std::string> MessageParser::ParseErrorAndStatus(boost::property_tree::ptree &pt) {

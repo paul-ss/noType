@@ -26,14 +26,19 @@ std::unique_ptr<Message> QueueManager::PopReceivedData() {
 void QueueManager::PushToSendingData(std::unique_ptr<Message> msg) {
   std::unique_lock<std::mutex> lock(_sendingMessagesMutex);
   _sendingMessages.push(std::move(msg));
-  _sendingMessagesCheck.notify_one();
+  _sendingMessagesNotified = true;
+  _sendingMessagesCheck.notify_all();
 }
 
 std::unique_ptr<Message> QueueManager::PopSendingData() {
   std::unique_lock<std::mutex> lock(_sendingMessagesMutex);
+  _sendingMessagesNotified = false;
 
   if (_sendingMessages.empty()) {
-    _sendingMessagesCheck.wait(lock, [&](){
+    _sendingMessagesCheck.wait_for(lock, std::chrono::milliseconds(500), [&](){
+      if (_sendingMessagesNotified) {
+        return true;
+      }
       return !_sendingMessages.empty();
     });
   }
@@ -46,6 +51,12 @@ std::unique_ptr<Message> QueueManager::PopSendingData() {
   }
 
   return nullptr;
+}
+
+void QueueManager::Notify() {
+  std::unique_lock<std::mutex> lock(_sendingMessagesMutex);
+  _sendingMessagesNotified = true;
+  _sendingMessagesCheck.notify_all();
 }
 
 }  // namespace Network

@@ -1,7 +1,7 @@
 #include "Message.hpp"
 
 namespace Network {
-  Message::Message(MessageType msgType, std::any &&data) : _msgType(msgType), _data(data) {}
+  Message::Message(MessageType msgType, std::any data) : _msgType(msgType), _data(data) {}
 
   const MessageType& Message::GetMessageType() {
     return _msgType;
