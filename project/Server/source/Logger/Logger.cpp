@@ -1,6 +1,6 @@
 #include "Logger.hpp"
 
-#define LOG_FILE "server.log"
+#define LOG_FILE "/var/log/notype/server.log"
 
 #include <mutex>
 
@@ -11,6 +11,7 @@ void initLogger(boost::log::trivial::severity_level l_severity = boost::log::tri
     boost::log::register_simple_formatter_factory<boost::log::trivial::severity_level, char>("Severity");
 
     boost::log::add_file_log(
+        boost::log::keywords::auto_flush = true,
         boost::log::keywords::file_name = LOG_FILE,
         boost::log::keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%"
     );

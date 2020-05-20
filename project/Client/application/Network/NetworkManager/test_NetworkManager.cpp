@@ -31,7 +31,7 @@ TEST(NetworkManager, NetworkManagerCheck) {
     try {
       auto data = msg->ExtractData();
       auto initResponse = std::any_cast<Network::InitResponse>(data);
-     // std::cout << initResponse.id << std::endl;
+     std::cout << initResponse.id << std::endl;
     } catch (const std::bad_any_cast& e) {
       std::cout << e.what() << std::endl;
     }

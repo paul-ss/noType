@@ -44,3 +44,4 @@ build
 notype
 logNoType.txt
 Dockerfile
+server.log
