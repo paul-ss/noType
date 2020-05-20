@@ -3,7 +3,7 @@
 //
 
 #include "ValidateWrittenText.hpp"
-#incldue "Logger.hpp"
+#include "Logger.hpp"
 
 ValidateWrittenTextRequest::ValidateWrittenTextRequest(const std::string &connectionUUID, pt::ptree &&pTree) :
     ClientCommand(CommandType::ValidateWrittenTextRequest, connectionUUID) {
