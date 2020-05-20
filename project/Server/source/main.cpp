@@ -45,13 +45,13 @@ int main(int argc, const char *argv[]) {
   }
 
   Setup serverSetup;
-
+  boost::asio::io_service io_service;
   boost::asio::signal_set signals(io_service, SIGINT, SIGTERM);
   signals.async_wait([&](const boost::system::error_code& error, int signal_number) {
-    const boost::system::error_code& error,
-    int signal_number) {
       if (!error) {
-      serverSetup.stop();
+        serverSetup.stop();
+        BOOST_LOG_TRIVIAL(debug) << "Signal number occured " << signal_number;
+      }
   });
 
   serverSetup.setup();

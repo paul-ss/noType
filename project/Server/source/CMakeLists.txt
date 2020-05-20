@@ -30,7 +30,6 @@ FIND_PACKAGE(Boost 1.42.0 REQUIRED COMPONENTS
         log
         log_setup
         program_options
-        signal_set
 )
 
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
