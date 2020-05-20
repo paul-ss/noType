@@ -6,4 +6,4 @@
 #include <boost/log/utility/setup/file.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
 
-void init_logger();
+void initLogger();
