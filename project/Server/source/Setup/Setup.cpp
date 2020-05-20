@@ -54,7 +54,6 @@ void Setup::runInterface() {
 
 void Setup::setup() {
   parseConfig();
-  initLogger();
 
   RoomConfig roomConfig(200, 5, 10000, 60000, 3000, 3000);
 
