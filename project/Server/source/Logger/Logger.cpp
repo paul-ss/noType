@@ -1,6 +1,6 @@
 #include "Logger.hpp"
 
-#define LOG_FILE "/var/log/notype/server.log"
+#define LOG_FILE "server.log"
 
 #include <mutex>
 

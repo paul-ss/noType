@@ -4,6 +4,7 @@
 
 #include "Room.hpp"
 #include "RoomManager.hpp"
+#include "Logger.hpp"
 
 
 Room::Room(boost::asio::io_service &service,
@@ -25,10 +26,12 @@ Room::Room(boost::asio::io_service &service,
       _text = textInfo->text;
     } else {
       _text = "Text default";
+      BOOST_LOG_TRIVIAL(error) << "Room constructor : can't get text from db";
     }
 
   } catch (...) {
     _text = "Text default";
+    BOOST_LOG_TRIVIAL(error) << "Room constructor exception: can't get text from db";
   }
 }
 
@@ -161,11 +164,13 @@ void Room::removeSelf() {
   auto roomManagerShared = _roomManager.lock();
   if (roomManagerShared) {
     if (!roomManagerShared->deleteRoom(_roomUUID)) {
-      std::cout << "RemoveSelf error: can't erase room" << std::endl;
+      BOOST_LOG_TRIVIAL(error) << "RemoveSelf error: can't erase room";
     }
-    std::cout << "Room removed" << std::endl;
+    // mutex ?
+    BOOST_LOG_TRIVIAL(info) << "Room " + _roomUUID + " removed";
+
   } else {
-    std::cout << "RemoveSelf error: can't make shared" << std::endl; //todo log
+    BOOST_LOG_TRIVIAL(error) << "RemoveSelf error: can't make shared";
   }
 }
 
@@ -205,7 +210,11 @@ void Room::updatePlayerInfo(const Player &player, int increaseWinsCount, int inc
       _dataBaseFacade->InsertPlayerInfo(std::move(playerInfo));
 
     }
+  } catch (DataBase::Exception &exc) {
+    BOOST_LOG_TRIVIAL(error) << "Room : updatePlayerInfo : exception : " << exc.what();
+
   } catch (...) {
     std::cout << "Database exception" << std::endl;  // todo log
+    BOOST_LOG_TRIVIAL(error) << "Room : updatePlayerInfo : unknown type exception";
   }
 }

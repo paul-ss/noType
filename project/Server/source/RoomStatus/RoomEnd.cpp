@@ -50,11 +50,10 @@ void RoomEnd::startAsyncEvent(std::shared_ptr<Room> room) {
 
 void RoomEnd::deadlineHandler(std::shared_ptr<Room> room, const boost::system::error_code& ec) {
   if (ec) {
-    //std::cout << "RoomEnd handler error: " << ec.message() << std::endl;
     BOOST_LOG_TRIVIAL(error) << "RoomEnd handler error: " << ec.message();
     return;
   }
-  //std::cout << "End handler" << std::endl;
+
   BOOST_LOG_TRIVIAL(info) << "End handler";
 
   {

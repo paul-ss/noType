@@ -3,7 +3,7 @@
 //
 
 #include "Connect.hpp"
-#include "Logger.hpp"
+
 
 ConnectRequest::ConnectRequest(const std::string &connectionUUID, pt::ptree &&pTree) :
     ClientCommand(CommandType::ConnectRequest, connectionUUID) {
@@ -37,16 +37,13 @@ std::string ConnectResponse::parseToJSON() {
     return internalParseToJSON();
 
   } catch (const pt::ptree_error &exc) {
-    //std::cout << "ConnectResponse::parseToJSON :" + std::string(exc.what()) << std::endl;
     BOOST_LOG_TRIVIAL(debug) << "ConnectResponse::parseToJSON :" + std::string(exc.what());
-    
     auto resp = ErrorResponse(_connectionUUID,
         "ConnectResponse::parseToJSON :" + std::string(exc.what()));
     return resp.parseToJSON();
 
 
   } catch (...) {
-    //std::cout << "ConnectResponse::parseToJSON : unknown exception" << std::endl;
     BOOST_LOG_TRIVIAL(error) << "ConnectResponse::parseToJSON : unknown exception";
     auto resp = ErrorResponse(_connectionUUID,
                               "ConnectResponse::parseToJSON : unknown exception");

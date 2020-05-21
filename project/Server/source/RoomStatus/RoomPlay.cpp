@@ -62,12 +62,9 @@ ExpectedRoom<size_t> RoomPlay::validateWrittenText(std::shared_ptr<Room> room,
     if (room->_numberOfFinishers == room->_players.size()) {
       // end game
       if (room->_timer.cancel() > 0) {
-        //TODO use make shared !!
         room->_roomStatus = std::shared_ptr<IRoomStatus>(std::make_shared<RoomEnd>(_roomConfig));
         room->startAsyncEvent();
       } else {
-       // throw RoomException("addPlayer (WAIT) : No one async wait canceled. Maybe, that shouldn't be an exception.");
-        //std::cout << "addPlayer (WAIT) : No one async wait canceled in room " + room->_roomUUID << std::endl;
         BOOST_LOG_TRIVIAL(info) << "addPlayer (WAIT) : No one async wait canceled in room " + room->_roomUUID;
       }
     }
@@ -108,17 +105,14 @@ void RoomPlay::startAsyncEvent(std::shared_ptr<Room> room) {
 
 void RoomPlay::deadlineHandler(std::shared_ptr<Room> room, const boost::system::error_code& ec) {
   if (ec) {
-    //std::cout << "RoomPlay handler error: " << ec.message() << std::endl;
     BOOST_LOG_TRIVIAL(error) << "RoomPlay handler error: " << ec.message();
     return;
   }
-  //std::cout << "RoomPlay handler" << std::endl;
+
   BOOST_LOG_TRIVIAL(debug) << "RoomPlay handler";
 
   std::unique_lock<std::mutex> lock(room->_roomMutex);
-
   calculatePlayersSpeed(room);
-
   room->startAsyncEvent();
 }
 

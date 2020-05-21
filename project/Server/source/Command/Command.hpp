@@ -5,6 +5,7 @@
 #pragma once
 
 #include "IRoomStatus.hpp"
+#include "Logger.hpp"
 
 #include <iostream>
 #include <vector>

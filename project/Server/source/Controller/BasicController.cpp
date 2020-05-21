@@ -74,7 +74,6 @@ void BasicController::commandDistributor(const std::shared_ptr<Command> &command
         break;
 
       default:
-        //std::cout << "BC : invalid command type" << std::endl;
         BOOST_LOG_TRIVIAL(error) << "BC : invalid command type";
 
         auto commandResp = std::make_shared<ErrorResponse>(
@@ -85,7 +84,6 @@ void BasicController::commandDistributor(const std::shared_ptr<Command> &command
     }
 
   } catch (...) {
-    //std::cout << "BC : exception : unknown, unexpected, mysterious... (like James Bond)" << std::endl;
     BOOST_LOG_TRIVIAL(error) << "BC : exception : unknown, unexpected, mysterious... (like James Bond)";
 
     auto commandResp = std::make_shared<ErrorResponse>(
@@ -102,8 +100,6 @@ template <class RequestCommand, class ResponseCommand, typename CommandHandler>
 void BasicController::handlerExceptionCatcher(const std::shared_ptr<Command> &command, CommandHandler handler) {
   auto castedCmd = std::dynamic_pointer_cast<RequestCommand>(command);
   if (!castedCmd) {
-    //std::cout <<"Can't cast command " + std::string(typeid(command).name()) << std::endl;
-    //std::cout <<"handler type: " + std::string(typeid(handler).name()) << std::endl;
     BOOST_LOG_TRIVIAL(error) << "Can't cast command " + std::string(typeid(command).name()) << std::endl
     << "handler type: " + std::string(typeid(handler).name());
 
@@ -123,13 +119,15 @@ void BasicController::handlerExceptionCatcher(const std::shared_ptr<Command> &co
     auto commandResp = std::make_shared<ResponseCommand>(castedCmd->getConnectionUUID());
     commandResp->setError(exc.what());
     _queueManager->controllerPush(commandResp);
-    // todo log
+
+    BOOST_LOG_TRIVIAL(error) << "BC : exception : " << exc.what();
 
   } catch (...) {
     auto commandResp = std::make_shared<ResponseCommand>(castedCmd->getConnectionUUID());
     commandResp->setError("Exception : unknown exception type");
     _queueManager->controllerPush(commandResp);
-    // todo log
+
+    BOOST_LOG_TRIVIAL(error) << "BC : exception : unknown exception type";
   }
 }
 
@@ -186,7 +184,6 @@ void BasicController::runQueueWorker() {
     }
   }
 
-  //std::cout << "QueueWorker (BC) stopped" << std::endl;
   BOOST_LOG_TRIVIAL(info) << "QueueWorker (BC) stopped";
 }
 

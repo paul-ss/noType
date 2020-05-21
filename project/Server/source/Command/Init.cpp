@@ -3,7 +3,7 @@
 //
 
 #include "Init.hpp"
-#include "Logger.hpp"
+
 
 InitRequest::InitRequest(const std::string &connectionUUID, pt::ptree &&pTree) :
     ClientCommand(CommandType::InitRequest, connectionUUID) {
@@ -45,7 +45,6 @@ std::string InitResponse::parseToJSON() {
     return internalParseToJSON();
 
   } catch (const pt::ptree_error &exc) {
-    //std::cout << "InitResponse::parseToJSON :" + std::string(exc.what()) << std::endl;
     BOOST_LOG_TRIVIAL(error) << "InitResponse::parseToJSON :" + std::string(exc.what());
     auto resp = ErrorResponse(_connectionUUID,
                               "InitResponse::parseToJSON :" + std::string(exc.what()));
@@ -53,7 +52,6 @@ std::string InitResponse::parseToJSON() {
 
 
   } catch (...) {
-    //std::cout << "InitResponse::parseToJSON : unknown exception" << std::endl;
     BOOST_LOG_TRIVIAL(error) << "InitResponse::parseToJSON : unknown exception";
     auto resp = ErrorResponse(_connectionUUID,
                               "InitResponse::parseToJSON : unknown exception");

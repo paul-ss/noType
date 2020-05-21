@@ -32,14 +32,12 @@ void Client::handleRead(const boost::system::error_code& ec, size_t n_bytes) {
     // deadlock??
     if (ec) {
       if (ec == boost::asio::error::eof) {
-        //std::cout << "disconnected" << std::endl; //todo log
-        BOOST_LOG_TRIVIAL(error) << "[handeRead] disconnected eof";
+        BOOST_LOG_TRIVIAL(info) << "handleRead : client disconnected (eof)";
+      } else {
+        BOOST_LOG_TRIVIAL(error) << "handleRead : error : " << ec.message();
       }
 
       removeThisConnection();
-
-      //std::cout << ec.message() << std::endl; // todo log
-      BOOST_LOG_TRIVIAL(debug) << ec.message() << " <-ec.message";
       return;
     }
 
@@ -49,9 +47,9 @@ void Client::handleRead(const boost::system::error_code& ec, size_t n_bytes) {
 
     if (is.readsome(&data[0], n_bytes) == (long) n_bytes) {
       data.erase(data.begin() + data.rfind(_delim), data.end());
-      //std::cout << "server push" << std::endl;
       BOOST_LOG_TRIVIAL(debug) << data << " <-data. [handleRead] Server push";
       _queueManager->serverPush(data, _connectionUUID);
+
     } else {
       BOOST_LOG_TRIVIAL(error) << data << " <-data. [handleRead] Server not push";
     }
@@ -74,8 +72,7 @@ void Client::write() {
   }
 
   if(_dataToSendQueue.front().find(_delim) != std::string::npos) {
-    //std::cout << "delim found" << std::endl;
-    BOOST_LOG_TRIVIAL(debug) << "delim found";
+    BOOST_LOG_TRIVIAL(error) << "Client::write : error:  delim found";
   }
 
   _sendBuf = _dataToSendQueue.front() + _delim;
@@ -95,15 +92,13 @@ void Client::handleWrite(const boost::system::error_code& ec, size_t n_bytes) {
     std::unique_lock<std::mutex> lock(_clientMutex);
     if (ec) {
       removeThisConnection();
-      //std::cout << ec.message() << std::endl; // todo log
-      BOOST_LOG_TRIVIAL(debug) << ec.message();
+      BOOST_LOG_TRIVIAL(error) << "handleWrite : error : " << ec.message();
       return;
     }
 
 
     if (n_bytes != _sendBuf.size()) {
-      //std::cout << "handleWrite error" << std::endl; // todo log
-      BOOST_LOG_TRIVIAL(error) << "handleWrite error";
+      BOOST_LOG_TRIVIAL(error) << "handleWrite : error : n_bytes != _sendBuf.size()";
     }
 
     _isWriting = false;
@@ -145,12 +140,10 @@ void Client::removeThisConnection() {
   auto clientsShared = _clients.lock();
   if (clientsShared) {
     if (!clientsShared->erase(_connectionUUID)) {
-      //std::cout << "RemoveThisConnection error: can't erase client" << std::endl;
-      BOOST_LOG_TRIVIAL(error) << "RemoveThisConnection error: can't erase client";
+      BOOST_LOG_TRIVIAL(error) << "RemoveThisConnection : error : can't erase client";
     }
 
   } else {
-    //std::cout << "RemoveThisConnection error: can't make shared" << std::endl; //todo log
-    BOOST_LOG_TRIVIAL(error) << "RemoveThisConnection error: can't make shared";
+    BOOST_LOG_TRIVIAL(error) << "RemoveThisConnection : error : can't make shared";
   }
 }

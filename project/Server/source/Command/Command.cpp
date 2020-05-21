@@ -97,10 +97,6 @@ std::string ErrorResponse::parseToJSON() {
   boost::property_tree::write_json(oss, pt);
 
   return oss.str();
-
-// BUG(vendroid): Ошибка при чтении на стороне клиента!
-//  return "{\n \"" COMMAND_TYPE_JSON_PATH "\" : \"" + std::string(_commandType._to_string()) + "\",\n" +
-//         "\"" ERROR_MSG_JSON_PATH "\" : \"" + _errorMsg + "\",\n }";
 }
 
 

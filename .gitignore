@@ -34,9 +34,8 @@
 #IDE
 .idea
 project/Server/cmake-build-debug/*
-cmake-build-debug
+project/Server/cmake-build-clang/*
 .vscode
-cmake-build-debug
 
 #Local
 .DS_Store
