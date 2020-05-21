@@ -1,13 +1,14 @@
 #pragma once
 
 #include "baseState.hpp"
-#include "eventManager.hpp"
-#include "stateManager.hpp"
-#include "label.hpp"
+
+enum class ElementName;
+struct EventDetails;
+class BaseElement;
 
 class MainMenuState : public BaseState {
 public:
-    explicit MainMenuState(std::weak_ptr<StateManager> stateManager);
+    explicit MainMenuState(std::weak_ptr<SharedContext> l_context);
     ~MainMenuState() = default;
 
     void OnCreate() override;
@@ -19,11 +20,10 @@ public:
     void Update(const sf::Time& l_time) override;
     void Draw() override;
 
+public:
     void MouseClick(EventDetails& l_details);
     void MouseRelease(EventDetails& l_details);
-    void Play(EventDetails& l_details);
-    void Quit(EventDetails& l_details);
 
-private:
-    std::vector<std::shared_ptr<BaseElement>> _elements;
+    void Play();
+    void Quit();
 };

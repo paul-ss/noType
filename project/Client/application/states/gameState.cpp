@@ -1,98 +1,114 @@
-#include "gameState.hpp"
+#include "numeric"
 
-GameState::GameState(std::weak_ptr<StateManager> stateManager)
-    : BaseState(stateManager) {}
+#include "gameState.hpp"
+#include "sharedContext.hpp"
+#include "logger.hpp"
+#include "exceptions.hpp"
+
+GameState::GameState(std::weak_ptr<SharedContext> l_context)
+    : BaseState(l_context) {}
 
 void GameState::OnCreate() {
     try {
-        std::shared_ptr<StateManager> stateMgr(_stateMgr);
-        std::shared_ptr<SharedContext> context(stateMgr->GetContext());
-        std::shared_ptr<EventManager> eMgr(context->eventManager);
-        std::shared_ptr<Window>window(context->window);
-        std::shared_ptr<sf::RenderWindow>renderWindow(window->GetRenderWindow());
+        auto context = GetSharedContext();
+        auto eMgr = GetEventManager();
 
-        auto windowSize = renderWindow->getSize();
-        auto filler = std::make_shared<Label>(context, sf::Vector2f(0, 0), "filler.json");
-        sf::Vector2f fillerPosition(windowSize.x * 0.5f - filler->GetSize().x * 0.5,
-                                    windowSize.y * 0.5f);
-        filler->SetPosition(fillerPosition);
-        //_elements.push_back(filler);
-        _elements.emplace()
-
-        _elements.push_back();
-
-        //auto play = std::make_shared<Label>(context, sf::Vector2f(0, 0), "button.json");
-        //auto playSize = play->GetSize();
-        //sf::Vector2f playPosition((windowSize.x * 0.5f - playSize.x * 0.5),
-        //                    (windowSize.y * 0.5f - playSize.y * 0.5) + ELEM_MARGIN_Y);
-        //play->SetText("Play");
-        //play->SetPosition(playPosition);
-        //_elements.push_back(play);
-        auto smartString = std::make_shared<SmartString>(context,
-                sf::Vector2f((windowSize.x * 0.5), (windowSize.y * 0.5f)),
-                "smartString.json",
-                "Welcome to Twin Peaks.");
-        auto smartStrSize = smartString->GetSize();
-        sf::Vector2f smartStrPosition((windowSize.x * 0.5), (windowSize.y * 0.5f));
-        smartString->SetPosition(smartStrPosition);
-        _elements.push_back(smartString);
-
-        auto lambdaQuit = [this](EventDetails& l_details) { this->MainMenu(l_details); };
+        auto lambdaQuit = [this](EventDetails& l_details) { this->GoToMenu(); };
         eMgr->AddCallback(StateType::Game, "Key_Escape", lambdaQuit);
 
         auto lambdaTextEntered = [this](EventDetails& l_details) { this->TextEntered(l_details); };
         eMgr->AddCallback(StateType::Game, "Text_Entered", lambdaTextEntered);
-        eMgr->AddCallback(StateType::Game, "Text_Delete", lambdaTextEntered);
+        eMgr->AddCallback(StateType::Game, "Text_Deleted", lambdaTextEntered);
 
-    } catch (const std::bad_weak_ptr &e) {
+    } catch (const std::bad_weak_ptr& e) {
         BOOST_LOG_TRIVIAL(error) << "[game - oncreate] " << e.what();
-        return;
     }
 }
 
 void GameState::TextEntered(EventDetails& l_details) {
-    char input = l_details.textEntered;
-    if (auto str = std::dynamic_pointer_cast<SmartString>(_elements[1])) {
-        str->Validate(input);
-    } else {
-        //log
+    try {
+
+    } catch (const std::bad_weak_ptr& e) {
+        BOOST_LOG_TRIVIAL(error) << "[game - textentered] " << e.what();
     }
 }
 
-void GameState::MainMenu(EventDetails& l_details) {
+void GameState::GoToMenu() {
     try {
-        std::shared_ptr<StateManager> stateMgr(_stateMgr);
+        auto stateMgr = GetStateManager();
         stateMgr->SwitchTo(StateType::MainMenu);
-    } catch (const std::bad_weak_ptr &e) {
+
+    } catch (const std::bad_weak_ptr& e) {
         BOOST_LOG_TRIVIAL(error) << "[game - mainmenu] " << e.what();
         return;
     }
 }
 
-void GameState::OnDestroy() {
-    auto stateMgr = _stateMgr.lock();
-    if (!stateMgr) {
-        BOOST_LOG_TRIVIAL(error) << "Not valid state manager [game - ondestroy]";
-        return;
-    }
-    auto context = stateMgr->GetContext().lock();
-    if (!context) {
-        BOOST_LOG_TRIVIAL(error) << "Not valid shared context [game - ondestroy]";
-        return;
-    }
-    auto eMgr = context->eventManager.lock();
-    if (!eMgr) {
-        BOOST_LOG_TRIVIAL(error) << "Not valid event manager [game - ondestroy]";
-        return;
-    }
-    eMgr->RemoveCallback(StateType::Game,"Key_Escape");
+double GameState::CountAverageSpeed(const double l_speed) {
+    _currentSpeed.push_back(l_speed);
+    auto sum = std::accumulate(_currentSpeed.begin(), _currentSpeed.end(), 0.0);
+    return sum / _currentSpeed.size();
 }
 
-void GameState::Update(const sf::Time& time) {}
-void GameState::Draw() {
-    for (auto& element : _elements) {
-        element->Draw();
+void GameState::OnDestroy() {
+    try {
+        auto eMgr = GetEventManager();
+        eMgr->RemoveCallback(StateType::Game, "Key_Escape");
+        eMgr->RemoveCallback(StateType::Game, "Text_Entered");
+        eMgr->RemoveCallback(StateType::Game, "Text_Deleted");
+
+    } catch (const std::bad_weak_ptr& e) {
+        BOOST_LOG_TRIVIAL(error) << "[game - ondestroy] " << e.what();
     }
 }
+
+void GameState::Update(const sf::Time& time) {
+    if(_timePass < 5.0f) {
+        CheckRoomStatus();
+    }
+}
+
+void GameState::CheckRoomStatus() {
+    try {
+        auto context = GetSharedContext();
+        auto queueManager = GetQueueManager();
+
+        Network::RoomStatusRequest roomRequest;
+        std::any data = roomRequest;
+        auto sendMsg = std::make_unique<Network::Message>
+                (Network::MessageType::RoomStatusRequest, std::move(data));
+        queueManager->PushToSendingData(std::move(sendMsg));
+
+        Network::RoomStatusResponse roomResponse;
+        std::unique_ptr<Network::Message> recvMsg = nullptr;
+        while (!recvMsg) {
+            recvMsg = queueManager->PopReceivedData();
+        }
+        if (recvMsg->GetMessageType() == Network::MessageType::RoomStatusResponse) {
+            auto data = recvMsg->ExtractData();
+            auto roomStatusResponse = std::any_cast<Network::RoomStatusResponse>(data);
+            auto itr = roomStatusResponse.playersInfo.find(context->uuid);
+            if (itr != roomStatusResponse.playersInfo.end()) {
+                _averageSpeed = CountAverageSpeed(itr->second.speed);
+                _position = itr->second.position;
+            } else {
+                BOOST_LOG_TRIVIAL(error) << "[game - checkroomstatus] " << "player uuid not found";
+            }
+        }
+    } catch (const std::bad_weak_ptr& e) {
+        BOOST_LOG_TRIVIAL(error) << "[game - mainmenu] " << e.what();
+        return;
+    } catch (const InvalidResponse& e) {
+        BOOST_LOG_TRIVIAL(error) << "[game - checkroomstatus] " << "Invalid respone"
+                << e.what();
+    }
+}
+
+void GameState::Draw() {
+    for (auto& element : _elements) {
+        element.second->Draw();
+    }
+}
+
 void GameState::Activate() {}
 void GameState::Deactivate() {}

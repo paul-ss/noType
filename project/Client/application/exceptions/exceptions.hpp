@@ -16,7 +16,7 @@ class ClientException : public std::exception {
 
 class InvalidCmd : public ClientException {
     public:
-        InvalidCmd() : ClientException("Invalid command in keys.cfg") {}
+        InvalidCmd() : ClientException("Invalid command in bindings.json") {}
 };
 
 class InvalidResponse : public ClientException {

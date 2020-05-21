@@ -1,17 +1,31 @@
 #pragma once
 
-#include "window.hpp"
-#include "stateManager.hpp"
-#include "sharedContext.hpp"
-
-#include "Network.hpp"
-
 #include <memory>
 
-class Game : public sf::NonCopyable {
+#include <SFML/System.hpp>
+
+struct SharedContext;
+class Window;
+class TextureManager;
+class FontManager;
+class AudioManager;
+class SoundManager;
+class StateManager;
+
+namespace Network {
+    class INetworkManager;
+    namespace Client {
+        class IQueueManager;
+    }
+}
+
+class Game {
 public:
     Game();
     ~Game() = default;
+
+    Game(const Game& l_game) = delete;
+    Game& operator=(const Game& l_game) = delete;
 
     void Run();
 

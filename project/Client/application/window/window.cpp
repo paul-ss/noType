@@ -1,4 +1,5 @@
 #include "window.hpp"
+#include "sharedContext.hpp"
 
 #define HEIGHT 640
 #define WEIGHT 640
@@ -22,7 +23,7 @@ void Window::setup(const std::string& title) {
     _isDone = false;
     _window->setFramerateLimit(FPS);
 
-    auto lambdaClose = [this](EventDetails& details) { this->Close(); };
+    auto lambdaClose = [this]([[maybe_unused]] EventDetails& details) { this->Close(); };
     _eventManager->AddCallback(StateType(0), "Window_close", lambdaClose);
     create();
 }

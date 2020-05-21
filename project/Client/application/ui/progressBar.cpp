@@ -1,17 +1,20 @@
 #include "progressBar.hpp"
+#include "sharedContext.hpp"
 #include "logger.hpp"
 
 ProgressBar::ProgressBar(const ElementName l_name, std::weak_ptr<SharedContext> l_sharedContext,
         const sf::Vector2f& l_position,
         const std::string& l_style,
         const std::string& l_reference) :
-        BaseElement(l_sharedContext, l_position, l_style),
-        _name(l_name) {}
+        BaseElement(l_name, l_sharedContext, l_position, l_style) {}
 
-void Update(float l_dT) {}
+ElementName OnClick(const sf::Vector2i& l_mousePos) {
+    return ElementName::None;
+}
+
+void Update([[maybe_unused]] float l_dT) {}
 void Draw() {}
-void ReadIn(const std::string& l_stream) {}
-ElementName OnClick(const sf::Vector2f& l_mousePos) {}
+void ReadIn([[maybe_unused]] const std::string& l_stream) {}
 void OnRelease() {}
-void OnHover(const sf::Vector2f& l_mousePos) {}
+void OnHover([[maybe_unused]] const sf::Vector2f& l_mousePos) {}
 void OnLeave() {}

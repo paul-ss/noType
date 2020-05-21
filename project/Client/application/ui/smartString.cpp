@@ -1,15 +1,15 @@
 #include "smartString.hpp"
+#include "sharedContext.hpp"
 #include "logger.hpp"
 
-#define TEXT_BLOCK 10
+#define TEXT_BLOCK_SIZE 10
 #define ASCII_BACKSPACE 8
 
 SmartString::SmartString(const ElementName l_name, std::weak_ptr<SharedContext> l_sharedContext,
             const sf::Vector2f& l_position,
             const std::string& l_style,
             const std::string& l_reference) :
-            BaseElement(l_sharedContext, l_position, l_style),
-            _name(l_name),
+            BaseElement(l_name, l_sharedContext, l_position, l_style),
             _isValid(true),
             _textPosition(0),
             _reference(l_reference) {
@@ -41,7 +41,7 @@ void SmartString::Draw() {
 
         renderWindow->draw(_coloredText);
     } catch (std::bad_weak_ptr& e) {
-        BOOST_LOG_TRIVIAL(error) << "[smartString - draw] " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "[smartstring - draw] " << e.what();
     }
 }
 
@@ -53,8 +53,8 @@ std::string SmartString::Validate(const char l_char) {
             std::cout <<"DELETE\n";
             afterChar = _reference.substr(_textPosition);
             _coloredText.clear();
-            _coloredText << sf::Color::Green << beforeChar <<
-                    sf::Color::White <<afterChar;
+            _coloredText << sf::Color::Green << beforeChar
+                    << sf::Color::White <<afterChar;
             _isValid = true;
             return std::string();
         } else {
@@ -87,7 +87,7 @@ std::string SmartString::Validate(const char l_char) {
             _coloredText << sf::Color::Green << beforeChar
                     << sf::Color::Green << l_char
                     << sf::Color::White << afterChar;
-            if (_validatedBlock.size() <= TEXT_BLOCK) {
+            if (_validatedBlock.size() <= TEXT_BLOCK_SIZE) {
                 return std::string();
             }
             return _validatedBlock;
@@ -98,9 +98,12 @@ std::string SmartString::Validate(const char l_char) {
     return std::string();
 }
 
-void SmartString::ReadIn(const std::string& l_stream) {}
-ElementName SmartString::OnClick(const sf::Vector2f& l_mousePos) {}
+ElementName SmartString::OnClick([[maybe_unused]] const sf::Vector2i& l_mousePos) {
+    return ElementName::None;
+}
+
+void SmartString::ReadIn([[maybe_unused]] const std::string& l_stream) {}
 void SmartString::OnRelease() {}
-void SmartString::OnHover(const sf::Vector2f& l_mousePos) {}
+void SmartString::OnHover([[maybe_unused]] const sf::Vector2f& l_mousePos) {}
 void SmartString::OnLeave() {}
-void SmartString::Update(float l_dT) {}
+void SmartString::Update([[maybe_unused]] float l_dT) {}
