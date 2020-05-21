@@ -29,6 +29,12 @@ enum class Status {
   Fail
 };
 
+enum class RoomStatus {
+  Wait,
+  Play,
+  End
+};
+
 struct InitRequest {
   std::string name;
 };
@@ -76,6 +82,7 @@ struct RoomStatusRequest {
 struct RoomStatusResponse {
   double timeFromStart;
   std::unordered_map<std::string, PlayerInfo> playersInfo;
+  RoomStatus roomStatus;
   Status status;
   std::string error;
 };

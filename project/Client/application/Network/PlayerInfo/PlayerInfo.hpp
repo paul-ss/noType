@@ -8,7 +8,7 @@ struct PlayerInfo {
   double speed;
   enum class Status {
     Play,
-    Wait,
+    Finish,
     Win
   };
   Status status;

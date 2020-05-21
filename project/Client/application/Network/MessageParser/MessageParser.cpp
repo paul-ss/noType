@@ -229,6 +229,18 @@ std::unique_ptr<Message> MessageParser::RoomStatusResponseToMessage(boost::prope
   auto timeFromStart = pt.get<double>(JsonFields::Text);
   auto errorData = ParseErrorAndStatus(pt);
 
+  auto stringPlayerStatus = pt.get<std::string>(JsonFields::Room::Status);
+
+  RoomStatus roomStatus;
+  if (stringPlayerStatus == JsonFields::Room::Wait) {
+    roomStatus = RoomStatus::Wait;
+  } else if (stringPlayerStatus == JsonFields::Room::Play) {
+    roomStatus = RoomStatus::Play;
+  } else if (stringPlayerStatus == JsonFields::Room::End) {
+    roomStatus = RoomStatus::End;
+  } else {
+    // exeption
+  }
   const std::string kComma = ".";
 
   std::unordered_map<std::string, PlayerInfo> playersInfo;
@@ -259,8 +271,8 @@ std::unique_ptr<Message> MessageParser::RoomStatusResponseToMessage(boost::prope
     auto stringPlayerStatus = pt.get<std::string>(pathToStatus);
     if (stringPlayerStatus == JsonFields::PlayerInfoFields::Play) {
       playerInfo.status = PlayerInfo::Status::Play;
-    } else if (stringPlayerStatus == JsonFields::PlayerInfoFields::Wait) {
-      playerInfo.status = PlayerInfo::Status::Wait;
+    } else if (stringPlayerStatus == JsonFields::PlayerInfoFields::Finish) {
+      playerInfo.status = PlayerInfo::Status::Finish;
     } else if (stringPlayerStatus == JsonFields::PlayerInfoFields::Win) {
       playerInfo.status = PlayerInfo::Status::Win;
     }
@@ -268,7 +280,7 @@ std::unique_ptr<Message> MessageParser::RoomStatusResponseToMessage(boost::prope
     playersInfo[uuid] = playerInfo;
   }
 
-  RoomStatusResponse roomStatusResponse = {timeFromStart, playersInfo, errorData.first, errorData.second};
+  RoomStatusResponse roomStatusResponse = {timeFromStart, playersInfo, roomStatus, errorData.first, errorData.second};
   std::any data = roomStatusResponse;
   return std::make_unique<Message>(MessageType::RoomStatusResponse, std::move(data));
 }
