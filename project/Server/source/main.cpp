@@ -7,15 +7,6 @@
 #include "Setup.hpp"
 #include "Logger.hpp"
 
-void handler(const boost::system::error_code& error, int signal_number) {
-  if (!error) {
-    //serverSetup.stop();
-    std::cout << "Signal number occured " << signal_number << std::endl;
-    BOOST_LOG_TRIVIAL(debug) << "Signal number occured " << signal_number;
-  }
-  //io_service.stop();
-  std::cout << "error"  << std::endl;
-};
 
 
 int main(int argc, const char *argv[]) {
@@ -57,25 +48,13 @@ int main(int argc, const char *argv[]) {
     std::cerr << ex.what() << std::endl;
   }
 
-  boost::asio::io_service io_service;
-  boost::asio::signal_set signals(io_service, SIGINT, SIGTERM);
-
-  std::thread thread([&] {
-    io_service.run();
-  });
 
   Setup serverSetup;
-  signals.async_wait([&](const boost::system::error_code& error, int signal_number) {
-    if (!error) {
-      serverSetup.stop();
-      BOOST_LOG_TRIVIAL(debug) << "Signal number occured " << signal_number;
-    }
-  });
 
   serverSetup.setup();
   serverSetup.start();
 
-  thread.join();
+
 
   return 0;
 }

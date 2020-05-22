@@ -13,10 +13,14 @@
 #include "Logger.hpp"
 
 
+#include <boost/asio/signal_set.hpp>
+
+
 
 class Setup {
 public:
 
+  Setup();
   ~Setup();
   void parseConfig();
   void start();
@@ -25,8 +29,12 @@ public:
 
 private:
   void runInterface();
+  void runSignalCatcher();
 
 private:
+  boost::asio::io_service _service;
+  boost::asio::signal_set _signalSet;
+
   std::shared_ptr<IDataBaseFacade> _dataBaseFacade;
   std::shared_ptr<QueueManager> _queueManager;
   std::unique_ptr<BasicController> _basicController;

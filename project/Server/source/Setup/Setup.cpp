@@ -6,6 +6,11 @@
 #include "Logger.hpp"
 
 
+
+Setup::Setup() :
+    _signalSet(_service, SIGINT, SIGTERM) {}
+
+
 Setup::~Setup() {
   for (auto &t : _threads) {
     t.join();
@@ -24,8 +29,8 @@ void Setup::start() {
   _gameController->startController();
   _basicController->startController();
 
-  _threads.emplace_back(std::bind(&Setup::runInterface, this));
-  //std::cout << "Server started" << std::endl;
+  runSignalCatcher();
+
   BOOST_LOG_TRIVIAL(info) << "Server started";
 }
 
@@ -36,18 +41,22 @@ void Setup::stop() {
    _basicController->stopController();
 }
 
-void Setup::runInterface() {
-//  while (true) {
-//    std::string command;
-//    std::cout << "Enter command (s - stop) >>> " << std::endl;
-//    std::cin >> command;
-//    if (command == "s") {
-//      stop();
-//      break;
-//    } else {
-//      std::cout << "Invalid command: " + command << std::endl;
-//    }
-//  }
+
+
+
+void Setup::runSignalCatcher() {
+  _signalSet.async_wait([&](const boost::system::error_code& ec, int signal_number) {
+    if (!ec) {
+      stop();
+      BOOST_LOG_TRIVIAL(debug) << "Signal number occured " << signal_number;
+      return;
+    }
+
+    BOOST_LOG_TRIVIAL(error) << "SignalCatcher : error : " << ec.message();
+  });
+
+  _threads.emplace_back([&](){ _service.run(); });
+
 }
 
 
