@@ -134,11 +134,13 @@ void BasicController::handlerExceptionCatcher(const std::shared_ptr<Command> &co
 
 
 void BasicController::initHandler(const std::shared_ptr<InitRequest> &command) {
+  auto clientUUID = randomUUID();
+
+  _dataBaseFacade->InsertPlayerInfo(std::make_unique<DataBase::External::PlayerInfo>(clientUUID));
+
   auto commandResp = std::make_shared<InitResponse>(
       command->getConnectionUUID(),
-      randomUUID());
-  // todo work with db
-
+      clientUUID);
   _queueManager->controllerPush(commandResp);
 }
 
@@ -147,10 +149,20 @@ void BasicController::initHandler(const std::shared_ptr<InitRequest> &command) {
 
 
 void BasicController::connectHandler(const std::shared_ptr<ConnectRequest> &command) {
-  auto commandResp = std::make_shared<ConnectResponse>(
-      command->getConnectionUUID());
-  // todo work with db
+  if (_dataBaseFacade->FindPlayerInfoByUuid(command->getClientUUID()) == nullptr) {
+    auto commandResp = std::make_shared<ConnectResponse>(command->getConnectionUUID());
 
+    commandResp->setError("connectHandler : can't find player with uuid '"
+    + command->getClientUUID() + "'");
+
+    BOOST_LOG_TRIVIAL(error) << "connectHandler : can't find player with uuid "
+                             << "'" + command->getClientUUID() + "'";
+
+    _queueManager->controllerPush(commandResp);
+    return;
+  }
+
+  auto commandResp = std::make_shared<ConnectResponse>(command->getConnectionUUID());
   _queueManager->controllerPush(commandResp);
 }
 

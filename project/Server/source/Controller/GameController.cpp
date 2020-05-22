@@ -142,9 +142,18 @@ void GameController::handlerExceptionCatcher(const std::shared_ptr<Command> &com
 
 
 void GameController::startGameSessionHandler(const std::shared_ptr<StartGameSessionRequest> &command) {
-  // todo get player name
-  // todo check: does user exist
-  Player player(command->getClientUUID(), "name");
+  auto playerInfo = _dataBaseFacade->FindPlayerInfoByUuid(command->getClientUUID());
+  if (playerInfo == nullptr) {
+    auto commandResp = std::make_shared<StartGameSessionResponse>(command->getConnectionUUID());
+
+    commandResp->setError("startGameSessionHandler : Can't find player in DB. Try 'init' or 'connect'");
+    BOOST_LOG_TRIVIAL(info) << "startGameSessionHandler : Can't find player in DB.";
+
+    _queueManager->controllerPush(commandResp);
+    return;
+  }
+
+  Player player(command->getClientUUID(), playerInfo->name);
 
   auto addPlayerRes = _roomManager->addPlayer(player);
   std::shared_ptr<StartGameSessionResponse> commandResp;

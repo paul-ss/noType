@@ -40,7 +40,7 @@ int main(int argc, const char *argv[]) {
     } else if (vm.count("trace")) {
       initLogger(boost::log::trivial::trace);
     } else if (vm.count("debug")) {
-      initLogger(boost::log::trivial::debug);
+     // initLogger(boost::log::trivial::debug);
     } else if (vm.count("info")) {
       initLogger(boost::log::trivial::info);
     } else if (vm.count("warning")) {
