@@ -1,7 +1,5 @@
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
-
 #include "label.hpp"
+#include "sharedContext.hpp"
 #include "logger.hpp"
 
 Label::Label(const ElementName l_name, std::weak_ptr<SharedContext> l_sharedContext,
@@ -10,27 +8,24 @@ Label::Label(const ElementName l_name, std::weak_ptr<SharedContext> l_sharedCont
 
 Label::~Label() {}
 
-void Label::ReadIn(const std::string& l_stream) {}
-
-ElementName Label::OnClick(const sf::Vector2f& l_mousePos) {
+ElementName Label::OnClick(const sf::Vector2i& l_mousePos) {
     float halfX = GetSize().x / 2.0f;
     float halfY = GetSize().y / 2.0f;
-    if (mousePos.x >= GetPosition().x - halfX &&
-        mousePos.x <= GetPosition().x + halfX &&
-        mousePos.y >= GetPosition().y - halfY &&
-        mousePos.y <= GetPosition().y + halfY) {
+    if (l_mousePos.x >= GetPosition().x - halfX &&
+        l_mousePos.x <= GetPosition().x + halfX &&
+        l_mousePos.y >= GetPosition().y - halfY &&
+        l_mousePos.y <= GetPosition().y + halfY) {
         _state = ElementState::Clicked;
         return _name;
     }
-    return -1;
-
+    return ElementName::None;
 }
 
 void Label::OnRelease() {
     _state = ElementState::Hover;
 }
 
-void Label::OnHover(const sf::Vector2f& l_mousePos) {
+void Label::OnHover([[maybe_unused]] const sf::Vector2f& l_mousePos) {
     _state = ElementState::Hover;
 }
 
@@ -38,7 +33,7 @@ void Label::OnLeave() {
     _state = ElementState::Neutral;
 }
 
-void Label::Update(float l_dT) {}
+void Label::Update([[maybe_unused]] float l_dT) {}
 
 void Label::draw(const std::shared_ptr<Style>& l_style) {
     try {
@@ -99,3 +94,5 @@ void Label::Draw() {
     }
     //log
 }
+
+void Label::ReadIn([[maybe_unused]] const std::string& l_stream) {}

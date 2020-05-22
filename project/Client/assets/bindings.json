@@ -29,7 +29,7 @@
                 "eventType" : 4,
                 "keyCode" : 0
             },
-            "Text_Delete" : {
+            "Text_Deleted" : {
                 "eventType" : 5,
                 "keyCode" : 59
             },

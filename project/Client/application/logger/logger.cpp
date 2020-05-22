@@ -6,6 +6,7 @@ void init_logger() {
     boost::log::register_simple_formatter_factory<boost::log::trivial::severity_level, char>("Severity");
 
     boost::log::add_file_log(
+        boost::log::keywords::auto_flush = true,
         boost::log::keywords::file_name = LOG_FILE,
         boost::log::keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%"
     );

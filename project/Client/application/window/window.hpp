@@ -2,7 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "eventManager.hpp"
+class EventManager;
 
 class Window {
 public:

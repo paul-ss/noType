@@ -1,7 +1,5 @@
 #pragma once
 
-#include <filesystem>
-
 #include <SFML/Audio.hpp>
 
 #include "resourceManager.hpp"

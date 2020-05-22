@@ -1,6 +1,10 @@
 #pragma once
 
-#include "sharedContext.hpp"
+#include <unordered_map>
+
+#include <SFML/Graphics.hpp>
+
+struct SharedContext;
 
 enum class ElementState {
     Neutral,
@@ -20,6 +24,9 @@ enum class ElementName {
     QuitButton,
     MenuButton,
     MuteButton,
+    TimeToStart,
+    PlayerPosition,
+    AverageSpeed,
     SmartString,
 };
 
@@ -62,7 +69,7 @@ struct Visual {
 };
 
 using ElementStyles = std::unordered_map<ElementState, std::shared_ptr<Style>>;
-struct SharedContext;
+
 class BaseElement {
 public:
     BaseElement(const ElementName l_name, std::weak_ptr<SharedContext> l_sharedContext,
@@ -71,11 +78,11 @@ public:
     virtual ~BaseElement() = default;
 
     virtual void Draw() = 0;
-    virtual void Update(float l_dT) = 0;
-    virtual void ReadIn(const std::string& l_stream) = 0;
-    virtual ElementName OnClick(const sf::Vector2f& l_mousePos) = 0;
+    virtual void Update([[maybe_unused]] float l_dT) = 0;
+    virtual void ReadIn([[maybe_unused]] const std::string& l_stream) = 0;
+    virtual ElementName OnClick([[maybe_unused]] const sf::Vector2i& l_mousePos) = 0;
     virtual void OnRelease() = 0;
-    virtual void OnHover(const sf::Vector2f& l_mousePos) = 0;
+    virtual void OnHover([[maybe_unused]] const sf::Vector2f& l_mousePos) = 0;
     virtual void OnLeave() = 0;
 
 public:
@@ -96,8 +103,4 @@ protected:
     Visual _visual;
     ElementState _state;
     std::weak_ptr<SharedContext> _sharedContext;
-
-    //bool _needsRedraw;
-    //bool _active;
-    //bool _isControl;
 };

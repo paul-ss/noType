@@ -1,16 +1,15 @@
 #pragma once
 
 #include "baseState.hpp"
-#include "eventManager.hpp"
-#include "stateManager.hpp"
-#include "label.hpp"
-#include "textField.hpp"
-#include "smartString.hpp"
+
+enum class ElementName;
+struct EventDetails;
+class BaseElement;
 
 class BeforeGameState : public BaseState {
 public:
-    explicit BeforeGameState(std::weak_ptr<StateManager> stateManager);
-    ~BeforeGameState();
+    explicit BeforeGameState(std::weak_ptr<SharedContext> l_context);
+    ~BeforeGameState() = default;
 
     void OnCreate() override;
     void OnDestroy() override;
@@ -26,11 +25,10 @@ public:
     void Connect();
     void StartGameSession();
     void GetText();
+
     void Game();
     void Quit(EventDetails& l_details);
 
 private:
-    //std::vector<std::shared_ptr<BaseElement>> _elements;
-    std::unordered_map<std::string, std::shared_ptr<BaseElement>> _elements;
     double _waitTime;
 };

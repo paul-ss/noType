@@ -3,12 +3,13 @@
 #include <functional>
 #include <unordered_map>
 
-#include "sharedContext.hpp"
 #include "gameState.hpp"
 #include "introState.hpp"
 #include "mainMenuState.hpp"
 #include "beforeGameState.hpp"
 #include "afterGameState.hpp"
+
+struct SharedContext;
 
 enum class StateType{
     Intro = 1,
@@ -26,7 +27,7 @@ using TypeContainer = std::vector<StateType>;
 using StateFactory = std::unordered_map< StateType,
         std::function<std::shared_ptr<BaseState>(void)>>;
 
-class StateManager : public std::enable_shared_from_this<StateManager> {
+class StateManager {
 public:
     explicit StateManager(std::weak_ptr<SharedContext> shared);
     ~StateManager();
@@ -48,8 +49,8 @@ private:
 
     template<class T>
     void registerState(const StateType& type) {
-        _stateFactory[type] = [this]()->std::shared_ptr<BaseState> {
-            return std::make_shared<T>(this->shared_from_this());
+        _stateFactory[type] = [&]()->std::shared_ptr<BaseState> {
+            return std::make_shared<T>(_shared);
         };
     }
 

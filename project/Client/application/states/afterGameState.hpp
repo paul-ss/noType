@@ -1,13 +1,14 @@
 #pragma once
 
 #include "baseState.hpp"
-#include "eventManager.hpp"
-#include "stateManager.hpp"
-#include "label.hpp"
+
+enum class ElementName;
+struct EventDetails;
+class BaseElement;
 
 class AfterGameState : public BaseState {
 public:
-    explicit AfterGameState(std::weak_ptr<StateManager> l_stateManager);
+    explicit AfterGameState(std::weak_ptr<SharedContext> l_context);
     ~AfterGameState() = default;
 
     void OnCreate() override;
@@ -19,9 +20,7 @@ public:
     void Update(const sf::Time& l_time) override;
     void Draw() override;
 
+public:
     void MainMenu(EventDetails& l_details);
     void Game(EventDetails& l_details);
-
-private:
-    std::vector<std::shared_ptr<BaseElement>> _elements;
 };

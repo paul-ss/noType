@@ -1,4 +1,5 @@
 #include "stateManager.hpp"
+#include "sharedContext.hpp"
 
 StateManager::StateManager(std::weak_ptr<SharedContext> l_sharedContext) : _shared(l_sharedContext) {
     registerState<IntroState>(StateType::Intro);

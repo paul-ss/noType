@@ -35,7 +35,6 @@ ADD_LIBRARY(colorString STATIC
 )
 
 SET(ALL_HEADERS
-    ${SOURCE_DIR}/utils
     ${SOURCE_DIR}/eventManager
     ${SOURCE_DIR}/ui
     ${SOURCE_DIR}/exceptions
@@ -66,6 +65,7 @@ SET(ALL_SOURCES
     ${SOURCE_DIR}/logger/logger.cpp
     ${SOURCE_DIR}/soundManager/soundManager.cpp
     ${SOURCE_DIR}/stateManager/stateManager.cpp
+    ${SOURCE_DIR}/states/baseState.cpp
     ${SOURCE_DIR}/states/introState.cpp
     ${SOURCE_DIR}/states/gameState.hpp
     ${SOURCE_DIR}/states/afterGameState.hpp
@@ -107,7 +107,7 @@ TARGET_LINK_LIBRARIES(notype
     NetworkManagerLib
     colorString
     progressBar
-    animation)
-
+    animation
+)
 
 #ADD_SUBDIRECTORY(tests)

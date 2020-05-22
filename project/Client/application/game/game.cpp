@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "sharedContext.hpp"
 
 #define GAME_NAME "noType"
 #define MUSIC_VOLUME 50.0f
@@ -36,6 +37,7 @@ Game::Game() {
     _context->networkManager = _networkManager;
 
     _stateManager = std::make_shared<StateManager>(_context);
+    _context->stateManager = _stateManager;
     _stateManager->SwitchTo(StateType::Intro);
 }
 

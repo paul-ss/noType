@@ -1,13 +1,14 @@
 #pragma once
 
 #include "baseState.hpp"
-#include "eventManager.hpp"
-#include "stateManager.hpp"
-#include "smartString.hpp"
+
+enum class ElementName;
+struct EventDetails;
+class BaseElement;
 
 class GameState : public BaseState {
 public:
-    explicit GameState(std::weak_ptr<StateManager> stateManager);
+    explicit GameState(std::weak_ptr<SharedContext> l_context);
     ~GameState() = default;
 
     void OnCreate() override;
@@ -19,9 +20,16 @@ public:
     void Update(const sf::Time& l_time) override;
     void Draw() override;
 
+public:
+    double CountAverageSpeed(const double l_speed);
+    void CheckRoomStatus();
+
     void TextEntered(EventDetails& l_details);
-    void MainMenu(EventDetails& l_details);
+    void GoToMenu();
 
 private:
-    std::unordered_map<std::string, std::shared_ptr<BaseElement>> _elements;
+    float _timePass;
+    size_t _position;
+    double _averageSpeed;
+    std::vector<double> _currentSpeed;
 };

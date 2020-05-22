@@ -1,13 +1,14 @@
 #pragma once
 
 #include "baseState.hpp"
-#include "eventManager.hpp"
-#include "stateManager.hpp"
-#include "label.hpp"
+
+enum class ElementName;
+struct EventDetails;
+class BaseElement;
 
 class IntroState : public BaseState {
 public:
-    explicit IntroState(std::weak_ptr<StateManager> stateManager);
+    explicit IntroState(std::weak_ptr<SharedContext> l_context);
     ~IntroState() = default;
 
     void OnCreate() override;
@@ -19,8 +20,6 @@ public:
     void Update(const sf::Time& time) override;
     void Draw() override;
 
+public:
     void Continue(EventDetails& details);
-
-private:
-    std::unordered_map<std::string, std::shared_ptr<BaseElement>> _elements;
 };
