@@ -23,7 +23,7 @@ FIND_PACKAGE(Threads REQUIRED)
 SET(Boost_USE_STATIC_LIBS ON)
 SET(Boost_USE_MULTITHREAD ON)
 ##
-set(Boost_USE_STATIC_RUNTIME    OFF)
+set(Boost_USE_STATIC_RUNTIME  OFF)
 
 FIND_PACKAGE(Boost 1.42.0 REQUIRED COMPONENTS
         system
@@ -46,7 +46,6 @@ TARGET_INCLUDE_DIRECTORIES(LoggerLib PUBLIC Logger/ ${Boost_INCLUDE_DIRS})
 
 TARGET_LINK_LIBRARIES(LoggerLib PUBLIC ${Boost_LIBRARIES})
 
-message(boost = ${Boost_LIBRARIES})
 
 ADD_SUBDIRECTORY(DataBase/)
 ADD_SUBDIRECTORY(TcpServer/)
@@ -105,15 +104,16 @@ TARGET_LINK_LIBRARIES(CommandLib LoggerLib ${Boost_LIBRARIES})
 
 
 
-#ADD_EXECUTABLE(commandTests
-#        Command/Tests/ParseFromTests.cpp
-#        mainTest.cpp)
-#
-#TARGET_LINK_LIBRARIES(commandTests
-#        ${GTEST_LIBRARIES}
-#        ${CMAKE_THREAD_LIBS_INIT}
-#        ${Boost_SYSTEM_LIBRARY}
-#        CommandLib)
+ADD_EXECUTABLE(commandTests
+        Command/Tests/ParseFromTests.cpp
+        mainTest.cpp)
+
+TARGET_LINK_LIBRARIES(commandTests
+        ${GTEST_LIBRARIES}
+        ${CMAKE_THREAD_LIBS_INIT}
+        ${Boost_SYSTEM_LIBRARY}
+        CommandLib
+        LoggerLib)
 
 
 
