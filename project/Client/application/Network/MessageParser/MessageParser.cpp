@@ -207,11 +207,11 @@ std::unique_ptr<Message> MessageParser::ConnectResponseToMessage(boost::property
 }
 
 std::unique_ptr<Message> MessageParser::StartGameSessionResponseToMessage(boost::property_tree::ptree &pt) {
-  auto id = pt.get<std::string>(JsonFields::ClientUuid);
+  auto playerId = pt.get<std::string>(JsonFields::PlayerId);
   auto waitTime = pt.get<size_t>(JsonFields::WaitTime);
   auto errorData = ParseErrorAndStatus(pt);
 
-  StartGameSessionResponse startGameSessionResponse = {id, waitTime, errorData.first, errorData.second};
+  StartGameSessionResponse startGameSessionResponse = {playerId, waitTime, errorData.first, errorData.second};
   std::any data = startGameSessionResponse;
   return std::make_unique<Message>(MessageType::StartGameSessionResponse, std::move(data));
 }
@@ -226,61 +226,15 @@ std::unique_ptr<Message> MessageParser::GetTextResponseToMessage(boost::property
 }
 
 std::unique_ptr<Message> MessageParser::RoomStatusResponseToMessage(boost::property_tree::ptree& pt) {
-  auto timeFromStart = pt.get<double>(JsonFields::Text);
   auto errorData = ParseErrorAndStatus(pt);
 
   auto stringPlayerStatus = pt.get<std::string>(JsonFields::Room::Status);
 
-  RoomStatus roomStatus;
-  if (stringPlayerStatus == JsonFields::Room::Wait) {
-    roomStatus = RoomStatus::Wait;
-  } else if (stringPlayerStatus == JsonFields::Room::Play) {
-    roomStatus = RoomStatus::Play;
-  } else if (stringPlayerStatus == JsonFields::Room::End) {
-    roomStatus = RoomStatus::End;
-  } else {
-    // exeption
-  }
-  const std::string kComma = ".";
+  RoomStatus roomStatus = ParsePlayerStatus(stringPlayerStatus);
 
-  std::unordered_map<std::string, PlayerInfo> playersInfo;
-  for (const auto& [uuid, _]: pt.get_child(JsonFields::Players)) {
-    PlayerInfo playerInfo;
+  auto playersInfo = ParsePlayersInfo(pt);
 
-    std::string pathToUuid = JsonFields::Players + kComma;
-    pathToUuid += uuid;
-
-    std::string pathToName = pathToUuid + kComma;
-    pathToName += JsonFields::PlayerInfoFields::Name;
-
-    playerInfo.name = pt.get<std::string>(pathToName);
-
-    std::string pathToPosition = pathToUuid + kComma;
-    pathToPosition += JsonFields::PlayerInfoFields::Position;
-
-    playerInfo.position = pt.get<std::uint16_t>(pathToPosition);
-
-    std::string pathToSpeed = pathToUuid + kComma;
-    pathToSpeed += JsonFields::PlayerInfoFields::Speed;
-
-    playerInfo.position = pt.get<double>(pathToSpeed);
-
-    std::string pathToStatus = pathToUuid + kComma;
-    pathToStatus += JsonFields::PlayerInfoFields::Status;
-
-    auto stringPlayerStatus = pt.get<std::string>(pathToStatus);
-    if (stringPlayerStatus == JsonFields::PlayerInfoFields::Play) {
-      playerInfo.status = PlayerInfo::Status::Play;
-    } else if (stringPlayerStatus == JsonFields::PlayerInfoFields::Finish) {
-      playerInfo.status = PlayerInfo::Status::Finish;
-    } else if (stringPlayerStatus == JsonFields::PlayerInfoFields::Win) {
-      playerInfo.status = PlayerInfo::Status::Win;
-    }
-
-    playersInfo[uuid] = playerInfo;
-  }
-
-  RoomStatusResponse roomStatusResponse = {timeFromStart, playersInfo, roomStatus, errorData.first, errorData.second};
+  RoomStatusResponse roomStatusResponse = {playersInfo, roomStatus, errorData.first, errorData.second};
   std::any data = roomStatusResponse;
   return std::make_unique<Message>(MessageType::RoomStatusResponse, std::move(data));
 }
@@ -319,6 +273,64 @@ std::pair<Status, std::string> MessageParser::ParseErrorAndStatus(boost::propert
 
   return {status, error};
 }
+
+RoomStatus MessageParser::ParsePlayerStatus(const std::string& stringPlayerStatus) {
+  if (stringPlayerStatus == JsonFields::Room::Wait) {
+    return RoomStatus::Wait;
+  } else if (stringPlayerStatus == JsonFields::Room::Play) {
+    return RoomStatus::Play;
+  } else if (stringPlayerStatus == JsonFields::Room::End) {
+    return RoomStatus::End;
+  } else {
+    // exception
+  }
+
+  return {};
+}
+
+std::unordered_map<std::string, PlayerInfo> MessageParser::ParsePlayersInfo(boost::property_tree::ptree& pt) {
+  const std::string kComma = ".";
+
+  std::unordered_map<std::string, PlayerInfo> playersInfo;
+  for (const auto& [uuid, _]: pt.get_child(JsonFields::Players)) {
+    PlayerInfo playerInfo;
+
+    std::string pathToUuid = JsonFields::Players + kComma;
+    pathToUuid += uuid;
+
+    std::string pathToName = pathToUuid + kComma;
+    pathToName += JsonFields::PlayerInfoFields::Name;
+
+    playerInfo.name = pt.get<std::string>(pathToName);
+
+    std::string pathToPosition = pathToUuid + kComma;
+    pathToPosition += JsonFields::PlayerInfoFields::Position;
+
+    playerInfo.position = pt.get<std::uint16_t>(pathToPosition);
+
+    std::string pathToSpeed = pathToUuid + kComma;
+    pathToSpeed += JsonFields::PlayerInfoFields::Speed;
+
+    playerInfo.position = pt.get<double>(pathToSpeed);
+
+    std::string pathToStatus = pathToUuid + kComma;
+    pathToStatus += JsonFields::PlayerInfoFields::Status;
+
+    auto stringPlayerStatus = pt.get<std::string>(pathToStatus);
+    if (stringPlayerStatus == JsonFields::PlayerInfoFields::Play) {
+      playerInfo.status = PlayerInfo::Status::Play;
+    } else if (stringPlayerStatus == JsonFields::PlayerInfoFields::Finish) {
+      playerInfo.status = PlayerInfo::Status::Finish;
+    } else if (stringPlayerStatus == JsonFields::PlayerInfoFields::Win) {
+      playerInfo.status = PlayerInfo::Status::Win;
+    }
+
+    playersInfo[uuid] = playerInfo;
+  }
+  std::vector<int> b;
+  return playersInfo;
+}
+
 
 }  // namespace Network
 

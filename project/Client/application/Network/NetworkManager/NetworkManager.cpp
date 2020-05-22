@@ -30,10 +30,7 @@ NetworkManager::NetworkManager(std::shared_ptr<Connector::IQueueManager> queueMa
                                  _socket{_ioService},
                                  _isWorking{false} {}
 
-NetworkManager::~NetworkManager() {
-  //std::unique_lock<std::mutex> lock(_networkManagerMutex);
-  //std::cout << "~NetworkManager" << std::endl;
-}
+NetworkManager::~NetworkManager() {}
 
 void NetworkManager::Connect() {
   try {
@@ -48,7 +45,6 @@ void NetworkManager::Disconnect() {
  std::unique_lock<std::mutex> lock(_networkManagerMutex);
   _queueManager->Notify();
   _isWorking = false;
-  //std::cout << "Disconnect" << std::endl;
 }
 
 void NetworkManager::Run() {
@@ -59,12 +55,12 @@ void NetworkManager::Run() {
 }
 
 void NetworkManager::Stop() {
-  //std::unique_lock<std::mutex> lock(_networkManagerMutex);
+  std::unique_lock<std::mutex> lock(_networkManagerMutex);
   _queueManager->Notify();
+  _socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
   _socket.close();
   while(!_isStoped) {}
   _thread->join();
-
 }
 
 void NetworkManager::loop() {
@@ -75,16 +71,13 @@ void NetworkManager::loop() {
         break;
       }
     }
-    std::cout << "Continue.." << std::endl;
     try {
-
       if (auto sendMsg = _queueManager->PopSendingData(); sendMsg != nullptr) {
         std::string sendJsonData = _messageParser->ParseToJson(std::move(sendMsg));
 
         boost::asio::write(_socket, boost::asio::buffer(sendJsonData + std::string(kDelimiter)));
 
         boost::asio::streambuf buf;
-        std::cout << "Start reading: " << std::endl;
         {
           if (!_isWorking) {
             _isStoped = true;

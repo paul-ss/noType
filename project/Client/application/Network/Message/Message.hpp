@@ -59,7 +59,7 @@ struct StartGameSessionRequest {
 };
 
 struct StartGameSessionResponse {
-  std::string id;
+  std::string playerId;
   size_t waitTime;
   Status status;
   std::string error;
@@ -80,7 +80,6 @@ struct RoomStatusRequest {
 };
 
 struct RoomStatusResponse {
-  double timeFromStart;
   std::unordered_map<std::string, PlayerInfo> playersInfo;
   RoomStatus roomStatus;
   Status status;

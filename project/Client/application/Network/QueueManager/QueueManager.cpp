@@ -37,7 +37,7 @@ std::unique_ptr<Message> QueueManager::PopSendingData() {
   _sendingMessagesNotified = false;
 
   if (_sendingMessages.empty()) {
-    _sendingMessagesCheck.wait(lock, [&](){
+    _sendingMessagesCheck.wait_for(lock, std::chrono::milliseconds(1000), [&](){
       if (_sendingMessagesNotified) {
         return true;
       }
@@ -56,7 +56,7 @@ std::unique_ptr<Message> QueueManager::PopSendingData() {
 }
 
 void QueueManager::Notify() {
-  std::unique_lock<std::mutex> lock(_sendingMessagesMutex);
+  //std::unique_lock<std::mutex> lock(_sendingMessagesMutex);
   _sendingMessagesNotified = true;
   _sendingMessagesCheck.notify_one();
 }

@@ -34,6 +34,7 @@ static const std::string Fail                   ("fail");
 
 // NOTE(vendroid): Основные поля
 static const std::string ClientUuid             ("clientUUID");
+static const std::string PlayerId               ("playerID");
 static const std::string Name                   ("clientName");
 static const std::string WaitTime               ("waitTime");
 static const std::string Text                   ("text");

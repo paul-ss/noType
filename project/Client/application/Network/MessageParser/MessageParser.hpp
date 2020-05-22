@@ -2,13 +2,17 @@
 
 #include <string>
 #include <tuple>
+#include <unordered_map>
 
 #include <boost/property_tree/ptree.hpp>
+
+struct PlayerInfo;
 
 namespace Network {
 
 class Message;
 enum class Status;
+enum class RoomStatus;
 
 class MessageParser {
 public:
@@ -37,6 +41,8 @@ private:
 
 private:
   static std::pair<Status, std::string> ParseErrorAndStatus(boost::property_tree::ptree& pt);
+  static RoomStatus ParsePlayerStatus(const std::string& stringPlayerStatus);
+  static std::unordered_map<std::string, PlayerInfo> ParsePlayersInfo(boost::property_tree::ptree& pt);
 };
 
 }  // namespace Network
