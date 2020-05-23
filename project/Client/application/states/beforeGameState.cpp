@@ -122,8 +122,9 @@ void BeforeGameState::StartGameSession() {
             _waitTime = startGameSessionResponse.waitTime;
             _waitTime /= 1000.0; // to second
             auto windowSize = renderWindow->getSize();
+            sf::Vector2f windowCenter(windowSize.x * 0.5, windowSize.y * 0.5);
             auto timeToStart = std::make_shared<TextField>(ElementName::TimeToStart,
-                    context, sf::Vector2f(0, 0), "textField.json", std::to_string(_waitTime));
+                    context, windowCenter, "textField.json", std::to_string(_waitTime));
 
             timeToStart->SetText(std::to_string(_waitTime));
             context->playerId = startGameSessionResponse.playerId;
@@ -213,9 +214,7 @@ void BeforeGameState::Update(const sf::Time& l_time) {
     try {
         auto stateMgr = GetStateManager();
         _waitTime -= l_time.asSeconds();
-        std::cout << _waitTime << "\n";
         if (_waitTime >= 0.0) {
-            std::cout << "HERE\n";
             auto itr = _elements.find(ElementName::TimeToStart);
             if (itr == _elements.end()) {
                 return;

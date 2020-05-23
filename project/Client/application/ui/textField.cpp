@@ -16,6 +16,12 @@ void TextField::Draw() {
         std::shared_ptr<SharedContext>sharedContext(_sharedContext);
         std::shared_ptr<Window>window(sharedContext->window);
         std::shared_ptr<sf::RenderWindow>renderWindow(window->GetRenderWindow());
+        auto styleItr = _style.find(ElementState::Neutral);
+        if (styleItr == _style.end()) {
+            BOOST_LOG_TRIVIAL(error) << "[String - draw] neutral state not found";
+            return;
+        }
+        applyStyle(styleItr->second);
         renderWindow->draw(_visual.text);
 
     } catch (std::bad_weak_ptr& e) {

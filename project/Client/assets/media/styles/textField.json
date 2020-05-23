@@ -6,9 +6,9 @@
         "bgImage" : "",
         "bgImgColor" : [0, 0, 255, 255],
         "textColor" : [0, 255, 0, 255],
-        "textFont" : "Text",
+        "textFont" : "Main",
         "textPadding" : [150, 16],
-        "textSize" : 14,
+        "textSize" : 60,
         "textOriginCenter" : "true",
         "glyph" : "",
         "glyphPadding" : [150, 16]

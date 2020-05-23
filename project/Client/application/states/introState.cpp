@@ -1,6 +1,6 @@
 #include "introState.hpp"
 #include "sharedContext.hpp"
-#include "label.hpp"
+#include "filler.hpp"
 #include "logger.hpp"
 
 IntroState::IntroState(std::weak_ptr<SharedContext> l_context)
@@ -12,18 +12,15 @@ void IntroState::OnCreate() {
         auto renderWindow = GetRenderWindow();
 
         auto windowSize = renderWindow->getSize();
-
-        auto filler = std::make_shared<Label>(ElementName::Filler, context, sf::Vector2f(0, 0), "filler.json");
+        sf::Vector2f windowCenter(windowSize.x * 0.5, windowSize.y * 0.5);
+        auto filler = std::make_shared<Filler>(ElementName::Filler, context, windowCenter, "filler.json");
         sf::Vector2f fillerPosition(windowSize.x * 0.5f - filler->GetSize().x * 0.5,
                 windowSize.y * 0.5f);
         filler->SetPosition(fillerPosition);
         context->sharedElements.emplace(ElementName::Filler, filler);
         _elements.emplace(ElementName::Filler, filler);
 
-        auto introSprite = std::make_shared<Label>(ElementName::IntroSprite, context, sf::Vector2f(0, 0), "introSprite.json");
-        sf::Vector2f introPosition(windowSize.x * 0.5f - introSprite->GetSize().x * 0.5,
-                windowSize.y * 0.5f);
-        introSprite->SetPosition(introPosition);
+        auto introSprite = std::make_shared<Filler>(ElementName::IntroSprite, context, windowCenter, "introSprite.json");
         introSprite->SetText("PRESS SPACE TO CONTINUE");
         _elements.emplace(ElementName::IntroSprite, introSprite);
 
