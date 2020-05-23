@@ -8,6 +8,8 @@
 #include "logger.hpp"
 #include "exceptions.hpp"
 
+#include <thread>
+
 BeforeGameState::BeforeGameState(std::weak_ptr<SharedContext> l_context)
     : BaseState(l_context), _waitTime(0) {}
 
@@ -118,7 +120,7 @@ void BeforeGameState::StartGameSession() {
             auto data = recvMsg->ExtractData();
             auto startGameSessionResponse = std::any_cast<Network::StartGameSessionResponse>(data);
             checkNetStatus(startGameSessionResponse.status, startGameSessionResponse.error);
-            _waitTime = startGameSessionResponse.waitTime;
+            _waitTime = startGameSessionResponse.waitTime + 500;
             auto windowSize = renderWindow->getSize();
             sf::Vector2f windowCenter(windowSize.x * 0.5, windowSize.y * 0.5);
             auto timeToStart = std::make_shared<TextField>(ElementName::TimeToStart,
@@ -151,28 +153,29 @@ void BeforeGameState::GetText() {
 
         Network::GetTextRequest getTextRequest = {context->uuid};
         auto sendMsg = std::make_unique<Network::Message>
-                (Network::MessageType::GetTextRequest, getTextRequest);
+          (Network::MessageType::GetTextRequest, getTextRequest);
         queueManager->PushToSendingData(std::move(sendMsg));
 
         std::unique_ptr<Network::Message> recvMsg = nullptr;
         while (!recvMsg) {
-            recvMsg = queueManager->PopReceivedData();
+          recvMsg = queueManager->PopReceivedData();
         }
 
         if (recvMsg->GetMessageType() == Network::MessageType::GetTextResponse) {
-            auto data = recvMsg->ExtractData();
-            auto getTextResponse = std::any_cast<Network::GetTextResponse>(data);
-            checkNetStatus(getTextResponse.status, getTextResponse.error);
+          auto data = recvMsg->ExtractData();
+          auto getTextResponse = std::any_cast<Network::GetTextResponse>(data);
+          checkNetStatus(getTextResponse.status, getTextResponse.error);
 
-            // Create text string and share it with game state
-            auto windowSize = renderWindow->getSize();
-            auto smartString = std::make_shared<SmartString>(ElementName::SmartString,
-                    context, sf::Vector2f((windowSize.x * 0.5), (windowSize.y * 0.5f)),
-                    "smartString.json", getTextResponse.text);
+          // Create text string and share it with game state
+          auto windowSize = renderWindow->getSize();
+          auto smartString = std::make_shared<SmartString>(ElementName::SmartString,
+                                                           context,
+                                                           sf::Vector2f((windowSize.x * 0.5), (windowSize.y * 0.5f)),
+                                                           "smartString.json", getTextResponse.text);
 
-            sf::Vector2f smartStrPosition((windowSize.x * 0.5), (windowSize.y * 0.5f));
-            smartString->SetPosition(smartStrPosition);
-            context->sharedElements.emplace(ElementName::SmartString, smartString);
+          sf::Vector2f smartStrPosition((windowSize.x * 0.5), (windowSize.y * 0.5f));
+          smartString->SetPosition(smartStrPosition);
+          context->sharedElements.emplace(ElementName::SmartString, smartString);
         }
 
     } catch (const std::bad_weak_ptr& e) {
@@ -214,7 +217,7 @@ void BeforeGameState::Update(const sf::Time& l_time) {
         _waitTime -= l_time.asMilliseconds();
         std::cout << _waitTime << "\n";
         if (_waitTime >= 0) {
-            std::cout << "HERE\n";
+            //std::cout << "HERE\n";
             auto itr = _elements.find(ElementName::TimeToStart);
             if (itr == _elements.end()) {
                 return;
@@ -245,28 +248,32 @@ bool BeforeGameState::isGame() {
     try {
         auto queueManager = GetQueueManager();
         auto context = GetSharedContext();
-        Network::RoomStatusRequest roomStatusRequest = {context->uuid};
-        auto sendMsg = std::make_unique<Network::Message>
-                (Network::MessageType::RoomStatusRequest, roomStatusRequest);
-        queueManager->PushToSendingData(std::move(sendMsg));
 
-        std::unique_ptr<Network::Message> recvMsg = nullptr;
-        while (!recvMsg) {
+        while (true) {
+          Network::RoomStatusRequest roomStatusRequest = {context->uuid};
+          auto sendMsg = std::make_unique<Network::Message>
+            (Network::MessageType::RoomStatusRequest, roomStatusRequest);
+          queueManager->PushToSendingData(std::move(sendMsg));
+
+          std::unique_ptr<Network::Message> recvMsg = nullptr;
+          while (!recvMsg) {
             recvMsg = queueManager->PopReceivedData();
-        }
+          }
 
-        if (recvMsg->GetMessageType() == Network::MessageType::RoomStatusResponse) {
+          if (recvMsg->GetMessageType() == Network::MessageType::RoomStatusResponse) {
             auto roomStatusResponse = std::any_cast<Network::RoomStatusResponse>(recvMsg->ExtractData());
             checkNetStatus(roomStatusResponse.status, roomStatusResponse.error);
             if (roomStatusResponse.roomStatus == Network::RoomStatus::Play) {
-                return true;
+              return true;
             } else {
-                return false;
+              return false;
             }
-        } else {
+          } else {
             return false;
+          }
+          std::this_thread::sleep_for(std::chrono::microseconds(300));
+          std::cout << "continue waiting" << std::endl;
         }
-
     } catch (const std::bad_weak_ptr& e) {
         BOOST_LOG_TRIVIAL(error) << "[beforeGameState - isGame] " << e.what();
     } catch (const std::bad_any_cast& e) {
