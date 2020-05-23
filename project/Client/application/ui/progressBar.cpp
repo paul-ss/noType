@@ -15,6 +15,7 @@ ElementName OnClick(const sf::Vector2i& l_mousePos) {
 void Update([[maybe_unused]] float l_dT) {}
 void Draw() {}
 void ReadIn([[maybe_unused]] const std::string& l_stream) {}
-void OnRelease() {}
+void OnRele    drawElement(ElementName::Filler);
+drawElement(ElementName::SmartString);ase() {}
 void OnHover([[maybe_unused]] const sf::Vector2f& l_mousePos) {}
 void OnLeave() {}

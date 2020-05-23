@@ -23,7 +23,7 @@ void TextField::Draw() {
     }
 }
 
-ElementName TextField::OnClick(const sf::Vector2i& l_mousePos) {
+ElementName TextField::OnClick([[maybe_unused]] const sf::Vector2i& l_mousePos) {
     return ElementName::None;
 }
 

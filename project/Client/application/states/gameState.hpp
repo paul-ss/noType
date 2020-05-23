@@ -23,6 +23,7 @@ public:
 public:
     double CountAverageSpeed(const double l_speed);
     void CheckRoomStatus();
+    void UpdatePosition(const std::string& l_validatedBlock);
 
     void TextEntered(EventDetails& l_details);
     void GoToMenu();
@@ -30,6 +31,8 @@ public:
 private:
     float _timePass;
     size_t _position;
+    std::string _gameCookie;
+    size_t _leaderPosition;
     double _averageSpeed;
     std::vector<double> _currentSpeed;
 };

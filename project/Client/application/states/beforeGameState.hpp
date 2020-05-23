@@ -27,6 +27,8 @@ public:
     void GetText();
 
     void Game();
+    void BackToMenu();
+    bool isGame();
     void Quit(EventDetails& l_details);
 
 private:

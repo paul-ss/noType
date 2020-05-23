@@ -1,5 +1,7 @@
 #include "game.hpp"
 #include "sharedContext.hpp"
+#include "exceptions.hpp"
+#include "logger.hpp"
 
 #define GAME_NAME "noType"
 #define MUSIC_VOLUME 50.0f
@@ -25,7 +27,6 @@ Game::Game() {
     _context->textureManager = _textureManager;
 
     _fontManager = std::make_shared<FontManager>();
-    _fontManager->RequireResource("Main");
     _context->fontManager = _fontManager;
 
     auto queueManager = std::make_shared<Network::QueueManager>();
@@ -38,6 +39,7 @@ Game::Game() {
 
     _stateManager = std::make_shared<StateManager>(_context);
     _context->stateManager = _stateManager;
+
     _stateManager->SwitchTo(StateType::Intro);
 }
 
@@ -67,7 +69,13 @@ void Game::lateUpdate() {
 }
 
 void Game::Run() {
-    _networkManager->Connect();
+    try {
+        _networkManager->Connect();
+    } catch (const ConnectionFailure& e) {
+        BOOST_LOG_TRIVIAL(error) << "[run - game] " << e.what();
+        return;
+    }
+
     _networkManager->Run();
     while (!_window->IsDone()) {
         update();

@@ -9,6 +9,13 @@ Label::Label(const ElementName l_name, std::weak_ptr<SharedContext> l_sharedCont
 Label::~Label() {}
 
 ElementName Label::OnClick(const sf::Vector2i& l_mousePos) {
+    auto styleItr = _style.find(ElementState::Neutral);
+    if (styleItr == _style.end()) {
+        //log
+    }
+    if (styleItr->second->isFullScreen) {
+        return ElementName::None;
+    }
     float halfX = GetSize().x / 2.0f;
     float halfY = GetSize().y / 2.0f;
     if (l_mousePos.x >= GetPosition().x - halfX &&

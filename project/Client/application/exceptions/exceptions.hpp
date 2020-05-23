@@ -4,27 +4,27 @@
 #include <string>
 
 class ClientException : public std::exception {
-    public:
-        explicit ClientException(const std::string& l_msg) : _errorMsg(l_msg) {}
-        const char* what() const noexcept override {
-            return _errorMsg.c_str();
-        }
+public:
+    explicit ClientException(const std::string& l_msg) : _errorMsg(l_msg) {}
+    const char* what() const noexcept override {
+        return _errorMsg.c_str();
+    }
 
-    private:
-        std::string _errorMsg;
+private:
+    std::string _errorMsg;
 };
 
 class InvalidCmd : public ClientException {
-    public:
-        InvalidCmd() : ClientException("Invalid command in bindings.json") {}
+public:
+    InvalidCmd() : ClientException("Invalid command in bindings.json") {}
 };
 
 class InvalidResponse : public ClientException {
-    public:
-        InvalidResponse(const std::string& l_error) : ClientException(l_error) {}
+public:
+    InvalidResponse(const std::string& l_error) : ClientException(l_error) {}
 };
 
 class ConnectionFailure : public ClientException {
 public:
-  ConnectionFailure(const std::string& l_error) : ClientException(l_error) {}
+    ConnectionFailure(const std::string& l_error) : ClientException(l_error) {}
 };
