@@ -4,6 +4,7 @@
 
 #define TEXT_BLOCK_SIZE 10
 #define ASCII_BACKSPACE 8
+#define STRING_SIZE 80
 
 SmartString::SmartString(const ElementName l_name, std::weak_ptr<SharedContext> l_sharedContext,
             const sf::Vector2f& l_position,
@@ -14,6 +15,21 @@ SmartString::SmartString(const ElementName l_name, std::weak_ptr<SharedContext> 
             _textPosition(0),
             _reference(l_reference) {
 
+    
+    auto numOfLines = l_reference.size() / STRING_SIZE;
+    if (l_reference.size() % STRING_SIZE != 0) {
+        numOfLines++;
+    }
+
+    std::string cuttedString;
+    for (size_t i = 0; i < numOfLines; ++i) {
+        size_t size = STRING_SIZE;
+        if (i * STRING_SIZE > l_reference.size()) {
+            size = -1;
+        }
+        cuttedString += l_reference.substr(i * STRING_SIZE, size) + "\n";
+    }
+
     auto styleItr = _style.find(ElementState::Neutral);
         if (styleItr == _style.end()) {
             //log
@@ -23,10 +39,7 @@ SmartString::SmartString(const ElementName l_name, std::weak_ptr<SharedContext> 
     if (_visual.text.getFont()) {
         _coloredText.setFont(*_visual.text.getFont());
     }
-    _coloredText << l_reference << _visual.text.getFillColor();
-
-        sf::Vector2f txtSz(_coloredText.getGlobalBounds().width,
-                _coloredText.getGlobalBounds().height);
+    _coloredText << cuttedString << _visual.text.getFillColor();
 
     _coloredText.setCharacterSize(_visual.text.getCharacterSize());
     _coloredText.setPosition(l_position.x - _coloredText.getGlobalBounds().width * 0.5,

@@ -215,9 +215,14 @@ void BeforeGameState::Update(const sf::Time& l_time) {
     try {
         auto stateMgr = GetStateManager();
         _waitTime -= l_time.asMilliseconds();
-        std::cout << _waitTime << "\n";
         if (_waitTime >= 0) {
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
             //std::cout << "HERE\n";
+=======
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
             auto itr = _elements.find(ElementName::TimeToStart);
             if (itr == _elements.end()) {
                 return;
@@ -226,7 +231,6 @@ void BeforeGameState::Update(const sf::Time& l_time) {
             itr->second->SetText(std::to_string(waitTimeInSeconds));
         } else {
             if (isGame()) {
-                std::cout << "Game is started" << std::endl;
                 Game();
             } else {
                 BOOST_LOG_TRIVIAL(error) << "[beforeGameState - update] " << "Internal server error. Back to menu.";
