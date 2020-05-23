@@ -216,13 +216,6 @@ void BeforeGameState::Update(const sf::Time& l_time) {
         auto stateMgr = GetStateManager();
         _waitTime -= l_time.asMilliseconds();
         if (_waitTime >= 0) {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-            //std::cout << "HERE\n";
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
             auto itr = _elements.find(ElementName::TimeToStart);
             if (itr == _elements.end()) {
                 return;
