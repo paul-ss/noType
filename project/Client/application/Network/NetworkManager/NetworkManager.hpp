@@ -16,7 +16,6 @@ public:
   virtual void Stop() = 0;
 
   virtual ~INetworkManager() = default;
-
 };
 
 class MessageParser;
@@ -29,9 +28,9 @@ class IQueueManager;
 
 class NetworkManager : public INetworkManager {
 public:
-  NetworkManager(std::shared_ptr<Connector::IQueueManager> queueManager);
+  explicit NetworkManager(std::shared_ptr<Connector::IQueueManager> queueManager);
   NetworkManager(std::shared_ptr<Connector::IQueueManager> queueManager,
-                 std::string serverIp,
+                 const std::string& serverIp,
                  std::uint32_t port);
 
   void Connect() override;
@@ -39,8 +38,7 @@ public:
   void Run() override;
   void Stop() override;
 
-
-  ~NetworkManager();
+  ~NetworkManager() override;
 
 private:
   void loop();

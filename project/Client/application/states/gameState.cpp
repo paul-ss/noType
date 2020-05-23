@@ -124,9 +124,8 @@ void GameState::CheckRoomStatus() {
         auto queueManager = GetQueueManager();
 
         Network::RoomStatusRequest roomRequest = {context->uuid};
-        std::any data = roomRequest;
         auto sendMsg = std::make_unique<Network::Message>
-                (Network::MessageType::RoomStatusRequest, std::move(data));
+                (Network::MessageType::RoomStatusRequest, roomRequest);
         queueManager->PushToSendingData(std::move(sendMsg));
 
         Network::RoomStatusResponse roomResponse;
@@ -137,7 +136,7 @@ void GameState::CheckRoomStatus() {
         if (recvMsg->GetMessageType() == Network::MessageType::RoomStatusResponse) {
             auto data = recvMsg->ExtractData();
             auto roomStatusResponse = std::any_cast<Network::RoomStatusResponse>(data);
-            auto itr = roomStatusResponse.playersInfo.find(context->uuid);
+            auto itr = roomStatusResponse.playersInfo.find(context->playerId);
             if (itr != roomStatusResponse.playersInfo.end()) {
                 _averageSpeed = CountAverageSpeed(itr->second.speed);
                 _position = itr->second.position;

@@ -73,9 +73,8 @@ void BeforeGameState::Connect() {
         auto queueManager = GetQueueManager();
 
         Network::ConnectRequest connectRequest = {context->uuid};
-        std::any data = connectRequest;
         auto sendMsg = std::make_unique<Network::Message>
-                (Network::MessageType::ConnectRequest, std::move(data));
+                (Network::MessageType::ConnectRequest, connectRequest);
         queueManager->PushToSendingData(std::move(sendMsg));
 
         std::unique_ptr<Network::Message> recvMsg = nullptr;
@@ -107,9 +106,8 @@ void BeforeGameState::StartGameSession() {
         auto queueManager = GetQueueManager();
 
         Network::StartGameSessionRequest startGameRequest = {context->uuid};
-        std::any data = startGameRequest;
         auto sendMsg = std::make_unique<Network::Message>
-                (Network::MessageType::StartGameSessionRequest, std::move(data));
+                (Network::MessageType::StartGameSessionRequest, startGameRequest);
         queueManager->PushToSendingData(std::move(sendMsg));
 
         std::unique_ptr<Network::Message> recvMsg = nullptr;
@@ -122,12 +120,13 @@ void BeforeGameState::StartGameSession() {
             auto startGameSessionResponse = std::any_cast<Network::StartGameSessionResponse>(data);
             checkNetStatus(startGameSessionResponse.status, startGameSessionResponse.error);
             _waitTime = startGameSessionResponse.waitTime;
-            _waitTime /= 1000; // to second
+            _waitTime /= 1000.0; // to second
             auto windowSize = renderWindow->getSize();
             auto timeToStart = std::make_shared<TextField>(ElementName::TimeToStart,
                     context, sf::Vector2f(0, 0), "textField.json", std::to_string(_waitTime));
 
             timeToStart->SetText(std::to_string(_waitTime));
+            context->playerId = startGameSessionResponse.playerId;
             auto timeSize = timeToStart->GetSize();
             sf::Vector2f timePosition((windowSize.x * 0.5) - timeSize.x * 0.5, (windowSize.y * 0.5f));
             timeToStart->SetPosition(timePosition);
@@ -152,9 +151,8 @@ void BeforeGameState::GetText() {
         auto queueManager = GetQueueManager();
 
         Network::GetTextRequest getTextRequest = {context->uuid};
-        std::any data = getTextRequest;
         auto sendMsg = std::make_unique<Network::Message>
-                (Network::MessageType::GetTextRequest, std::move(data));
+                (Network::MessageType::GetTextRequest, getTextRequest);
         queueManager->PushToSendingData(std::move(sendMsg));
 
         std::unique_ptr<Network::Message> recvMsg = nullptr;
@@ -216,7 +214,7 @@ void BeforeGameState::Update(const sf::Time& l_time) {
         auto stateMgr = GetStateManager();
         _waitTime -= l_time.asSeconds();
         std::cout << _waitTime << "\n";
-        if (_waitTime >= 0) {
+        if (_waitTime >= 0.0) {
             std::cout << "HERE\n";
             auto itr = _elements.find(ElementName::TimeToStart);
             if (itr == _elements.end()) {
@@ -245,10 +243,10 @@ void BeforeGameState::Draw() {
 bool BeforeGameState::isGame() {
     try {
         auto queueManager = GetQueueManager();
-        Network::RoomStatusRequest roomStatusRequest;
-        std::any data = roomStatusRequest;
+        auto context = GetSharedContext();
+        Network::RoomStatusRequest roomStatusRequest = {context->uuid};
         auto sendMsg = std::make_unique<Network::Message>
-                (Network::MessageType::RoomStatusRequest, std::move(data));
+                (Network::MessageType::RoomStatusRequest, roomStatusRequest);
         queueManager->PushToSendingData(std::move(sendMsg));
 
         std::unique_ptr<Network::Message> recvMsg = nullptr;

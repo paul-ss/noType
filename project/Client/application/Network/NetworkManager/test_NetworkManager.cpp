@@ -144,7 +144,6 @@ TEST(NetworkManager, NetworkManagerCheck) {
       auto data = msg->ExtractData();
       auto getTextResponse = std::any_cast<Network::GetTextResponse>(data);
       std::cout << "getTextResponse.text: " <<  getTextResponse.text << std::endl;
-      std::cout << getTextResponse.text << std::endl;
     } catch (const std::bad_any_cast& e) {
       std::cout << e.what() << std::endl;
     }

@@ -19,12 +19,12 @@ static void eraseDelimiter(std::string& jsonData, const std::string_view& delimi
 
 
 NetworkManager::NetworkManager(std::shared_ptr<Connector::IQueueManager> queueManager) :
-                                            NetworkManager(queueManager, std::string(kServerIp), kServerPort)  {}
+                                            NetworkManager(std::move(queueManager), std::string(kServerIp), kServerPort)  {}
 
 NetworkManager::NetworkManager(std::shared_ptr<Connector::IQueueManager> queueManager,
-                               std::string serverIp,
+                               const std::string& serverIp,
                                std::uint32_t port) :
-                                 _queueManager{queueManager},
+                                 _queueManager{std::move(queueManager)},
                                  _ioService{},
                                  _endPoint(boost::asio::ip::address::from_string(serverIp), port),
                                  _socket{_ioService},

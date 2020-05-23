@@ -28,6 +28,7 @@ struct SharedContext {
     std::unordered_map<ElementName, std::shared_ptr<BaseElement>> sharedElements;
 
     std::string uuid;
+    std::string playerId;
     std::weak_ptr<Network::INetworkManager> networkManager;
     std::weak_ptr<Network::Client::IQueueManager> queueManager;
 };
