@@ -28,7 +28,7 @@ public:
 
   GameController(const std::shared_ptr<QueueManager> &queueManager,
                   const std::shared_ptr<IDataBaseFacade> &dataBaseFacade,
-                  const RoomConfig &roomConfig = RoomConfig());
+                  RoomConfig &&roomConfig = RoomConfig());
   ~GameController();
   void startController();
   void stopController();

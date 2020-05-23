@@ -10,10 +10,14 @@
 #include "BasicController.hpp"
 #include "GameController.hpp"
 #include "DataBaseFacade.hpp"
+#include "ConfigParser.hpp"
 #include "Logger.hpp"
 
 
+
+
 #include <boost/asio/signal_set.hpp>
+#include <boost/program_options.hpp>
 
 
 
@@ -22,18 +26,21 @@ public:
 
   Setup();
   ~Setup();
-  void parseConfig();
+  void parseConfig(const std::string &path);
   void start();
   void stop();
   void setup();
 
 private:
+  void parseProgOptions(int argc, const char *argv[]);
   void runInterface();
   void runSignalCatcher();
 
 private:
   boost::asio::io_service _service;
   boost::asio::signal_set _signalSet;
+  
+  ConfigParser _configParser;
 
   std::shared_ptr<IDataBaseFacade> _dataBaseFacade;
   std::shared_ptr<QueueManager> _queueManager;

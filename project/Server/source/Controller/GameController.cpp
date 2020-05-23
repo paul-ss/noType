@@ -8,10 +8,10 @@
 
 GameController::GameController(const std::shared_ptr<QueueManager> &queueManager,
                                 const std::shared_ptr<IDataBaseFacade> &dataBaseFacade,
-                                const RoomConfig &roomConfig) :
+                                RoomConfig &&roomConfig) :
     _queueManager(queueManager),
     _dataBaseFacade(dataBaseFacade),
-    _roomConfig(roomConfig),
+    _roomConfig(std::move(roomConfig)),
     _roomManager(std::make_shared<RoomManager>()),
     _work(_service),
     _state(GAME_CONTROLLER_STOP) {}

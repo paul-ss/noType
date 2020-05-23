@@ -5,13 +5,13 @@
 #include "TcpServer.hpp"
 #include "Logger.hpp"
 
-TcpServer::TcpServer(const std::shared_ptr<QueueManager> &queueManager, const ServerConfig &config) :
+TcpServer::TcpServer(const std::shared_ptr<QueueManager> &queueManager, ServerConfig &&config) :
     _acceptor(_service),
     _clients (new ConnectedClients()),
     _queueManager(queueManager),
     _ep(boost::asio::ip::address::from_string(config._ip), config._port),
     _state(SERVER_STOP),
-    _config(config) {}
+    _config(std::move(config)) {}
 
 
 TcpServer::~TcpServer() {

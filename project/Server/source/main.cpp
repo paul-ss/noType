@@ -7,11 +7,15 @@
 #include "Setup.hpp"
 #include "Logger.hpp"
 
+namespace po = boost::program_options;
+
 
 
 int main(int argc, const char *argv[]) {
+  Setup serverSetup;
+
   try {
-    boost::program_options::options_description desc{"Options"};
+    po::options_description desc{"Options"};
     desc.add_options()
       ("help,h", "Help screen")
       ("trace","TRACE")
@@ -19,9 +23,15 @@ int main(int argc, const char *argv[]) {
       ("info", "INFO")
       ("warning","WARNING")
       ("error","ERROR")
-      ("fatal", "FATAL");
+      ("fatal", "FATAL")
+      ("stdout", "TRACE logging to stdout))")
+      (
+          "config,c",
+          po::value<std::string>()->default_value("config/Server.conf"),
+          "Specify config file path. Usage: -c <config path>"
+      );
 
-    boost::program_options::variables_map vm;
+    po::variables_map vm;
     store(parse_command_line(argc, argv, desc), vm);
     notify(vm);
 
@@ -31,7 +41,7 @@ int main(int argc, const char *argv[]) {
     } else if (vm.count("trace")) {
       initLogger(boost::log::trivial::trace);
     } else if (vm.count("debug")) {
-     // initLogger(boost::log::trivial::debug);
+      initLogger(boost::log::trivial::debug);
     } else if (vm.count("info")) {
       initLogger(boost::log::trivial::info);
     } else if (vm.count("warning")) {
@@ -40,16 +50,29 @@ int main(int argc, const char *argv[]) {
       initLogger(boost::log::trivial::error);
     } else if (vm.count("fatal")) {
       initLogger(boost::log::trivial::fatal);
+    } else if (vm.count("stdout")) {
+      ;
     } else {
       std::cout << desc << std::endl;
       return EXIT_FAILURE;
     }
-  } catch (const boost::program_options::error &ex) {
+
+
+    serverSetup.parseConfig(vm["config"].as<std::string>());
+
+
+
+  } catch (const po::error &ex) {
     std::cerr << ex.what() << std::endl;
+    return EXIT_FAILURE;
+
+  } catch (...) {
+    std::cerr << "Unknown exception" << std::endl;
+    return EXIT_FAILURE;
   }
 
 
-  Setup serverSetup;
+
 
   serverSetup.setup();
   serverSetup.start();

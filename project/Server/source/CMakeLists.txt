@@ -10,6 +10,7 @@ INCLUDE_DIRECTORIES(
         Exceptions
         Setup
         Parser
+        ConfigParser
         Logger)
 
 
@@ -45,6 +46,18 @@ ADD_LIBRARY(LoggerLib STATIC
 TARGET_INCLUDE_DIRECTORIES(LoggerLib PUBLIC Logger/ ${Boost_INCLUDE_DIRS})
 
 TARGET_LINK_LIBRARIES(LoggerLib PUBLIC ${Boost_LIBRARIES})
+
+
+
+
+ADD_LIBRARY(ConfigParserLib STATIC
+        ConfigParser/ConfigParser.hpp
+        ConfigParser/ConfigParser.cpp
+        Room/RoomConfig.hpp
+        TcpServer/ServerConfig.hpp)
+
+TARGET_INCLUDE_DIRECTORIES(ConfigParserLib PUBLIC ConfigParser/ ${Boost_INCLUDE_DIRS})
+TARGET_LINK_LIBRARIES(ConfigParserLib PUBLIC ${Boost_LIBRARIES})
 
 
 ADD_SUBDIRECTORY(DataBase/)
@@ -137,6 +150,7 @@ TARGET_LINK_LIBRARIES(server
         RoomLib
         QueueLib
         CommandLib
+        ConfigParserLib
         LoggerLib)
 
 

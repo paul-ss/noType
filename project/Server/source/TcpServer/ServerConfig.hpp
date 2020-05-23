@@ -15,6 +15,19 @@ struct ServerConfig {
       _queueWorkersCount(1),
       _delim("delim") {}
 
+  ServerConfig(const std::string &ipAddress,
+               unsigned int port,
+               int listenCount,
+               unsigned int workerThreadsCount,
+               unsigned int queueWorkersCount,
+               const std::string &delim) :
+      _ip(ipAddress),
+      _port(port),
+      _listenCount(listenCount),
+      _workerThreadsCount(workerThreadsCount),
+      _queueWorkersCount(queueWorkersCount),
+      _delim(delim) {}
+
   std::string _ip;
   unsigned int _port;
   int _listenCount;

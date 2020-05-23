@@ -19,8 +19,11 @@ Setup::~Setup() {
 
 
 
-void Setup::parseConfig() {
-  // todo imlement it
+
+
+
+void Setup::parseConfig(const std::string &configPath) {
+  _configParser.parseConfig(configPath);
 }
 
 
@@ -61,16 +64,15 @@ void Setup::runSignalCatcher() {
 
 
 void Setup::setup() {
-  parseConfig();
 
-  RoomConfig roomConfig(200, 5, 10000, 60000, 3000, 3000);
 
+  //RoomConfig roomConfig(200, 5, 10000, 60000, 3000, 3000);
 
 
   _dataBaseFacade = std::make_shared<DataBaseFacade>();
   _queueManager = std::make_shared<QueueManager>();
 
-  _tcpServer = std::make_unique<TcpServer>(_queueManager);
-  _gameController = std::make_unique<GameController>(_queueManager, _dataBaseFacade, roomConfig);
+  _tcpServer = std::make_unique<TcpServer>(_queueManager, _configParser.extractServerConfig());
+  _gameController = std::make_unique<GameController>(_queueManager, _dataBaseFacade, _configParser.extractRoomConfig());
   _basicController = std::make_unique<BasicController>(_queueManager, _dataBaseFacade);
 }
