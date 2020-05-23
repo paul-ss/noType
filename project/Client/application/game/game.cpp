@@ -83,4 +83,5 @@ void Game::Run() {
         lateUpdate();
     }
     _networkManager->Disconnect();
+  _networkManager->Stop();
 }
