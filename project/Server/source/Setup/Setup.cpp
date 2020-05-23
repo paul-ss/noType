@@ -27,6 +27,11 @@ void Setup::parseConfig(const std::string &configPath) {
 }
 
 
+void Setup::initLogger(boost::log::trivial::severity_level securityLevel) {
+  Logger::initLogger(securityLevel, _configParser.getLoggerConfig());
+}
+
+
 void Setup::start() {
   _tcpServer->startServer();
   _gameController->startController();

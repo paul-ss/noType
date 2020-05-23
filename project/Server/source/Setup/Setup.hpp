@@ -27,13 +27,13 @@ public:
   Setup();
   ~Setup();
   void parseConfig(const std::string &path);
+  void initLogger(boost::log::trivial::severity_level securityLevel);
   void start();
   void stop();
   void setup();
 
 private:
   void parseProgOptions(int argc, const char *argv[]);
-  void runInterface();
   void runSignalCatcher();
 
 private:

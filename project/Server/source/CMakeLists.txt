@@ -11,6 +11,7 @@ INCLUDE_DIRECTORIES(
         Setup
         Parser
         ConfigParser
+        ProgramOptionsParser
         Logger)
 
 
@@ -41,7 +42,7 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 ADD_LIBRARY(LoggerLib STATIC
         Logger/Logger.hpp
-        Logger/Logger.cpp)
+        Logger/Logger.cpp Logger/LoggerConfig.hpp)
 
 TARGET_INCLUDE_DIRECTORIES(LoggerLib PUBLIC Logger/ ${Boost_INCLUDE_DIRS})
 
@@ -138,7 +139,7 @@ ADD_EXECUTABLE(server
         Controller/GameController.hpp
         Exceptions/Exceptions.hpp
         Setup/Setup.cpp
-        Setup/Setup.hpp)
+        Setup/Setup.hpp ProgramOptionsParser/ProgramOptionsParser.cpp ProgramOptionsParser/ProgramOptionsParser.hpp)
 
 
 TARGET_LINK_LIBRARIES(server

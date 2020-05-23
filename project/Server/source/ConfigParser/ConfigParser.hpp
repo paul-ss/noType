@@ -6,6 +6,7 @@
 
 #include "RoomConfig.hpp"
 #include "ServerConfig.hpp"
+#include "LoggerConfig.hpp"
 
 #include <string>
 
@@ -28,6 +29,8 @@
 #define PLAY_HANDLE_INTERVAL_PATH "playHandleInterval"
 #define END_DURATION_PATH "endDuration"
 
+#define LOG_FILE_PATH "logFile"
+
 
 
 namespace pt = boost::property_tree;
@@ -38,13 +41,16 @@ public:
   void parseConfig(const std::string &configPath);
   RoomConfig &&extractRoomConfig();
   ServerConfig &&extractServerConfig();
+  LoggerConfig getLoggerConfig();
 
 private:
-  void parseRoomConfig(const std::string &configPath);
-  void parseTcpServerConfig(const std::string &configPath);
+  void parseRoomConfig(const pt::ptree &pTree);
+  void parseTcpServerConfig(const pt::ptree &pTree);
+  void parseLoggerConfig(const pt::ptree &pTree);
 
 private:
   std::unique_ptr<RoomConfig> _roomConfig;
   std::unique_ptr<ServerConfig> _serverConfig;
+  std::unique_ptr<LoggerConfig> _loggerConfig;
 };
 
