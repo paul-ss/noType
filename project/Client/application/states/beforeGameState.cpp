@@ -39,9 +39,8 @@ void BeforeGameState::Init() {
         auto queueManager = GetQueueManager();
 
         Network::InitRequest initRequest;
-        std::any data = initRequest;
         auto sendMsg = std::make_unique<Network::Message>
-                (Network::MessageType::InitRequest, std::move(data));
+                (Network::MessageType::InitRequest, initRequest);
         queueManager->PushToSendingData(std::move(sendMsg));
 
         std::unique_ptr<Network::Message> recvMsg = nullptr;
@@ -120,7 +119,6 @@ void BeforeGameState::StartGameSession() {
             auto startGameSessionResponse = std::any_cast<Network::StartGameSessionResponse>(data);
             checkNetStatus(startGameSessionResponse.status, startGameSessionResponse.error);
             _waitTime = startGameSessionResponse.waitTime;
-            _waitTime /= 1000.0; // to second
             auto windowSize = renderWindow->getSize();
             sf::Vector2f windowCenter(windowSize.x * 0.5, windowSize.y * 0.5);
             auto timeToStart = std::make_shared<TextField>(ElementName::TimeToStart,
@@ -213,15 +211,19 @@ void BeforeGameState::BackToMenu() {
 void BeforeGameState::Update(const sf::Time& l_time) {
     try {
         auto stateMgr = GetStateManager();
-        _waitTime -= l_time.asSeconds();
-        if (_waitTime >= 0.0) {
+        _waitTime -= l_time.asMilliseconds();
+        std::cout << _waitTime << "\n";
+        if (_waitTime >= 0) {
+            std::cout << "HERE\n";
             auto itr = _elements.find(ElementName::TimeToStart);
             if (itr == _elements.end()) {
                 return;
             }
-            itr->second->SetText(std::to_string(_waitTime));
+            auto waitTimeInSeconds = std::max<int>(_waitTime / 1000, 0);
+            itr->second->SetText(std::to_string(waitTimeInSeconds));
         } else {
             if (isGame()) {
+                std::cout << "Game is started" << std::endl;
                 Game();
             } else {
                 BOOST_LOG_TRIVIAL(error) << "[beforeGameState - update] " << "Internal server error. Back to menu.";

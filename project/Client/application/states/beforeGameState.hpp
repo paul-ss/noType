@@ -32,5 +32,5 @@ public:
     void Quit(EventDetails& l_details);
 
 private:
-    double _waitTime;
+    std::int32_t _waitTime;
 };
