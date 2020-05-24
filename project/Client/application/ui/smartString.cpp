@@ -94,12 +94,12 @@ std::string SmartString::Validate(const char l_char) {
                 _coloredText << sf::Color::Green << beforeChar
                         << sf::Color::Green << l_char
                         << sf::Color::White << afterChar;
-                if (_validatedBlock.size() <= TEXT_BLOCK_SIZE) {
-                    return std::string();
+                if (_validatedBlock.size() >= TEXT_BLOCK_SIZE || _textPosition == _reference.size() - 1) {
+                    std::string temp = _validatedBlock;
+                    _validatedBlock = std::string();
+                    return temp;
                 }
-                std::string temp = _validatedBlock;
-                _validatedBlock = std::string();
-                return temp;
+                return std::string();
             } else {
                 auto falseChar = _reference.substr(_textPosition, 1);
                 if (falseChar == " ") {
