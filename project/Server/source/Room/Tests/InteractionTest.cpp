@@ -7,6 +7,8 @@
 #include "Room.hpp"
 #include "RoomManager.hpp"
 
+#include "RoomEnd.hpp"
+
 #include <thread>
 
 using ::testing::Return;
@@ -114,3 +116,91 @@ TEST_F(Interaction, insert) {
   service.run();
 
 }
+
+
+TEST_F(Interaction, delete_player_wait) {
+  for (int i = 0; i < 5; i++) {
+    auto playerInfo = std::make_unique<PlayerInfo>("uuid" + std::to_string(i));
+    EXPECT_CALL(*db, FindPlayerInfoByUuid("uuid" + std::to_string(i)))
+        .Times(0);
+
+  }
+
+  EXPECT_CALL(*db, UpadatePlayerInfo_(_))
+      .Times(0);
+  EXPECT_CALL(*db, InsertPlayerInfo_(_))
+      .Times(0);
+
+
+  room->setRoomStatus(std::make_shared<RoomWait>(rc));
+  for (int i = 0; i < 5; i++) {
+    ASSERT_TRUE(room->deletePlayer(pls[i].clientUUID));
+  }
+  service.run();
+}
+
+TEST_F(Interaction, delete_player_play) {
+  for (int i = 0; i < 5; i++) {
+    auto playerInfo = std::make_unique<PlayerInfo>("uuid" + std::to_string(i));
+    EXPECT_CALL(*db, FindPlayerInfoByUuid("uuid" + std::to_string(i)))
+        .Times(0);
+
+  }
+
+  EXPECT_CALL(*db, UpadatePlayerInfo_(_))
+      .Times(0);
+  EXPECT_CALL(*db, InsertPlayerInfo_(_))
+      .Times(0);
+
+
+  room->setRoomStatus(std::make_shared<RoomPlay>(rc));
+  for (int i = 0; i < 5; i++) {
+    ASSERT_TRUE(room->deletePlayer(pls[i].clientUUID));
+  }
+  service.run();
+}
+
+
+TEST_F(Interaction, delete_player_end) {
+  for (int i = 0; i < 5; i++) {
+    auto playerInfo = std::make_unique<PlayerInfo>("uuid" + std::to_string(i));
+    EXPECT_CALL(*db, FindPlayerInfoByUuid("uuid" + std::to_string(i)))
+        .WillOnce(Return(ByMove(std::move(playerInfo))));
+
+  }
+
+  EXPECT_CALL(*db, UpadatePlayerInfo_(_))
+      .Times(5);
+
+
+
+  room->setRoomStatus(std::make_shared<RoomEnd>(rc));
+  for (int i = 0; i < 5; i++) {
+    ASSERT_TRUE(room->deletePlayer(pls[i].clientUUID));
+  }
+  service.run();
+}
+
+
+TEST_F(Interaction, delete_player_end_2) {
+  for (int i = 0; i < 5; i++) {
+    auto playerInfo = std::make_unique<PlayerInfo>("uuid" + std::to_string(i));
+    EXPECT_CALL(*db, FindPlayerInfoByUuid("uuid" + std::to_string(i)))
+        .WillOnce(Return(ByMove(std::move(playerInfo))));
+
+  }
+
+  EXPECT_CALL(*db, UpadatePlayerInfo_(_))
+      .Times(5);
+
+
+
+  room->setRoomStatus(std::make_shared<RoomEnd>(rc));
+  for (int i = 0; i < 3; i++) {
+    ASSERT_TRUE(room->deletePlayer(pls[i].clientUUID));
+  }
+  service.run();
+}
+
+
+

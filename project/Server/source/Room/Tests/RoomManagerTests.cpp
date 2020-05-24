@@ -55,3 +55,30 @@ TEST(room_manager, delete_get_room) {
 
   ASSERT_TRUE(rm->getRoom("uuid5"));
 }
+
+
+TEST(room_manager, delete_player) {
+  RoomConfig rc(200, 5, 1000, 2000, 700, 0);
+  boost::asio::io_service service;
+  auto rm = std::make_shared<RoomManager>();
+  auto db = std::make_shared<FakeDataBase>("text");
+
+  ASSERT_FALSE(rm->deletePlayer("uuid"));
+  ASSERT_FALSE(rm->deletePlayer(""));
+  ASSERT_FALSE(rm->deletePlayer("uuid 3423434114125412"));
+
+  for (int i = 0; i < 27; i++) {
+    ASSERT_TRUE(rm->addPlayerAndRoom(Player("uuid" + std::to_string(i), "name" + std::to_string(i)), service, db, rc));
+  }
+
+  for (int i = 0; i < 27; i++) {
+    ASSERT_TRUE(rm->deletePlayer("uuid" + std::to_string(i)));
+    ASSERT_FALSE(rm->deletePlayer("uuid" + std::to_string(i)));
+  }
+
+  ASSERT_FALSE(rm->deletePlayer("uuid"));
+  ASSERT_FALSE(rm->deletePlayer(""));
+  ASSERT_FALSE(rm->deletePlayer("uuid 3423434114125412"));
+}
+
+

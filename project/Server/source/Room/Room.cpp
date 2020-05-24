@@ -169,10 +169,10 @@ void Room::removeSelf() {
   if (roomManagerShared) {
     if (!roomManagerShared->deleteRoom(_roomUUID)) {
       BOOST_LOG_TRIVIAL(error) << "RemoveSelf error: can't erase room";
+    } else {
+      // mutex ?
+      BOOST_LOG_TRIVIAL(info) << "Room " + _roomUUID + " removed";
     }
-    // mutex ?
-    BOOST_LOG_TRIVIAL(info) << "Room " + _roomUUID + " removed";
-
   } else {
     BOOST_LOG_TRIVIAL(error) << "RemoveSelf error: can't make shared";
   }

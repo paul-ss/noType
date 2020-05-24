@@ -137,3 +137,38 @@ TEST_F(RoomPlayTest, get_room_status) {
     playersEQ(res.players.at("uuid" + std::to_string(i)), pls[i]);
   }
 }
+
+
+
+TEST_F(RoomPlayTest, delete_player) {
+  ASSERT_THROW(room->deletePlayer("uuid5"), RoomException);
+  ASSERT_THROW(room->deletePlayer(""), RoomException);
+
+  for (int i = 0; i < 5; i++) {
+    ASSERT_TRUE(room->deletePlayer(pls[i].clientUUID));
+  }
+
+  ASSERT_EQ(room->getPlayers().size(), 0);
+  ASSERT_EQ(room->getPlayersUUID().size(), 0);
+}
+
+
+
+TEST_F(RoomPlayTest, delete_player_multithread) {
+  std::vector<std::thread> thr;
+
+  for (int i = 0; i < 5; i++) {
+    thr.emplace_back([&, i] () {
+      EXPECT_TRUE(room->deletePlayer(pls[i].clientUUID));
+      EXPECT_THROW(room->deletePlayer(pls[i].clientUUID), RoomException);
+    });
+  }
+
+  for (auto &t : thr) {
+    t.join();
+  }
+
+
+  ASSERT_EQ(room->getPlayers().size(), 0);
+  ASSERT_EQ(room->getPlayersUUID().size(), 0);
+}

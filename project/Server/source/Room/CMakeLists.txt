@@ -6,7 +6,7 @@ ADD_EXECUTABLE(roomTests
         Tests/RoomPlayTest.cpp
         Tests/FakeDataBase.hpp
         Tests/FakeDataBase.cpp
-        Tests/InteractionTest.cpp)
+        Tests/InteractionTest.cpp Tests/RoomEndTests.cpp)
 
 
 TARGET_LINK_LIBRARIES(roomTests

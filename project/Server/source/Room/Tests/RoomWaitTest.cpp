@@ -103,3 +103,56 @@ TEST_F(RoomWaitTest, get_room_status) {
     playersEQ(res.players.at("uuid" + std::to_string(i)), pls[i]);
   }
 }
+
+
+TEST_F(RoomWaitTest, delete_player) {
+  std::vector<Player> pls;
+
+  ASSERT_THROW(room->deletePlayer(""), RoomException);
+  ASSERT_THROW(room->deletePlayer("uuid1"), RoomException);
+
+  for (int i = 0; i < 5; i++) {
+    Player player("uuid" + std::to_string(i), "name" + std::to_string(i));
+    ASSERT_TRUE(room->addPlayer(player));
+    pls.emplace_back(player);
+  }
+
+  ASSERT_THROW(room->deletePlayer("uuid5"), RoomException);
+  ASSERT_THROW(room->deletePlayer(""), RoomException);
+
+  for (int i = 0; i < 5; i++) {
+    ASSERT_TRUE(room->deletePlayer(pls[i].clientUUID));
+  }
+
+  ASSERT_EQ(room->getPlayers().size(), 0);
+  ASSERT_EQ(room->getPlayersUUID().size(), 0);
+}
+
+
+TEST_F(RoomWaitTest, delete_player_multithread) {
+  std::vector<std::thread> thr;
+  std::vector<Player> pls;
+
+  for (int i = 0; i < 5; i++) {
+    Player player("uuid" + std::to_string(i), "name" + std::to_string(i));
+    ASSERT_TRUE(room->addPlayer(player));
+    pls.emplace_back(player);
+  }
+
+  for (int i = 0; i < 5; i++) {
+    thr.emplace_back([&, i] () {
+      EXPECT_TRUE(room->deletePlayer(pls[i].clientUUID));
+      EXPECT_THROW(room->deletePlayer(pls[i].clientUUID), RoomException);
+    });
+  }
+
+  for (auto &t : thr) {
+    t.join();
+  }
+
+
+  ASSERT_EQ(room->getPlayers().size(), 0);
+  ASSERT_EQ(room->getPlayersUUID().size(), 0);
+}
+
+
