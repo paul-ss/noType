@@ -6,17 +6,6 @@ ProgressBar::ProgressBar(const ElementName l_name, std::weak_ptr<SharedContext> 
         const sf::Vector2f& l_position,
         const std::string& l_style) :
         BaseElement(l_name, l_sharedContext, l_position, l_style) {
-    
-    try {
-        std::shared_ptr<SharedContext>sharedContext(_sharedContext);
-        std::shared_ptr<Window>window(sharedContext->window);
-        std::shared_ptr<sf::RenderWindow>renderWindow(window->GetRenderWindow());
-        auto windowSize = renderWindow->getSize();
-        _progressBar.setOrigin(windowSize.x * 0.5, windowSize.y * 0.5);
-
-    } catch (std::bad_weak_ptr& e) {
-        //log
-    }
 
     auto styleItr = _style.find(ElementState::Neutral);
     if (styleItr == _style.end()) {
@@ -28,6 +17,7 @@ ProgressBar::ProgressBar(const ElementName l_name, std::weak_ptr<SharedContext> 
     _progressBar.setPosition(l_position.x, l_position.y);
     _progressBar.setShowBackgroundAndFrame(true);
     _progressBar.setSize(_visual.backgroundSolid.getSize());
+    _progressBar.setOrigin(_progressBar.getLocalBounds().width * 0.5, 0);
     _progressBar.setColor(_visual.backgroundSolid.getFillColor());
 }
 

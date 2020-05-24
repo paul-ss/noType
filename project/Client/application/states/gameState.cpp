@@ -32,10 +32,10 @@ void GameState::OnCreate() {
         }
 
         auto windowSize = renderWindow->getSize();
-        auto pb = std::make_shared<ProgressBar>(ElementName::LeaderPosition, context, sf::Vector2f(0, 0), "progressBar.json");
-        auto pbSize = pb->GetSize();
-        sf::Vector2f pbPosition(0,0);
-        pb->SetPosition(pbPosition);
+        auto pb = std::make_shared<ProgressBar>(ElementName::LeaderPosition, context, sf::Vector2f(windowSize.x * 0.5, 0), "progressBar.json");
+        //auto pbSize = pb->GetSize();
+        //sf::Vector2f pbPosition(0,0);
+        //pb->SetPosition(pbPosition);
         _elements.emplace(ElementName::LeaderPosition, pb);
 
         // add mute, back to menu button
@@ -125,17 +125,16 @@ void GameState::UpdateLeaderPosition(const std::unordered_map<std::string, Netwo
         BOOST_LOG_TRIVIAL(error) << "[game - updateleaderposition] " << "leaderposition not found";
     }
     auto str = std::dynamic_pointer_cast<SmartString>(itrStr->second);
-    //itrPb->second->Update(currPos / str->GetStringSize());
-    itrPb->second->Update(50.0f);
+    itrPb->second->Update(currPos / str->GetStringSize());
+    //itrPb->second->Update(50.0f);
 }
 
-size_t GameState::UpdatePlayerPosition(const std::unordered_map<std::string, Network::PlayerInfo>& l_players) {
+void GameState::UpdatePlayerPosition(const std::unordered_map<std::string, Network::PlayerInfo>& l_players) {
     try {
     auto context = GetSharedContext();
     auto itr = l_players.find(context->playerId);
     if (itr == l_players.end()) {
         //log
-        return 0;
     }
     std::vector<std::pair<std::string, size_t>> playersPositions;
     for (auto& [playerId, playerInfo]: l_players) {
@@ -190,10 +189,10 @@ void GameState::GetAverageSpeed() {
     }
 }
 
-double GameState::CountAverageSpeed(const double l_speed) {
+void GameState::CountAverageSpeed(const double l_speed) {
     _currentSpeed.push_back(l_speed);
     auto sum = std::accumulate(_currentSpeed.begin(), _currentSpeed.end(), 0.0);
-    return sum / _currentSpeed.size();
+    _averageSpeed = sum / _currentSpeed.size();
 }
 
 void GameState::OnDestroy() {
@@ -242,9 +241,9 @@ void GameState::CheckRoomStatus() {
                 BOOST_LOG_TRIVIAL(error) << "[game - checkroomstatus] " << "player uuid not found";
                 return;
             }
-            _averageSpeed = CountAverageSpeed(itr->second.speed);
+            CountAverageSpeed(itr->second.speed);
             _textPosition = itr->second.position;
-            _playerPosition = UpdatePlayerPosition(roomStatusResponse.playersInfo);
+            UpdatePlayerPosition(roomStatusResponse.playersInfo);
 
             if (roomStatusResponse.roomStatus == Network::RoomStatus::End ||
                     itr->second.status == Network::PlayerInfo::Status::Finish) {
@@ -276,7 +275,7 @@ void GameState::AfterGame() {
 void GameState::Draw() {
     drawElement(ElementName::Filler);
     drawElement(ElementName::SmartString);
-    //drawElement(ElementName::LeaderPosition);
+    drawElement(ElementName::LeaderPosition);
 }
 
 void GameState::Activate() {}

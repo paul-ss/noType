@@ -29,13 +29,13 @@ public:
 
 public:
     void GetAverageSpeed();
-    double CountAverageSpeed(const double l_speed);
+    void CountAverageSpeed(const double l_speed);
 
     void UpdateLeaderPosition(const std::unordered_map<std::string, Network::PlayerInfo>& l_players);
     void CheckRoomStatus();
     void UpdatePosition(const std::string& l_validatedBlock);
 
-    size_t UpdatePlayerPosition(const std::unordered_map<std::string, Network::PlayerInfo>& l_players);
+    void UpdatePlayerPosition(const std::unordered_map<std::string, Network::PlayerInfo>& l_players);
     void GetPlayerPosition();
 
     void TextEntered(EventDetails& l_details);
