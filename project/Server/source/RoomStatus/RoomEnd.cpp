@@ -19,6 +19,31 @@ ExpectedRoom<AddPlayerResp> RoomEnd::addPlayer(std::shared_ptr<Room> room, const
 }
 
 
+
+
+bool RoomEnd::deletePlayer(std::shared_ptr<Room> room, const std::string &clientUUID) {
+  std::unique_lock<std::mutex> lock(room->_roomMutex);
+
+  if (clientUUID.empty()) {
+    throw RoomException("deletePlayer (END) : Invalid Player UUID at room " + room->_roomUUID);
+  }
+
+  if (room->_players.count(clientUUID) == 0) {
+    throw RoomException("deletePlayer (END) : Attempt to delete not existing player at room " + room->_roomUUID);
+  }
+
+  room->sendOnePlayerStatistic(room->_players.at(clientUUID));
+
+  if (room->_players.erase(clientUUID) == 0) {
+    BOOST_LOG_TRIVIAL(error) << "deletePlayer (END) : Player disappeared somewhere. It's magic";
+  }
+
+  return true;
+}
+
+
+
+
 ExpectedRoom<std::string> RoomEnd::getText(std::shared_ptr<Room> room) {
   std::unique_lock<std::mutex> lock(room->_roomMutex);
   return RoomError("getText (END) : can't get text");
@@ -56,12 +81,12 @@ void RoomEnd::deadlineHandler(std::shared_ptr<Room> room, const boost::system::e
 
   BOOST_LOG_TRIVIAL(info) << "End handler";
 
+  room->removeSelf();
+
   {
     std::unique_lock<std::mutex> lock(room->_roomMutex);
     room->sendStatistic();
   }
-
-  room->removeSelf();
 }
 
 

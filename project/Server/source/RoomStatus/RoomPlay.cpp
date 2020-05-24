@@ -25,11 +25,40 @@ ExpectedRoom<AddPlayerResp> RoomPlay::addPlayer(std::shared_ptr<Room> room, cons
 }
 
 
+bool RoomPlay::deletePlayer(std::shared_ptr<Room> room, const std::string &clientUUID) {
+  std::unique_lock<std::mutex> lock(room->_roomMutex);
+
+  if (clientUUID.empty()) {
+    throw RoomException("deletePlayer (PLAY) : Invalid Player UUID at room " + room->_roomUUID);
+  }
+
+  if (room->_players.erase(clientUUID) == 0) {
+    throw RoomException("deletePlayer (PLAY) : Attempt to delete not existing player at room " + room->_roomUUID);
+  }
+
+  if (room->_players.size() == 0) {
+    // all players gone, stop async handler
+    if (room->_timer.cancel() > 0) {
+      room->_roomStatus = std::shared_ptr<IRoomStatus>(std::make_shared<RoomEnd>(_roomConfig));
+      room->startAsyncEvent();
+      BOOST_LOG_TRIVIAL(info) << "deletePlayer (PLAY) : Async wait canceled in room " + room->_roomUUID + ". All players gone.";
+    } else {
+      BOOST_LOG_TRIVIAL(info) << "deletePlayer (PLAY) : No one async wait canceled in room " + room->_roomUUID;
+    }
+  }
+
+  return true;
+}
+
+
+
+
 
 ExpectedRoom<std::string> RoomPlay::getText(std::shared_ptr<Room> room) {
   std::unique_lock<std::mutex> lock(room->_roomMutex);
   return room->_text;  // player may do it, but why?
 }
+
 
 
 
@@ -64,8 +93,10 @@ ExpectedRoom<size_t> RoomPlay::validateWrittenText(std::shared_ptr<Room> room,
       if (room->_timer.cancel() > 0) {
         room->_roomStatus = std::shared_ptr<IRoomStatus>(std::make_shared<RoomEnd>(_roomConfig));
         room->startAsyncEvent();
+        BOOST_LOG_TRIVIAL(info) << "validateText (PLAY) : Async wait canceled in room " + room->_roomUUID
+        + ". All players have already finished.";
       } else {
-        BOOST_LOG_TRIVIAL(info) << "addPlayer (WAIT) : No one async wait canceled in room " + room->_roomUUID;
+        BOOST_LOG_TRIVIAL(info) << "validateText (PLAY) : No one async wait canceled in room " + room->_roomUUID;
       }
     }
   }

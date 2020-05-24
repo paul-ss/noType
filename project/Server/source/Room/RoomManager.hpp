@@ -21,6 +21,7 @@ public:
  // void addPlayer(const Player &player, boost::asio::io_service &service);
 
   bool deleteRoom(const std::string &roomUUID);
+  bool deletePlayer(const std::string &clientUUID);
   ExpectedRoom<AddPlayerResp> addPlayer(const Player &player);
   ExpectedRoom<AddPlayerResp> addPlayerAndRoom(const Player &player,
                                                boost::asio::io_service &service,
@@ -32,7 +33,6 @@ public:
 
 private:
   ExpectedRoom<AddPlayerResp> addPlayerInternal(const Player &player); // doesn't catch mutex!
-  bool deletePlayer(const std::string &playerUUID); // doesn't catch mutex!
   std::string randomUUID();
 
   

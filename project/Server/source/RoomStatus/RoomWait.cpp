@@ -52,6 +52,32 @@ ExpectedRoom<AddPlayerResp> RoomWait::addPlayer(std::shared_ptr<Room> room, cons
 }
 
 
+bool RoomWait::deletePlayer(std::shared_ptr<Room> room, const std::string &clientUUID) {
+  std::unique_lock<std::mutex> lock(room->_roomMutex);
+
+  if (clientUUID.empty()) {
+    throw RoomException("deletePlayer (WAIT) : Invalid Player UUID at room " + room->_roomUUID);
+  }
+
+  if (room->_players.erase(clientUUID) == 0) {
+    throw RoomException("deletePlayer (WAIT) : Attempt to delete not existing player at room " + room->_roomUUID);
+  }
+
+  if (room->_players.size() == 0) {
+    // all players gone, stop async handler
+    if (room->_timer.cancel() > 0) {
+      BOOST_LOG_TRIVIAL(info) << "deletePlayer (WAIT) : Async wait canceled in room " + room->_roomUUID + ". All players gone.";
+    } else {
+      BOOST_LOG_TRIVIAL(info) << "deletePlayer (WAIT) : No one async wait canceled in room " + room->_roomUUID;
+    }
+  }
+
+  return true;
+}
+
+
+
+
 ExpectedRoom<std::string> RoomWait::getText(std::shared_ptr<Room> room) {
   std::unique_lock<std::mutex> lock(room->_roomMutex);
   return room->_text;

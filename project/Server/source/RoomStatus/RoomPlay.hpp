@@ -14,6 +14,7 @@ class RoomPlay : public IRoomStatus {
 public:
   explicit RoomPlay(const RoomConfig &roomConfig);
   ExpectedRoom<AddPlayerResp> addPlayer(std::shared_ptr<Room> room, const Player &player) override;
+  bool deletePlayer(std::shared_ptr<Room> room, const std::string &clientUUID) override;
   ExpectedRoom<std::string> getText(std::shared_ptr<Room> room) override;
   ExpectedRoom<size_t> validateWrittenText(std::shared_ptr<Room> room, const std::string &text, const std::string &clientUUID) override;
   GetRoomStatusResp getRoomStatus(std::shared_ptr<Room> room) override;

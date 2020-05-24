@@ -44,6 +44,7 @@ public:
       _roomConfig(roomConfig) {}
   virtual ~IRoomStatus() = default;
   virtual ExpectedRoom<AddPlayerResp> addPlayer(std::shared_ptr<Room> room, const Player &player) = 0;
+  virtual bool deletePlayer(std::shared_ptr<Room> room, const std::string &clientUUID) = 0;
   virtual ExpectedRoom<std::string> getText(std::shared_ptr<Room> room) = 0;
   virtual ExpectedRoom<size_t> validateWrittenText(std::shared_ptr<Room> room, const std::string &text, const std::string &clientUUID) = 0;
   virtual GetRoomStatusResp getRoomStatus(std::shared_ptr<Room> room) = 0;

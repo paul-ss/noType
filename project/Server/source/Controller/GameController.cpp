@@ -267,15 +267,12 @@ void GameController::validateWrittenTextHandler(const std::shared_ptr<ValidateWr
 
 
 void GameController::leaveRoomHandler(const std::shared_ptr<LeaveRoomRequest> &command) {
-  auto room = _roomManager->getRoom(command->getClientUUID());
-  if (!room) {
-    auto commandResp = std::make_shared<ValidateWrittenTextResponse>(command->getConnectionUUID());
-    commandResp->setError("Player with uuid " + command->getClientUUID() + " doesn't exist in room");
-    _queueManager->controllerPush(commandResp);
-    return;
+  if (!_roomManager->deletePlayer(command->getClientUUID())) {
+    BOOST_LOG_TRIVIAL(info) << "GC : Can't delete player. Player doesn't exist in RM";
   }
 
-  // todo delete player!!!
+  auto commandResp = std::make_shared<LeaveRoomResponse>(command->getConnectionUUID());
+  _queueManager->controllerPush(commandResp);
 }
 
 

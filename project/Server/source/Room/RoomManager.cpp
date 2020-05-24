@@ -3,6 +3,7 @@
 //
 
 #include "RoomManager.hpp"
+#include "Logger.hpp"
 
 
 #include <iostream>
@@ -17,24 +18,48 @@ RoomManager::RoomManager(/* Data */) {
 
 bool RoomManager::deleteRoom(const std::string &roomUUID) {
   std::unique_lock<std::mutex> lock(_roomManagerMutex);
-  if (_rooms.count(roomUUID) > 0) {
-    // todo remove this
-    auto playersUUID = _rooms[roomUUID]->getPlayersUUID();
-    _rooms.erase(roomUUID);
-
-    for (auto &playerUUID : playersUUID) {
-      if (_players.count(playerUUID) > 0) {
-        _players.erase(playerUUID);
-      } else {
-        throw  RoomManagerException("Player with UUID " + playerUUID + " exists in room, but not in RoomManager");
-      }
-    }
-
-    return true;
-  } else {
+  if (_rooms.count(roomUUID) == 0) {
     return false;
   }
+
+  // todo remove this
+  auto playersUUID = _rooms[roomUUID]->getPlayersUUID();
+  _rooms.erase(roomUUID);
+
+  for (auto &playerUUID : playersUUID) {
+    if (_players.erase(playerUUID) == 0) {
+      BOOST_LOG_TRIVIAL(error) << "Player with UUID " + playerUUID + " exists in room, but not in RoomManager";
+    }
+  }
+
+  return true;
 }
+
+
+
+bool RoomManager::deletePlayer(const std::string &clientUUID) {
+  std::unique_lock<std::mutex> lock(_roomManagerMutex);
+  if (_players.count(clientUUID) == 0) {
+    return false;
+  }
+
+  auto roomUUID = _players[clientUUID];
+
+  if (_rooms.count(roomUUID) == 0) {
+    return false;
+  }
+
+  if (!_rooms[roomUUID]->deletePlayer(clientUUID)) {
+    throw RoomManagerException("Can't delete player with uuid '" + clientUUID + "' , but RM thinks, that player exists");
+  }
+
+  if (_players.erase(clientUUID) == 0) {
+    throw RoomManagerException("Can't erase player from RM. Magically disappeared");
+  }
+
+  return true;
+}
+
 
 
 

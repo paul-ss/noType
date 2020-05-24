@@ -41,6 +41,7 @@ public:
 
   std::unordered_map<std::string, Player> getPlayers();
   ExpectedRoom<AddPlayerResp> addPlayer(const Player &player);
+  bool deletePlayer(const std::string &clientUUID);
   ExpectedRoom<std::string> getText();
   ExpectedRoom<size_t> validateWrittenText(const std::string &text, const std::string &clientUUID);
   GetRoomStatusResp getRoomStatus();
@@ -66,6 +67,7 @@ private:
 
   void removeSelf();
   void sendStatistic();
+  void sendOnePlayerStatistic(const Player &player);
   void updatePlayerInfo(const Player &player, int increaseWinsCount, int increasePoints);
 
 

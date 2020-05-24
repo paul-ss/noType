@@ -64,6 +64,10 @@ ExpectedRoom<AddPlayerResp> Room::addPlayer(const Player &player) {
   return _roomStatus->addPlayer(shared_from_this(), player);
 }
 
+bool Room::deletePlayer(const std::string &clientUUID) {
+  return _roomStatus->deletePlayer(shared_from_this(), clientUUID);
+}
+
 
 ExpectedRoom<std::string> Room::getText() {
   return _roomStatus->getText(shared_from_this());
@@ -178,20 +182,27 @@ void Room::removeSelf() {
 
 void Room::sendStatistic() {
   for (auto &player : _players) {
-    switch (player.second.state) {
-      case (PlayerState::win) :
-        updatePlayerInfo(player.second, 1, (int) player.second.textPosition / 3);
-        break;
-
-      case (PlayerState::finish) :
-        updatePlayerInfo(player.second, 0, (int) player.second.textPosition / 4);
-        break;
-
-      default:
-        updatePlayerInfo(player.second, 0, (int) player.second.textPosition / 5);
-    }
+    sendOnePlayerStatistic(player.second);
   }
 }
+
+
+
+void Room::sendOnePlayerStatistic(const Player &player) {
+  switch (player.state) {
+    case (PlayerState::win) :
+      updatePlayerInfo(player, 1, (int) player.textPosition / 3);
+      break;
+
+    case (PlayerState::finish) :
+      updatePlayerInfo(player, 0, (int) player.textPosition / 4);
+      break;
+
+    default:
+      updatePlayerInfo(player, 0, (int) player.textPosition / 5);
+  }
+}
+
 
 
 void Room::updatePlayerInfo(const Player &player, int increaseWinsCount, int increasePoints) {
