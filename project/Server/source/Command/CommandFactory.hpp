@@ -11,6 +11,7 @@
 #include "GetText.hpp"
 #include "StartGameSession.hpp"
 #include "ValidateWrittenText.hpp"
+#include "LeaveRoom.hpp"
 
 #include <memory>
 

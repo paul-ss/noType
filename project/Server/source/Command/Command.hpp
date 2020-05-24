@@ -52,6 +52,8 @@ BETTER_ENUM (CommandType, int,
     RoomStatusResponse,
     ValidateWrittenTextRequest,
     ValidateWrittenTextResponse,
+    LeaveRoomRequest,
+    LeaveRoomResponse,
     ErrorRequest,
     ErrorResponse
 )

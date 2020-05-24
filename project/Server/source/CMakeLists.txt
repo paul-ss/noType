@@ -111,7 +111,7 @@ ADD_LIBRARY(CommandLib STATIC
         Command/Init.hpp
         Command/Connect.cpp
         Command/Connect.hpp
-        Utils/Error.hpp)
+        Utils/Error.hpp Command/LeaveRoom.cpp Command/LeaveRoom.hpp)
 
 
 TARGET_LINK_LIBRARIES(CommandLib LoggerLib ${Boost_LIBRARIES})

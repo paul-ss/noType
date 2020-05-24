@@ -66,6 +66,9 @@ std::shared_ptr<ClientCommand> CommandFactory::createCommandInternal(
     case CommandType::ValidateWrittenTextRequest :
       return std::make_shared<ValidateWrittenTextRequest>(connectionUUID, std::move(tree));
 
+    case CommandType::LeaveRoomRequest :
+      return std::make_shared<LeaveRoomRequest>(connectionUUID, std::move(tree));
+
     default:
       return std::make_shared<ErrorRequest>(connectionUUID, "CommandFactory error: invalid command type");
   }
