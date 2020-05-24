@@ -20,6 +20,7 @@ public:
     void OnRelease() override;
     void OnHover(const sf::Vector2f& l_mousePos) override;
     void OnLeave() override;
+    size_t GetStringSize();
 
 public:
     std::string Validate(const char l_char);

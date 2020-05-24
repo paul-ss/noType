@@ -3,7 +3,6 @@
 #include "label.hpp"
 #include "logger.hpp"
 
-#define ELEM_MARGIN_X 80
 #define ELEM_MARGIN_Y 100
 
 MainMenuState::MainMenuState(std::weak_ptr<SharedContext> l_context)

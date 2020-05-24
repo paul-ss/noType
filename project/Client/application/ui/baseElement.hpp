@@ -25,6 +25,7 @@ enum class ElementName {
     MenuButton,
     MuteButton,
     TimeToStart,
+    LeaderPosition,
     PlayerPosition,
     AverageSpeed,
     SmartString,

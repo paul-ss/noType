@@ -21,6 +21,6 @@ public:
     void Draw() override;
 
 public:
-    void MainMenu(EventDetails& l_details);
-    void Game(EventDetails& l_details);
+    void MouseClick(EventDetails& l_details);
+    void Menu();
 };

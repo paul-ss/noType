@@ -29,7 +29,6 @@ void BeforeGameState::OnCreate() {
             BOOST_LOG_TRIVIAL(error) << "[beforeGameState - oncreate] " << "filler not found";
         }
 
-
     } catch (const std::bad_weak_ptr& e) {
         BOOST_LOG_TRIVIAL(error) << "[beforeGameState - oncreate] " << e.what();
     }

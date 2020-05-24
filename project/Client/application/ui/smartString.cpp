@@ -32,10 +32,11 @@ SmartString::SmartString(const ElementName l_name, std::weak_ptr<SharedContext> 
     _reference = cuttedString;
 
     auto styleItr = _style.find(ElementState::Neutral);
-        if (styleItr == _style.end()) {
-            //log
-            return;
-        }
+    if (styleItr == _style.end()) {
+        //log
+        return;
+    }
+
     applyStyle(styleItr->second);
     if (_visual.text.getFont()) {
         _coloredText.setFont(*_visual.text.getFont());
@@ -45,6 +46,10 @@ SmartString::SmartString(const ElementName l_name, std::weak_ptr<SharedContext> 
     _coloredText.setCharacterSize(_visual.text.getCharacterSize());
     _coloredText.setPosition(l_position.x - _coloredText.getGlobalBounds().width * 0.5,
                             l_position.y);
+}
+
+size_t SmartString::GetStringSize() {
+    return _reference.size();
 }
 
 void SmartString::Draw() {
@@ -89,7 +94,9 @@ std::string SmartString::Validate(const char l_char) {
                 if (_validatedBlock.size() <= TEXT_BLOCK_SIZE) {
                     return std::string();
                 }
-                return _validatedBlock;
+                std::string temp = _validatedBlock;
+                _validatedBlock = std::string();
+                return temp;
             } else {
                 auto falseChar = _reference.substr(_textPosition, 1);
                 if (falseChar == " ") {

@@ -52,10 +52,7 @@ void IntroState::Draw() {
 void IntroState::Continue([[maybe_unused]] EventDetails& l_details) {
     try {
         auto stateMgr = GetStateManager();
-        if (!stateMgr) {
-            BOOST_LOG_TRIVIAL(error) << "Not valid state manager [intro - continue]";
-            return;
-        }
+
         stateMgr->SwitchTo(StateType::MainMenu);
         stateMgr->Remove(StateType::Intro);
 
