@@ -32,10 +32,8 @@ void GameState::OnCreate() {
         }
 
         auto windowSize = renderWindow->getSize();
-        auto pb = std::make_shared<ProgressBar>(ElementName::LeaderPosition, context, sf::Vector2f(windowSize.x * 0.5, 0), "progressBar.json");
-        //auto pbSize = pb->GetSize();
-        //sf::Vector2f pbPosition(0,0);
-        //pb->SetPosition(pbPosition);
+        auto pb = std::make_shared<ProgressBar>(ElementName::LeaderPosition, context,
+                sf::Vector2f(windowSize.x * 0.5, 0), "progressBar.json");
         _elements.emplace(ElementName::LeaderPosition, pb);
 
         // add mute, back to menu button
@@ -125,7 +123,7 @@ void GameState::UpdateLeaderPosition(const std::unordered_map<std::string, Netwo
         BOOST_LOG_TRIVIAL(error) << "[game - updateleaderposition] " << "leaderposition not found";
     }
     auto str = std::dynamic_pointer_cast<SmartString>(itrStr->second);
-    itrPb->second->Update(currPos / str->GetStringSize());
+    itrPb->second->Update(static_cast<float>(currPos) / str->GetStringSize());
     //itrPb->second->Update(50.0f);
 }
 

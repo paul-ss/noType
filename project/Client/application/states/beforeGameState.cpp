@@ -8,7 +8,7 @@
 #include "logger.hpp"
 #include "exceptions.hpp"
 
-#include <thread>
+#define FIX_COLLISION 500
 
 BeforeGameState::BeforeGameState(std::weak_ptr<SharedContext> l_context)
     : BaseState(l_context), _waitTime(0) {}
@@ -119,17 +119,14 @@ void BeforeGameState::StartGameSession() {
             auto data = recvMsg->ExtractData();
             auto startGameSessionResponse = std::any_cast<Network::StartGameSessionResponse>(data);
             checkNetStatus(startGameSessionResponse.status, startGameSessionResponse.error);
-            _waitTime = startGameSessionResponse.waitTime + 500;
+            _waitTime = startGameSessionResponse.waitTime + FIX_COLLISION;
+
             auto windowSize = renderWindow->getSize();
             sf::Vector2f windowCenter(windowSize.x * 0.5, windowSize.y * 0.5);
             auto timeToStart = std::make_shared<TextField>(ElementName::TimeToStart,
                     context, windowCenter, "textField.json", std::to_string(_waitTime));
-
             timeToStart->SetText(std::to_string(_waitTime));
             context->playerId = startGameSessionResponse.playerId;
-            auto timeSize = timeToStart->GetSize();
-            sf::Vector2f timePosition((windowSize.x * 0.5) - timeSize.x * 0.5, (windowSize.y * 0.5f));
-            timeToStart->SetPosition(timePosition);
             _elements.emplace(ElementName::TimeToStart, timeToStart);
         }
 
