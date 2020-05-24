@@ -108,7 +108,7 @@ void GameState::Menu() {
     }
 }
 
-void GameState::UpdateLeaderPosition(const std::unordered_map<std::string, PlayerInfo>& l_players) {
+void GameState::UpdateLeaderPosition(const std::unordered_map<std::string, Network::PlayerInfo>& l_players) {
     size_t currPos = 0;
     for (auto& itr : l_players) {
         if (currPos < itr.second.position) {
@@ -128,15 +128,31 @@ void GameState::UpdateLeaderPosition(const std::unordered_map<std::string, Playe
     itrPb->second->Update(50.0f);
 }
 
-size_t GameState::UpdatePlayerPosition(const std::unordered_map<std::string, PlayerInfo>& l_players) {
+size_t GameState::UpdatePlayerPosition(const std::unordered_map<std::string, Network::PlayerInfo>& l_players) {
     try {
     auto context = GetSharedContext();
-    auto itr = l_players.find(context->uuid);
+    auto itr = l_players.find(context->playerId);
     if (itr == l_players.end()) {
         //log
         return 0;
     }
-    size_t
+    std::vector<std::pair<std::string, size_t>> playersPositions;
+    for (auto& [playerId, playerInfo]: l_players) {
+      playersPositions.emplace_back(playerId, playerInfo.position);
+    }
+    std::sort(playersPositions.begin(), playersPositions.end(),[](const auto& lhs, const auto& rhs){
+      return lhs.second < rhs.second;
+    });
+
+    auto it = std::find_if(playersPositions.begin(), playersPositions.end(), [&](const auto& lhs){
+      if (context->playerId == lhs.first) {
+        return true;
+      }
+      return false;
+    });
+
+    _playerPosition = std::distance(playersPositions.begin(), it);
+
     } catch (std::bad_weak_ptr& e) {
         //log
     }
@@ -214,7 +230,7 @@ void GameState::CheckRoomStatus() {
             _playerPosition = UpdatePlayerPosition(roomStatusResponse.playersInfo);
 
             if (roomStatusResponse.roomStatus == Network::RoomStatus::End ||
-                    itr->second.status == PlayerInfo::Status::Finish) {
+                    itr->second.status == Network::PlayerInfo::Status::Finish) {
                 AfterGame();
             }
         }

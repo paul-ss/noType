@@ -9,6 +9,10 @@ enum class ElementName;
 struct EventDetails;
 class BaseElement;
 
+namespace Network {
+  struct PlayerInfo;
+}
+
 class GameState : public BaseState {
 public:
     explicit GameState(std::weak_ptr<SharedContext> l_context);
@@ -27,11 +31,11 @@ public:
     double GetAverageSpeed();
     double CountAverageSpeed(const double l_speed);
 
-    void UpdateLeaderPosition(const std::unordered_map<std::string, PlayerInfo>& l_players);
+    void UpdateLeaderPosition(const std::unordered_map<std::string, Network::PlayerInfo>& l_players);
     void CheckRoomStatus();
     void UpdatePosition(const std::string& l_validatedBlock);
 
-    size_t UpdatePlayerPosition(const std::unordered_map<std::string, PlayerInfo>& l_players);
+    size_t UpdatePlayerPosition(const std::unordered_map<std::string, Network::PlayerInfo>& l_players);
     size_t GetPlayerPosition();
 
     void TextEntered(EventDetails& l_details);
