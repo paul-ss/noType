@@ -24,7 +24,7 @@ SmartString::SmartString(const ElementName l_name, std::weak_ptr<SharedContext> 
     std::string cuttedString;
     for (size_t i = 0; i < numOfLines; ++i) {
         size_t size = STRING_SIZE;
-        if (i * STRING_SIZE > l_reference.size()) {
+        if ((i + 1) * STRING_SIZE > l_reference.size()) {
             size = -1;
         }
         cuttedString += l_reference.substr(i * STRING_SIZE, size) + "\n";
@@ -66,6 +66,9 @@ void SmartString::Draw() {
 
 std::string SmartString::Validate(const char l_char) {
     try {
+        if (_textPosition == _reference.size() - 1) {
+          return {};
+        }
         auto newline = _reference.substr(_textPosition, 1);
         if (newline == "\n") {
             _textPosition++;
