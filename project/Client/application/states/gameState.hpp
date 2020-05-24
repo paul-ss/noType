@@ -28,7 +28,7 @@ public:
     void Draw() override;
 
 public:
-    double GetAverageSpeed();
+    void GetAverageSpeed();
     double CountAverageSpeed(const double l_speed);
 
     void UpdateLeaderPosition(const std::unordered_map<std::string, Network::PlayerInfo>& l_players);
@@ -36,7 +36,7 @@ public:
     void UpdatePosition(const std::string& l_validatedBlock);
 
     size_t UpdatePlayerPosition(const std::unordered_map<std::string, Network::PlayerInfo>& l_players);
-    size_t GetPlayerPosition();
+    void GetPlayerPosition();
 
     void TextEntered(EventDetails& l_details);
     void AfterGame();

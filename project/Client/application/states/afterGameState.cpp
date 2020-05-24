@@ -41,11 +41,12 @@ void AfterGameState::OnCreate() {
     menu->SetPosition(menuPosition);
     _elements.emplace(ElementName::MenuButton, menu);
 
+    auto eMgr = GetEventManager();
     auto lambdaClick = [this](EventDetails& l_details) { this->MouseClick(l_details); };
     eMgr->AddCallback(StateType::MainMenu, "Mouse_Left", lambdaClick);
 
     auto lambdaPlay = [this]([[maybe_unused]] EventDetails& l_details) { this->Menu(); };
-    eMgr->AddCallback(StateType::MainMenu, "Key_Enter", lambdaPlay);
+    eMgr->AddCallback(StateType::MainMenu, "Intro_Continue", lambdaPlay);
 }
 
 void AfterGameState::MouseClick(EventDetails& l_details) {

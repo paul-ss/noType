@@ -4,6 +4,7 @@
 #include "sharedContext.hpp"
 #include "smartString.hpp"
 #include "progressBar.hpp"
+#include "textField.hpp"
 #include "logger.hpp"
 #include "exceptions.hpp"
 
@@ -30,12 +31,12 @@ void GameState::OnCreate() {
             BOOST_LOG_TRIVIAL(error) << "[beforeGameState - oncreate] " << "filler not found";
         }
 
-        //auto windowSize = renderWindow->getSize();
-        //auto pb = std::make_shared<ProgressBar>(ElementName::LeaderPosition, context, sf::Vector2f(0, 0), "progressBar.json");
-        //auto pbSize = pb->GetSize();
-        //sf::Vector2f pbPosition(0,0);
-        //pb->SetPosition(pbPosition);
-        //_elements.emplace(ElementName::LeaderPosition, pb);
+        auto windowSize = renderWindow->getSize();
+        auto pb = std::make_shared<ProgressBar>(ElementName::LeaderPosition, context, sf::Vector2f(0, 0), "progressBar.json");
+        auto pbSize = pb->GetSize();
+        sf::Vector2f pbPosition(0,0);
+        pb->SetPosition(pbPosition);
+        _elements.emplace(ElementName::LeaderPosition, pb);
 
         // add mute, back to menu button
         auto lambdaQuit = [this]([[maybe_unused]] EventDetails& l_details) { this->Menu(); };
@@ -138,17 +139,17 @@ size_t GameState::UpdatePlayerPosition(const std::unordered_map<std::string, Net
     }
     std::vector<std::pair<std::string, size_t>> playersPositions;
     for (auto& [playerId, playerInfo]: l_players) {
-      playersPositions.emplace_back(playerId, playerInfo.position);
+        playersPositions.emplace_back(playerId, playerInfo.position);
     }
     std::sort(playersPositions.begin(), playersPositions.end(),[](const auto& lhs, const auto& rhs){
-      return lhs.second < rhs.second;
+        return lhs.second < rhs.second;
     });
 
     auto it = std::find_if(playersPositions.begin(), playersPositions.end(), [&](const auto& lhs){
-      if (context->playerId == lhs.first) {
+        if (context->playerId == lhs.first) {
         return true;
-      }
-      return false;
+        }
+        return false;
     });
 
     _playerPosition = std::distance(playersPositions.begin(), it);
@@ -158,19 +159,35 @@ size_t GameState::UpdatePlayerPosition(const std::unordered_map<std::string, Net
     }
 }
 
-size_t GameState::GetPlayerPosition() {
+void GameState::GetPlayerPosition() {
     try {
+        auto context = GetSharedContext();
+        auto renderWindow = GetRenderWindow();
+        auto windowSize = renderWindow->getSize();
 
-    } catch (const std::bad_weak_ptr& e) {
-        BOOST_LOG_TRIVIAL(error) << "[game - getplayerposition] " << e.what();
+        sf::Vector2f windowCenter(windowSize.x * 0.5, windowSize.y * 0.5);
+        auto playerPosition = std::make_shared<TextField>(ElementName::PlayerPosition,
+                context, windowCenter, "textField.json", std::to_string(_averageSpeed));
+        context->sharedElements.emplace(ElementName::PlayerPosition, playerPosition);
+
+    } catch (std::bad_weak_ptr& e) {
+        BOOST_LOG_TRIVIAL(error) << "[game - getaveragespeed] " << e.what();
     }
 }
 
 void GameState::GetAverageSpeed() {
-    auto windowSize = renderWindow->getSize();
-    sf::Vector2f windowCenter(windowSize.x * 0.5, windowSize.y * 0.5);
-    auto timeToStart = std::make_shared<TextField>(ElementName::TimeToStart,
-            context, windowCenter, "textField.json", std::to_string(_waitTime));
+    try {
+        auto context = GetSharedContext();
+        auto renderWindow = GetRenderWindow();
+        auto windowSize = renderWindow->getSize();
+
+        sf::Vector2f windowCenter(windowSize.x * 0.5, windowSize.y * 0.5);
+        auto averageSpeed = std::make_shared<TextField>(ElementName::AverageSpeed,
+                context, windowCenter, "textField.json", std::to_string(_averageSpeed));
+        context->sharedElements.emplace(ElementName::AverageSpeed, averageSpeed);
+    } catch (std::bad_weak_ptr& e) {
+        BOOST_LOG_TRIVIAL(error) << "[game - getaveragespeed] " << e.what();
+    }
 }
 
 double GameState::CountAverageSpeed(const double l_speed) {
