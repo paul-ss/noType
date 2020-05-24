@@ -170,7 +170,7 @@ void EventManager::loadBindings() {
         }
 
     } catch (const boost::property_tree::ptree_error& e) {
-        BOOST_LOG_TRIVIAL(error) << e.what();
+        BOOST_LOG_TRIVIAL(error) << "[eventmanager - loadBindings] " << e.what();
 
     } catch (const InvalidCmd& e) {
         BOOST_LOG_TRIVIAL(error) << "Failed to add new Binding " << e.what();

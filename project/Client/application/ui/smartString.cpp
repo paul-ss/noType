@@ -112,7 +112,7 @@ std::string SmartString::Validate(const char l_char) {
         }
 
     } catch (std::out_of_range& e) {
-        BOOST_LOG_TRIVIAL(error) << e.what();
+        BOOST_LOG_TRIVIAL(error) << "[validate - smartstring] " << e.what();
     }
     return std::string();
 }

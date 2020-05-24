@@ -177,7 +177,7 @@ void BaseElement::loadStyle(const std::string& l_path) {
     } catch (const boost::property_tree::ptree_error& e) {
         BOOST_LOG_TRIVIAL(error) << e.what() << " not valid json file: " << l_path;
     } catch (const std::bad_weak_ptr& e) {
-        BOOST_LOG_TRIVIAL(error) << e.what();
+        BOOST_LOG_TRIVIAL(error) << "[loadstyles - baseelement] " << e.what();
     }
 }
 
