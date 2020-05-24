@@ -1,6 +1,9 @@
 #pragma once
 
+#include <unordered_map>
+
 #include "baseState.hpp"
+#include "Network.hpp"
 
 enum class ElementName;
 struct EventDetails;
@@ -21,18 +24,25 @@ public:
     void Draw() override;
 
 public:
+    double GetAverageSpeed();
     double CountAverageSpeed(const double l_speed);
+
+    void UpdateLeaderPosition(const std::unordered_map<std::string, PlayerInfo>& l_players);
     void CheckRoomStatus();
     void UpdatePosition(const std::string& l_validatedBlock);
 
+    size_t UpdatePlayerPosition(const std::unordered_map<std::string, PlayerInfo>& l_players);
+    size_t GetPlayerPosition();
+
     void TextEntered(EventDetails& l_details);
-    void GoToMenu();
+    void AfterGame();
+    void Menu();
 
 private:
-    float _timePass;
-    size_t _position;
+    size_t _textPosition;
+    size_t _playerPosition;
     std::string _gameCookie;
-    size_t _leaderPosition;
+    float _timePass;
     double _averageSpeed;
     std::vector<double> _currentSpeed;
 };

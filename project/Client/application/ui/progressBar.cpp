@@ -4,18 +4,53 @@
 
 ProgressBar::ProgressBar(const ElementName l_name, std::weak_ptr<SharedContext> l_sharedContext,
         const sf::Vector2f& l_position,
-        const std::string& l_style,
-        const std::string& l_reference) :
-        BaseElement(l_name, l_sharedContext, l_position, l_style) {}
+        const std::string& l_style) :
+        BaseElement(l_name, l_sharedContext, l_position, l_style) {
+    
+    try {
+        std::shared_ptr<SharedContext>sharedContext(_sharedContext);
+        std::shared_ptr<Window>window(sharedContext->window);
+        std::shared_ptr<sf::RenderWindow>renderWindow(window->GetRenderWindow());
+        auto windowSize = renderWindow->getSize();
+        _progressBar.setOrigin(windowSize.x * 0.5, windowSize.y * 0.5);
 
-ElementName OnClick(const sf::Vector2i& l_mousePos) {
+    } catch (std::bad_weak_ptr& e) {
+        //log
+    }
+
+    auto styleItr = _style.find(ElementState::Neutral);
+    if (styleItr == _style.end()) {
+        //log
+        return;
+    }
+    applyStyle(styleItr->second);
+
+    _progressBar.setPosition(l_position.x, l_position.y);
+    _progressBar.setShowBackgroundAndFrame(true);
+    _progressBar.setSize(_visual.backgroundSolid.getSize());
+    _progressBar.setColor(_visual.backgroundSolid.getFillColor());
+}
+
+ElementName ProgressBar::OnClick(const sf::Vector2i& l_mousePos) {
     return ElementName::None;
 }
 
-void Update([[maybe_unused]] float l_dT) {}
-void Draw() {}
-void ReadIn([[maybe_unused]] const std::string& l_stream) {}
-void OnRele    drawElement(ElementName::Filler);
-drawElement(ElementName::SmartString);ase() {}
-void OnHover([[maybe_unused]] const sf::Vector2f& l_mousePos) {}
-void OnLeave() {}
+void ProgressBar::OnRelease() {}
+
+void ProgressBar::Update(float l_position) {
+    _progressBar.setRatio(l_position);
+}
+void ProgressBar::Draw() {
+    try {
+        std::shared_ptr<SharedContext>sharedContext(_sharedContext);
+        std::shared_ptr<Window>window(sharedContext->window);
+        std::shared_ptr<sf::RenderWindow>renderWindow(window->GetRenderWindow());
+        renderWindow->draw(_progressBar);
+
+    } catch (std::bad_weak_ptr& e) {
+        //log
+    }
+}
+void ProgressBar::ReadIn([[maybe_unused]] const std::string& l_stream) {}
+void ProgressBar::OnHover([[maybe_unused]] const sf::Vector2f& l_mousePos) {}
+void ProgressBar::OnLeave() {}
