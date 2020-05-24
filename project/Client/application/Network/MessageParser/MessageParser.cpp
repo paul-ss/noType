@@ -341,7 +341,7 @@ std::unordered_map<std::string, PlayerInfo> MessageParser::parsePlayersInfo(boos
     std::string pathToSpeed = pathToUuid + kComma;
     pathToSpeed += JsonFields::PlayerInfoFields::Speed;
 
-    playerInfo.position = pt.get<double>(pathToSpeed);
+    playerInfo.speed = pt.get<double>(pathToSpeed);
 
     std::string pathToStatus = pathToUuid + kComma;
     pathToStatus += JsonFields::PlayerInfoFields::Status;

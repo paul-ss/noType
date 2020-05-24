@@ -166,7 +166,10 @@ TEST(NetworkManager, NetworkManagerCheck) {
     try {
       auto data = msg->ExtractData();
       auto roomStatusResponse = std::any_cast<Network::RoomStatusResponse>(data);
-      std::cout << "RoomStatusRequest.roomStatus: " <<  roomStatusParser(roomStatusResponse.roomStatus) << std::endl;
+      //std::cout << "RoomStatusRequest.roomStatus: " <<  roomStatusParser(roomStatusResponse.roomStatus) << std::endl;
+      for (const auto& [_, playerInfo] : roomStatusResponse.playersInfo) {
+        std::cout << playerInfo.name << std::endl;
+      }
     } catch (const std::bad_any_cast& e) {
       std::cout << e.what() << std::endl;
     }

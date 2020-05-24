@@ -123,7 +123,7 @@ void GameState::UpdateLeaderPosition(const std::unordered_map<std::string, Netwo
         BOOST_LOG_TRIVIAL(error) << "[game - updateleaderposition] " << "leaderposition not found";
     }
     auto str = std::dynamic_pointer_cast<SmartString>(itrStr->second);
-    itrPb->second->Update(static_cast<float>(currPos) / str->GetStringSize());
+    itrPb->second->Update(static_cast<float>(currPos) / static_cast<float>(str->GetStringSize()));
     //itrPb->second->Update(50.0f);
 }
 
