@@ -44,6 +44,8 @@ public:
 
   void Notify() override;
 
+  ~QueueManager() override;
+
 private:
   std::queue<std::unique_ptr<Message>> _receivedMessages;
   std::queue<std::unique_ptr<Message>> _sendingMessages;

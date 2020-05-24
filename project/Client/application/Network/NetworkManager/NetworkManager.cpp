@@ -6,9 +6,7 @@
 #include "NetworkManager.hpp"
 
 #include "exceptions.hpp"
-
-#include <iostream>
-
+#include "logger.hpp"
 
 #include <boost/exception/exception.hpp>
 #include <boost/system/system_error.hpp>
@@ -19,7 +17,8 @@ static void eraseDelimiter(std::string& jsonData, const std::string_view& delimi
 
 
 NetworkManager::NetworkManager(std::shared_ptr<Connector::IQueueManager> queueManager) :
-                                            NetworkManager(std::move(queueManager), std::string(kServerIp), kServerPort)  {}
+                                            NetworkManager(std::move(queueManager), std::string(kServerIp), kServerPort)
+                                            {}
 
 NetworkManager::NetworkManager(std::shared_ptr<Connector::IQueueManager> queueManager,
                                const std::string& serverIp,
@@ -30,13 +29,10 @@ NetworkManager::NetworkManager(std::shared_ptr<Connector::IQueueManager> queueMa
                                  _socket{_ioService},
                                  _isWorking{false} {}
 
-NetworkManager::~NetworkManager() {}
-
 void NetworkManager::Connect() {
   try {
     _socket.connect(_endPoint);
   } catch (const boost::system::system_error& error) {
-    // TODO(vendroid): Логирование!
     throw ConnectionFailure(error.what());
   }
 }
@@ -93,7 +89,7 @@ void NetworkManager::loop() {
         _queueManager->PushToReceivedData(std::move(recvMsg));
       }
     } catch (const boost::system::system_error& e) {
-      std::cout << e.what() << std::endl;
+      BOOST_LOG_TRIVIAL(error) << "NetworkManager::loop: " << e.what();
       break;
     }
   }

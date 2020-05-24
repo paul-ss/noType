@@ -38,8 +38,6 @@ public:
   void Run() override;
   void Stop() override;
 
-  ~NetworkManager() override;
-
 private:
   void loop();
 

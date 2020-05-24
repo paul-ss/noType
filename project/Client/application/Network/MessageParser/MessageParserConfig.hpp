@@ -18,9 +18,10 @@ static const std::string RoomStatusRequest            ("RoomStatusRequest");
 static const std::string RoomStatusResponse           ("RoomStatusResponse");
 static const std::string ValidateWrittenTextRequest   ("ValidateWrittenTextRequest");
 static const std::string ValidateWrittenTextResponse  ("ValidateWrittenTextResponse");
+static const std::string LeaveRoomRequest             ("LeaveRoomRequest");
+static const std::string LeaveRoomResponse            ("LeaveRoomResponse");
 static const std::string ErrorRequest                 ("ErrorRequest");
 static const std::string ErrorResponse                ("ErrorResponse");
-
 
 }  // namespace StringMessageType
 

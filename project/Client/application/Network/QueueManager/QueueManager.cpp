@@ -8,6 +8,8 @@ namespace Network {
 QueueManager::QueueManager()
 : _receivedMessagesNotified{false}, _sendingMessagesNotified{false} {}
 
+QueueManager::~QueueManager() { }
+
 void QueueManager::PushToReceivedData(std::unique_ptr<Message> msg) {
   std::unique_lock<std::mutex> lock(_receivedMessagesMutex);
   _receivedMessages.push(std::move(msg));
@@ -26,7 +28,6 @@ std::unique_ptr<Message> QueueManager::PopReceivedData() {
 }
 
 void QueueManager::PushToSendingData(std::unique_ptr<Message> msg) {
-  //std::unique_lock<std::mutex> lock(_sendingMessagesMutex);
   _sendingMessages.push(std::move(msg));
   _sendingMessagesNotified = true;
   _sendingMessagesCheck.notify_one();
@@ -56,7 +57,6 @@ std::unique_ptr<Message> QueueManager::PopSendingData() {
 }
 
 void QueueManager::Notify() {
-  //std::unique_lock<std::mutex> lock(_sendingMessagesMutex);
   _sendingMessagesNotified = true;
   _sendingMessagesCheck.notify_one();
 }

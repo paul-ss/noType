@@ -20,6 +20,8 @@ enum class MessageType {
   RoomStatusResponse,
   ValidateWrittenTextRequest,
   ValidateWrittenTextResponse,
+  LeaveRoomRequest,
+  LeaveRoomResponse,
   ErrorRequest,
   ErrorResponse,
 };
@@ -102,6 +104,15 @@ struct ErrorRequest {
 };
 
 struct ErrorResponse {
+  std::string error;
+};
+
+struct LeaveRoomRequest {
+  std::string id;
+};
+
+struct LeaveRoomResponse {
+  Status status;
   std::string error;
 };
 

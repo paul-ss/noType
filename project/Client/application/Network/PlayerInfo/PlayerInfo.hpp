@@ -2,6 +2,8 @@
 
 #include <string>
 
+namespace Network {
+
 struct PlayerInfo {
   std::string name;
   std::uint16_t position;
@@ -13,3 +15,5 @@ struct PlayerInfo {
   };
   Status status;
 };
+
+}  // namespace Network

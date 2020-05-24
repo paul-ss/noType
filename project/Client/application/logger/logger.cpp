@@ -1,8 +1,13 @@
 #include "logger.hpp"
 
+#include <mutex>
+
 #define LOG_FILE "logNoType.txt"
 
+std::mutex mtx;
+
 void init_logger() {
+    std::unique_lock<std::mutex> lock(mtx);
     boost::log::register_simple_formatter_factory<boost::log::trivial::severity_level, char>("Severity");
 
     boost::log::add_file_log(

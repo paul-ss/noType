@@ -34,6 +34,16 @@ ADD_LIBRARY(colorString STATIC
     ${SOURCE_THIRD_PARTY}/colorString/RichText.cpp
 )
 
+ADD_LIBRARY(LoggerLib STATIC
+        ${SOURCE_DIR}/logger/logger.hpp
+        ${SOURCE_DIR}/logger/logger.cpp
+        )
+
+TARGET_INCLUDE_DIRECTORIES(LoggerLib PUBLIC logger/ ${Boost_INCLUDE_DIRS})
+TARGET_LINK_LIBRARIES(LoggerLib PUBLIC
+        ${Boost_LOG_SETUP_LIBRARY}
+        ${Boost_LOG_LIBRARY})
+
 SET(ALL_HEADERS
     ${SOURCE_DIR}/eventManager
     ${SOURCE_DIR}/ui
@@ -105,6 +115,7 @@ TARGET_LINK_LIBRARIES(notype
     ${SFML_LIBRARIES}
     ${SFML_DEPENDENCIES}
     ${Boost_LIBRARIES}
+    LoggerLib
     NetworkManagerLib
     colorString
     progressBar

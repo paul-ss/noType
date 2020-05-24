@@ -1,8 +1,7 @@
 #include "MessageParserConfig.hpp"
 #include "MessageParser.hpp"
 #include "Message.hpp"
-
-#include <iostream>
+#include "logger.hpp"
 
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/exceptions.hpp>
@@ -10,50 +9,47 @@
 namespace Network {
 
 std::string MessageParser::ParseToJson(std::unique_ptr<Message> msg) {
-  if (!msg) {
-    // TODO(vendroid): кинуть исключение
-    std::cout << "Invalid pointer [MessageParser::ParseToJson]" << std::endl;
-    return {};
-  }
-
   std::string res;
   try {
     switch (msg->GetMessageType()) {
       case MessageType::InitRequest: {
-        res = InitRequestToJson(std::move(msg));
+        res = initRequestToJson(std::move(msg));
         break;
       }
       case MessageType::ConnectRequest: {
-        res = ConnectRequestToJson(std::move(msg));
+        res = connectRequestToJson(std::move(msg));
         break;
       }
       case MessageType::StartGameSessionRequest:{
-        res = StartGameSessionRequestToJson(std::move(msg));
+        res = startGameSessionRequestToJson(std::move(msg));
         break;
       }
       case MessageType::GetTextRequest: {
-        res = GetTextRequestToJson(std::move(msg));
+        res = getTextRequestToJson(std::move(msg));
         break;
       }
       case MessageType::RoomStatusRequest: {
-        res = RoomStatusRequestToJson(std::move(msg));
+        res = roomStatusRequestToJson(std::move(msg));
         break;
       }
       case MessageType::ValidateWrittenTextRequest: {
-        res = ValidateWrittenTextRequestToJson(std::move(msg));
+        res = validateWrittenTextRequestToJson(std::move(msg));
         break;
       }
       case MessageType::ErrorRequest: {
-        res = ErrorRequestToJson(std::move(msg));
+        res = errorRequestToJson(std::move(msg));
+        break;
+      } case MessageType::LeaveRoomRequest: {
+        res = leaveRoomRequestToJson(std::move(msg));
         break;
       }
       default: {
-        std::cerr << "Invalid request type" << std::endl;
+        BOOST_LOG_TRIVIAL(error) << "MessageParser::ParseToJson: Invalid MessageType";
         break;
       }
     }
   } catch (const boost::property_tree::ptree_error& error) {
-    std::cout << "[MessageParser::ParseToJson]: " << error.what() << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "MessageParser::ParseToJson: " << error.what();
   }
 
   return res;
@@ -68,28 +64,30 @@ std::unique_ptr<Message> MessageParser::ParseToMessage(std::string rawData) {
   try {
     auto stringMessageType = pt.get<std::string>(JsonFields::CommandType);
     if (stringMessageType == StringMessageType::InitResponse) {
-      return InitResponseToMessage(pt);
+      return initResponseToMessage(pt);
     } else if (stringMessageType == StringMessageType::ConnectResponse) {
-      return ConnectResponseToMessage(pt);
+      return connectResponseToMessage(pt);
     } else if (stringMessageType == StringMessageType::StartGameSessionResponse) {
-      return StartGameSessionResponseToMessage(pt);
+      return startGameSessionResponseToMessage(pt);
     } else if (stringMessageType == StringMessageType::GetTextResponse) {
-      return GetTextResponseToMessage(pt);
+      return getTextResponseToMessage(pt);
     } else if (stringMessageType == StringMessageType::RoomStatusResponse) {
-      return RoomStatusResponseToMessage(pt);
+      return roomStatusResponseToMessage(pt);
     } else if (stringMessageType == StringMessageType::ValidateWrittenTextResponse) {
-      return ValidateWrittenTextResponseToMessage(pt);
+      return validateWrittenTextResponseToMessage(pt);
     } else if (stringMessageType == StringMessageType::ErrorResponse) {
-      return ErrorResponseToMessage(pt);
+      return errorResponseToMessage(pt);
+    } else if (stringMessageType == StringMessageType::LeaveRoomResponse) {
+      return leaveRoomResponseToMessage(pt);
     }
   } catch (const boost::property_tree::ptree_error& error) {
-    std::cout << "[MessageParser::ParseToMessage]: " << error.what() << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "MessageParser::ParseToMessage: " << error.what();;
   }
   
   return nullptr;
 }
 
-std::string MessageParser::InitRequestToJson(std::unique_ptr<Message> msg) {
+std::string MessageParser::initRequestToJson(std::unique_ptr<Message> msg) {
   auto anyData = msg->ExtractData();
   auto initRequestData = std::any_cast<InitRequest>(anyData);
 
@@ -103,7 +101,7 @@ std::string MessageParser::InitRequestToJson(std::unique_ptr<Message> msg) {
   return oss.str();
 }
 
-std::string MessageParser::ConnectRequestToJson(std::unique_ptr<Message> msg) {
+std::string MessageParser::connectRequestToJson(std::unique_ptr<Message> msg) {
   auto anyData = msg->ExtractData();
   auto connectRequestData = std::any_cast<ConnectRequest>(anyData);
 
@@ -117,7 +115,7 @@ std::string MessageParser::ConnectRequestToJson(std::unique_ptr<Message> msg) {
   return oss.str();
 }
 
-std::string MessageParser::StartGameSessionRequestToJson(std::unique_ptr<Message> msg) {
+std::string MessageParser::startGameSessionRequestToJson(std::unique_ptr<Message> msg) {
   auto anyData = msg->ExtractData();
   auto startGameSessionRequestData = std::any_cast<StartGameSessionRequest>(anyData);
 
@@ -131,7 +129,7 @@ std::string MessageParser::StartGameSessionRequestToJson(std::unique_ptr<Message
   return oss.str();
 }
 
-std::string MessageParser::RoomStatusRequestToJson(std::unique_ptr<Message> msg) {
+std::string MessageParser::roomStatusRequestToJson(std::unique_ptr<Message> msg) {
   auto anyData = msg->ExtractData();
   auto roomStatusRequestData = std::any_cast<RoomStatusRequest>(anyData);
 
@@ -145,7 +143,7 @@ std::string MessageParser::RoomStatusRequestToJson(std::unique_ptr<Message> msg)
   return oss.str();
 }
 
-std::string MessageParser::GetTextRequestToJson(std::unique_ptr<Message> msg) {
+std::string MessageParser::getTextRequestToJson(std::unique_ptr<Message> msg) {
   auto anyData = msg->ExtractData();
   auto getTextRequestData = std::any_cast<GetTextRequest>(anyData);
 
@@ -159,7 +157,7 @@ std::string MessageParser::GetTextRequestToJson(std::unique_ptr<Message> msg) {
   return oss.str();
 }
 
-std::string MessageParser::ValidateWrittenTextRequestToJson(std::unique_ptr<Message> msg) {
+std::string MessageParser::validateWrittenTextRequestToJson(std::unique_ptr<Message> msg) {
   auto anyData = msg->ExtractData();
   auto validateWrittenTextRequestData = std::any_cast<ValidateWrittenTextRequest>(anyData);
 
@@ -174,7 +172,21 @@ std::string MessageParser::ValidateWrittenTextRequestToJson(std::unique_ptr<Mess
   return oss.str();
 }
 
-std::string MessageParser::ErrorRequestToJson(std::unique_ptr<Message> msg) {
+std::string MessageParser::leaveRoomRequestToJson(std::unique_ptr<Message> msg) {
+  auto anyData = msg->ExtractData();
+  auto leaveRoomRequest = std::any_cast<LeaveRoomRequest>(anyData);
+
+  boost::property_tree::ptree pt;
+  pt.put(JsonFields::CommandType, StringMessageType::LeaveRoomRequest);
+  pt.put(JsonFields::ClientUuid, leaveRoomRequest.id);
+
+  std::stringstream oss;
+  boost::property_tree::write_json(oss, pt);
+
+  return oss.str();
+}
+
+std::string MessageParser::errorRequestToJson(std::unique_ptr<Message> msg) {
   auto anyData = msg->ExtractData();
   auto validateWrittenTextRequestData = std::any_cast<ValidateWrittenTextRequest>(anyData);
 
@@ -189,66 +201,74 @@ std::string MessageParser::ErrorRequestToJson(std::unique_ptr<Message> msg) {
 
 // =====================================================================================================================
 
-std::unique_ptr<Message> MessageParser::InitResponseToMessage(boost::property_tree::ptree &pt) {
+std::unique_ptr<Message> MessageParser::initResponseToMessage(boost::property_tree::ptree &pt) {
   auto id = pt.get<std::string>(JsonFields::ClientUuid);
-  auto errorData = ParseErrorAndStatus(pt);
+  auto errorData = parseErrorAndStatus(pt);
 
   InitResponse initResponse = {id, errorData.first, errorData.second};
   std::any data = initResponse;
   return std::make_unique<Message>(MessageType::InitResponse, std::move(data));
 }
 
-std::unique_ptr<Message> MessageParser::ConnectResponseToMessage(boost::property_tree::ptree &pt) {
-  auto errorData = ParseErrorAndStatus(pt);
+std::unique_ptr<Message> MessageParser::connectResponseToMessage(boost::property_tree::ptree &pt) {
+  auto errorData = parseErrorAndStatus(pt);
 
   ConnectResponse connectResponse = {errorData.first, errorData.second};
   std::any data = connectResponse;
   return std::make_unique<Message>(MessageType::ConnectResponse, std::move(data));
 }
 
-std::unique_ptr<Message> MessageParser::StartGameSessionResponseToMessage(boost::property_tree::ptree &pt) {
+std::unique_ptr<Message> MessageParser::startGameSessionResponseToMessage(boost::property_tree::ptree &pt) {
   auto playerId = pt.get<std::string>(JsonFields::PlayerId);
   auto waitTime = pt.get<size_t>(JsonFields::WaitTime);
-  auto errorData = ParseErrorAndStatus(pt);
+  auto errorData = parseErrorAndStatus(pt);
 
   StartGameSessionResponse startGameSessionResponse = {playerId, waitTime, errorData.first, errorData.second};
   std::any data = startGameSessionResponse;
   return std::make_unique<Message>(MessageType::StartGameSessionResponse, std::move(data));
 }
 
-std::unique_ptr<Message> MessageParser::GetTextResponseToMessage(boost::property_tree::ptree& pt) {
+std::unique_ptr<Message> MessageParser::getTextResponseToMessage(boost::property_tree::ptree& pt) {
   auto text = pt.get<std::string>(JsonFields::Text);
-  auto errorData = ParseErrorAndStatus(pt);
+  auto errorData = parseErrorAndStatus(pt);
 
   GetTextResponse getTextResponse = {text, errorData.first, errorData.second};
   std::any data = getTextResponse;
   return std::make_unique<Message>(MessageType::GetTextResponse, std::move(data));
 }
 
-std::unique_ptr<Message> MessageParser::RoomStatusResponseToMessage(boost::property_tree::ptree& pt) {
-  auto errorData = ParseErrorAndStatus(pt);
+std::unique_ptr<Message> MessageParser::roomStatusResponseToMessage(boost::property_tree::ptree& pt) {
+  auto errorData = parseErrorAndStatus(pt);
 
   auto stringPlayerStatus = pt.get<std::string>(JsonFields::Room::Status);
 
-  RoomStatus roomStatus = ParsePlayerStatus(stringPlayerStatus);
+  RoomStatus roomStatus = parseRoomStatus(stringPlayerStatus);
 
-  auto playersInfo = ParsePlayersInfo(pt);
+  auto playersInfo = parsePlayersInfo(pt);
 
   RoomStatusResponse roomStatusResponse = {playersInfo, roomStatus, errorData.first, errorData.second};
   std::any data = roomStatusResponse;
   return std::make_unique<Message>(MessageType::RoomStatusResponse, std::move(data));
 }
 
-std::unique_ptr<Message> MessageParser::ValidateWrittenTextResponseToMessage(boost::property_tree::ptree& pt) {
+std::unique_ptr<Message> MessageParser::validateWrittenTextResponseToMessage(boost::property_tree::ptree& pt) {
   auto rightCount = pt.get<std::uint16_t>(JsonFields::RightCount);
-  auto errorData = ParseErrorAndStatus(pt);
+  auto errorData = parseErrorAndStatus(pt);
 
   ValidateWrittenTextResponse validateWrittenTextResponse = {rightCount, errorData.first, errorData.second};
   std::any data = validateWrittenTextResponse;
   return std::make_unique<Message>(MessageType::ValidateWrittenTextResponse, std::move(data));
 }
 
-std::unique_ptr<Message> MessageParser::ErrorResponseToMessage(boost::property_tree::ptree& pt) {
+std::unique_ptr<Message> MessageParser::leaveRoomResponseToMessage(boost::property_tree::ptree& pt) {
+  auto errorData = parseErrorAndStatus(pt);
+
+  LeaveRoomResponse leaveRoomResponse = {errorData.first, errorData.second};
+  std::any data = leaveRoomResponse;
+  return std::make_unique<Message>(MessageType::LeaveRoomResponse, std::move(data));
+}
+
+std::unique_ptr<Message> MessageParser::errorResponseToMessage(boost::property_tree::ptree& pt) {
   auto error = pt.get<std::string>(JsonFields::ErrorMessage);
 
   ErrorResponse errorResponse = {error};
@@ -257,7 +277,7 @@ std::unique_ptr<Message> MessageParser::ErrorResponseToMessage(boost::property_t
   return std::make_unique<Message>(MessageType::ErrorResponse, std::move(data));
 }
 
-std::pair<Status, std::string> MessageParser::ParseErrorAndStatus(boost::property_tree::ptree &pt) {
+std::pair<Status, std::string> MessageParser::parseErrorAndStatus(boost::property_tree::ptree &pt) {
   auto statusString = pt.get<std::string>(JsonFields::Status);
 
   Status status;
@@ -274,21 +294,31 @@ std::pair<Status, std::string> MessageParser::ParseErrorAndStatus(boost::propert
   return {status, error};
 }
 
-RoomStatus MessageParser::ParsePlayerStatus(const std::string& stringPlayerStatus) {
+RoomStatus MessageParser::parseRoomStatus(const std::string& stringPlayerStatus) {
   if (stringPlayerStatus == JsonFields::Room::Wait) {
     return RoomStatus::Wait;
   } else if (stringPlayerStatus == JsonFields::Room::Play) {
     return RoomStatus::Play;
   } else if (stringPlayerStatus == JsonFields::Room::End) {
     return RoomStatus::End;
-  } else {
-    // exception
   }
 
-  return {};
+  return RoomStatus::End;
 }
 
-std::unordered_map<std::string, PlayerInfo> MessageParser::ParsePlayersInfo(boost::property_tree::ptree& pt) {
+static PlayerInfo::Status parsePlayerStatus(const std::string& stringPlayerStatus) {
+  if (stringPlayerStatus == JsonFields::PlayerInfoFields::Play) {
+    return PlayerInfo::Status::Play;
+  } else if (stringPlayerStatus == JsonFields::PlayerInfoFields::Finish) {
+    return PlayerInfo::Status::Finish;
+  } else if (stringPlayerStatus == JsonFields::PlayerInfoFields::Win) {
+    return PlayerInfo::Status::Win;
+  }
+
+  return PlayerInfo::Status::Win;
+}
+
+std::unordered_map<std::string, PlayerInfo> MessageParser::parsePlayersInfo(boost::property_tree::ptree& pt) {
   const std::string kComma = ".";
 
   std::unordered_map<std::string, PlayerInfo> playersInfo;
@@ -317,17 +347,11 @@ std::unordered_map<std::string, PlayerInfo> MessageParser::ParsePlayersInfo(boos
     pathToStatus += JsonFields::PlayerInfoFields::Status;
 
     auto stringPlayerStatus = pt.get<std::string>(pathToStatus);
-    if (stringPlayerStatus == JsonFields::PlayerInfoFields::Play) {
-      playerInfo.status = PlayerInfo::Status::Play;
-    } else if (stringPlayerStatus == JsonFields::PlayerInfoFields::Finish) {
-      playerInfo.status = PlayerInfo::Status::Finish;
-    } else if (stringPlayerStatus == JsonFields::PlayerInfoFields::Win) {
-      playerInfo.status = PlayerInfo::Status::Win;
-    }
+    playerInfo.status = parsePlayerStatus(stringPlayerStatus);
 
     playersInfo[uuid] = playerInfo;
   }
-  std::vector<int> b;
+
   return playersInfo;
 }
 

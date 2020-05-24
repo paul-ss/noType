@@ -23,7 +23,8 @@ add_library(MessageParserLib STATIC
                                 ${MESSAGE_PARSER_SRCS})
 
 target_include_directories(MessageParserLib PUBLIC
-                                ${MESSAGE_PARSER_INCLUDE_DIRS})
+                                ${MESSAGE_PARSER_INCLUDE_DIRS}
+                                LoggerLib)
 
 #add_executable(test_MessageParser test_MessageParser.cpp)
 #
