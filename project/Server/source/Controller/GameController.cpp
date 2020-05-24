@@ -78,6 +78,12 @@ void GameController::commandDistributor(const std::shared_ptr<Command> &command)
             boost::bind(&GameController::validateWrittenTextHandler, this, _1));
         break;
 
+      case (CommandType::LeaveRoomRequest) :
+        handlerExceptionCatcher<LeaveRoomRequest, LeaveRoomResponse>(
+            command,
+            boost::bind(&GameController::leaveRoomHandler, this, _1));
+        break;
+
       default:
         BOOST_LOG_TRIVIAL(error) << "GC : invalid command type";
 
@@ -131,7 +137,7 @@ void GameController::handlerExceptionCatcher(const std::shared_ptr<Command> &com
     commandResp->setError("Exception : unknown exception type");
     _queueManager->controllerPush(commandResp);
 
-    BOOST_LOG_TRIVIAL(error) << "BC : exception : unknown exception type";
+    BOOST_LOG_TRIVIAL(error) << "GC : exception : unknown exception type";
   }
 }
 
@@ -255,6 +261,25 @@ void GameController::validateWrittenTextHandler(const std::shared_ptr<ValidateWr
 
   _queueManager->controllerPush(commandResp);
 }
+
+
+
+
+
+void GameController::leaveRoomHandler(const std::shared_ptr<LeaveRoomRequest> &command) {
+  auto room = _roomManager->getRoom(command->getClientUUID());
+  if (!room) {
+    auto commandResp = std::make_shared<ValidateWrittenTextResponse>(command->getConnectionUUID());
+    commandResp->setError("Player with uuid " + command->getClientUUID() + " doesn't exist in room");
+    _queueManager->controllerPush(commandResp);
+    return;
+  }
+
+  // todo delete player!!!
+}
+
+
+
 
 
 

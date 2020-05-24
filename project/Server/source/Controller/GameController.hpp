@@ -14,6 +14,7 @@
 #include "GetText.hpp"
 #include "StartGameSession.hpp"
 #include "ValidateWrittenText.hpp"
+#include "LeaveRoom.hpp"
 
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
@@ -44,6 +45,7 @@ private:
   void getTextHandler(const std::shared_ptr<GetTextRequest> &command);
   void getRoomStatusHandler(const std::shared_ptr<RoomStatusRequest> &command);
   void validateWrittenTextHandler(const std::shared_ptr<ValidateWrittenTextRequest> &command);
+  void leaveRoomHandler(const std::shared_ptr<LeaveRoomRequest> &command);
 
   void runGameSessions();
   void runQueueWorker();
