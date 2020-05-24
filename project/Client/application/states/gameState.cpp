@@ -20,8 +20,14 @@ void GameState::OnCreate() {
         }
         _elements.emplace(smartString->first, smartString->second);
 
-        // add mute, back to menu
+        auto fillerItr = context->sharedElements.find(ElementName::Filler);
+        if (fillerItr != context->sharedElements.end()) {
+            _elements.emplace(fillerItr->first, fillerItr->second);
+        } else {
+            BOOST_LOG_TRIVIAL(error) << "[beforeGameState - oncreate] " << "filler not found";
+        }
 
+        // add mute, back to menu
         auto lambdaQuit = [this]([[maybe_unused]] EventDetails& l_details) { this->GoToMenu(); };
         eMgr->AddCallback(StateType::Game, "Key_Escape", lambdaQuit);
 
@@ -41,7 +47,7 @@ void GameState::TextEntered(EventDetails& l_details) {
     }
 
     auto smartString = std::dynamic_pointer_cast<SmartString>(itr->second);
-    auto input = l_details.keyCode;
+    char input = l_details.textEntered;
     auto validatedBlock = smartString->Validate(input);
     if (!validatedBlock.empty()) {
         UpdatePosition(validatedBlock);

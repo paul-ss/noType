@@ -4,7 +4,7 @@
 
 #define TEXT_BLOCK_SIZE 10
 #define ASCII_BACKSPACE 8
-#define STRING_SIZE 80
+#define STRING_SIZE 60
 
 SmartString::SmartString(const ElementName l_name, std::weak_ptr<SharedContext> l_sharedContext,
             const sf::Vector2f& l_position,
@@ -29,6 +29,7 @@ SmartString::SmartString(const ElementName l_name, std::weak_ptr<SharedContext> 
         }
         cuttedString += l_reference.substr(i * STRING_SIZE, size) + "\n";
     }
+    _reference = cuttedString;
 
     auto styleItr = _style.find(ElementState::Neutral);
         if (styleItr == _style.end()) {
@@ -39,7 +40,7 @@ SmartString::SmartString(const ElementName l_name, std::weak_ptr<SharedContext> 
     if (_visual.text.getFont()) {
         _coloredText.setFont(*_visual.text.getFont());
     }
-    _coloredText << cuttedString << _visual.text.getFillColor();
+    _coloredText << _reference << _visual.text.getFillColor();
 
     _coloredText.setCharacterSize(_visual.text.getCharacterSize());
     _coloredText.setPosition(l_position.x - _coloredText.getGlobalBounds().width * 0.5,
@@ -60,10 +61,14 @@ void SmartString::Draw() {
 
 std::string SmartString::Validate(const char l_char) {
     try {
+        auto newline = _reference.substr(_textPosition, 1);
+        if (newline == "\n") {
+            _textPosition++;
+        }
+
         sf::String beforeChar = _reference.substr(0, _textPosition);
         sf::String afterChar = _reference.substr(_textPosition + 1);
         if (l_char == ASCII_BACKSPACE && !_isValid) {
-            std::cout <<"DELETE\n";
             afterChar = _reference.substr(_textPosition);
             _coloredText.clear();
             _coloredText << sf::Color::Green << beforeChar
@@ -72,14 +77,20 @@ std::string SmartString::Validate(const char l_char) {
             return std::string();
         } else {
             if (!_isValid) {
-                std::cout <<"NOTHING\n";
                 return std::string();
             }
-
-            if (l_char != _reference[_textPosition]) {
-                std::cout <<"INVALID\n";
-                std::cout << l_char << " char invalid\n";
-                std::cout << _reference[_textPosition] << " text position\n";
+            if (l_char == _reference[_textPosition]) {
+                _validatedBlock.push_back(l_char);
+                _textPosition++;
+                _coloredText.clear();
+                _coloredText << sf::Color::Green << beforeChar
+                        << sf::Color::Green << l_char
+                        << sf::Color::White << afterChar;
+                if (_validatedBlock.size() <= TEXT_BLOCK_SIZE) {
+                    return std::string();
+                }
+                return _validatedBlock;
+            } else {
                 auto falseChar = _reference.substr(_textPosition, 1);
                 if (falseChar == " ") {
                     falseChar = "_";
@@ -91,20 +102,8 @@ std::string SmartString::Validate(const char l_char) {
                 _isValid = false;
                 return std::string();
             }
-            std::cout <<"VALID\n";
-            std::cout << l_char << "\n";
-            std::cout << _reference[_textPosition] << "\n";
-            _validatedBlock.push_back(l_char);
-            _textPosition++;
-            _coloredText.clear();
-            _coloredText << sf::Color::Green << beforeChar
-                    << sf::Color::Green << l_char
-                    << sf::Color::White << afterChar;
-            if (_validatedBlock.size() <= TEXT_BLOCK_SIZE) {
-                return std::string();
-            }
-            return _validatedBlock;
         }
+
     } catch (std::out_of_range& e) {
         BOOST_LOG_TRIVIAL(error) << e.what();
     }
