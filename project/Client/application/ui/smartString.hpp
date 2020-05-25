@@ -1,8 +1,10 @@
 #pragma once
 
-#include "baseElement.hpp"
-#include "RichText.hpp"
 #include <SFML/System.hpp>
+
+#include "baseElement.hpp"
+
+#include "RichText.hpp"
 
 class SmartString : public BaseElement {
 public:
@@ -11,7 +13,6 @@ public:
             const std::string& l_style,
             const std::string& l_reference);
     ~SmartString() = default;
-
 
     void Update(float l_dT) override;
     void Draw() override;

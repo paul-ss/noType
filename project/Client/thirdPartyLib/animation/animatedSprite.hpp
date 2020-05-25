@@ -32,7 +32,6 @@
 
 #include "animation.hpp"
 
-namespace sfe {
 class AnimatedSprite : public sf::Drawable, public sf::Transformable
 {
 public:
@@ -68,6 +67,5 @@ private:
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 };
-}  // animation
 
 #endif // ANIMATEDSPRITE_INCLUDE

@@ -99,14 +99,32 @@ void GameState::Menu() {
     try {
         auto context = GetSharedContext();
         auto stateMgr = GetStateManager();
+        auto queueManager = GetQueueManager();
 
-        context->sharedElements.erase(ElementName::SmartString);
-        stateMgr->SwitchTo(StateType::MainMenu);
-        stateMgr->Remove(StateType::Game);
+        Network::LeaveRoomRequest leaveRequest = {context->uuid};
+        auto sendMsg = std::make_unique<Network::Message>(Network::MessageType::LeaveRoomRequest,
+                leaveRequest);
+        queueManager->PushToSendingData(std::move(sendMsg));
+
+        std::unique_ptr<Network::Message> recvMsg = nullptr;
+        while (!recvMsg) {
+        recvMsg = queueManager->PopReceivedData();
+        }
+
+        if (recvMsg->GetMessageType() == Network::MessageType::LeaveRoomResponse) {
+            context->sharedElements.erase(ElementName::SmartString);
+            _elements.erase(ElementName::SmartString);
+            stateMgr->SwitchTo(StateType::MainMenu);
+            stateMgr->Remove(StateType::Game);
+        }
 
     } catch (const std::bad_weak_ptr& e) {
-        BOOST_LOG_TRIVIAL(error) << "[game - gotomenu] " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "[game - menu] " << e.what();
         return;
+    } catch (const InvalidResponse& e) {
+        BOOST_LOG_TRIVIAL(error) << "[game - menu] " << e.what();
+    } catch (const std::bad_any_cast& e) {
+        BOOST_LOG_TRIVIAL(error) << "[game - textentered] " << e.what();
     }
 }
 

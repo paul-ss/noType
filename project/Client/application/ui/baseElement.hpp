@@ -19,7 +19,7 @@ enum class ElementState {
 enum class ElementName {
     None = -1,
     Filler,
-    IntroSprite,
+    IntroText,
     PlayButton,
     QuitButton,
     MenuButton,
@@ -32,6 +32,7 @@ enum class ElementName {
     AverageSpeed,
     AverageSpeedText,
     SmartString,
+    Pockemon
 };
 
 struct Style {

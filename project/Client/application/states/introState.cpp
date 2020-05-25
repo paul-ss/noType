@@ -1,5 +1,7 @@
 #include "introState.hpp"
 #include "sharedContext.hpp"
+#include "spriteAnimation.hpp"
+#include "textField.hpp"
 #include "filler.hpp"
 #include "logger.hpp"
 
@@ -11,7 +13,7 @@ void IntroState::OnCreate() {
         auto context = GetSharedContext();
         auto renderWindow = GetRenderWindow();
 
-        auto windowSize = renderWindow->getSize();
+        sf::Vector2u windowSize = renderWindow->getSize();
         sf::Vector2f windowCenter(windowSize.x * 0.5, windowSize.y * 0.5);
         auto filler = std::make_shared<Filler>(ElementName::Filler, context, windowCenter, "filler.json");
         sf::Vector2f fillerPosition(windowSize.x * 0.5f - filler->GetSize().x * 0.5,
@@ -20,9 +22,11 @@ void IntroState::OnCreate() {
         context->sharedElements.emplace(ElementName::Filler, filler);
         _elements.emplace(ElementName::Filler, filler);
 
-        auto introSprite = std::make_shared<Filler>(ElementName::IntroSprite, context, windowCenter, "introSprite.json");
-        introSprite->SetText("PRESS SPACE TO CONTINUE");
-        _elements.emplace(ElementName::IntroSprite, introSprite);
+        auto introText = std::make_shared<TextField>(ElementName::IntroText, context,
+                windowCenter, "introText.json", "SPACE  TO  CONTINUE");
+        _elements.emplace(ElementName::IntroText, introText);
+
+        _animation = std::make_shared<SpriteAnimation>(context, windowCenter, sf::Vector2i(66, 62), "Pockemon");
 
         auto eMgr = GetEventManager();
         auto lambdaContinue = [this](EventDetails& details) { this->Continue(details); };
@@ -46,7 +50,8 @@ void IntroState::OnDestroy() {
 
 void IntroState::Draw() {
     drawElement(ElementName::Filler);
-    drawElement(ElementName::IntroSprite);
+    _animation->Draw();
+    drawElement(ElementName::IntroText);
 }
 
 void IntroState::Continue([[maybe_unused]] EventDetails& l_details) {
@@ -61,6 +66,8 @@ void IntroState::Continue([[maybe_unused]] EventDetails& l_details) {
     }
 }
 
-void IntroState::Update([[maybe_unused]] const sf::Time& time) {}
+void IntroState::Update([[maybe_unused]] const sf::Time& l_time) {
+    _animation->Update(l_time);
+}
 void IntroState::Activate() {}
 void IntroState::Deactivate() {}

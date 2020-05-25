@@ -10,8 +10,6 @@ SET(SOURCE_THIRD_PARTY "${CMAKE_CURRENT_SOURCE_DIR}/thirdPartyLib")
 
 SET(THIRD_PARTY_INCLUDE
     ${SOURCE_THIRD_PARTY}/animation
-    ${SOURCE_THIRD_PARTY}/animation
-    ${SOURCE_THIRD_PARTY}/progressBar
     ${SOURCE_THIRD_PARTY}/progressBar
     ${SOURCE_THIRD_PARTY}/colorString
 )
@@ -20,7 +18,7 @@ ADD_LIBRARY(animation STATIC
     ${SOURCE_THIRD_PARTY}/animation/animation.hpp
     ${SOURCE_THIRD_PARTY}/animation/animation.cpp
     ${SOURCE_THIRD_PARTY}/animation/animatedSprite.hpp
-    ${SOURCE_THIRD_PARTY}/animation/animatedSprite.hpp
+    ${SOURCE_THIRD_PARTY}/animation/animatedSprite.cpp
 )
 
 ADD_LIBRARY(progressBar STATIC
@@ -71,6 +69,7 @@ SET(ALL_SOURCES
     ${SOURCE_DIR}/ui/textField.cpp
     ${SOURCE_DIR}/ui/filler.cpp
     ${SOURCE_DIR}/ui/progressBar.cpp
+    ${SOURCE_DIR}/ui/spriteAnimation.cpp
     ${SOURCE_DIR}/eventManager/eventManager.cpp
     ${SOURCE_DIR}/exceptions/exceptions.hpp
     ${SOURCE_DIR}/game/game.cpp

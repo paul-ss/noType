@@ -28,7 +28,6 @@
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Texture.hpp>
 
-namespace sfe {
 class Animation
 {
 public:
@@ -44,6 +43,5 @@ private:
     std::vector<sf::IntRect> m_frames;
     const sf::Texture* m_texture;
 };
-}  // animation
 
 #endif // ANIMATION_INCLUDE

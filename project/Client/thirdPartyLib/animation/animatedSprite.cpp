@@ -23,8 +23,6 @@
 
 #include "animatedSprite.hpp"
 
-namespace sfe {
-
 AnimatedSprite::AnimatedSprite(sf::Time frameTime, bool paused, bool looped) :
     m_animation(NULL), m_frameTime(frameTime), m_currentFrame(0), m_isPaused(paused), m_isLooped(looped), m_texture(NULL)
 {
@@ -192,5 +190,3 @@ void AnimatedSprite::draw(sf::RenderTarget& target, sf::RenderStates states) con
         target.draw(m_vertices, 4, sf::Quads, states);
     }
 }
-
-} // animation

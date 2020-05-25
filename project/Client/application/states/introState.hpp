@@ -5,6 +5,7 @@
 enum class ElementName;
 struct EventDetails;
 class BaseElement;
+class SpriteAnimation;
 
 class IntroState : public BaseState {
 public:
@@ -22,4 +23,7 @@ public:
 
 public:
     void Continue(EventDetails& details);
+
+private:
+    std::shared_ptr<SpriteAnimation> _animation;
 };

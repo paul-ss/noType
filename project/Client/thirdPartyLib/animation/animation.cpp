@@ -23,8 +23,6 @@
 
 #include "animation.hpp"
 
-namespace sfe {
-
 Animation::Animation() : m_texture(NULL)
 {
 
@@ -54,5 +52,3 @@ const sf::IntRect& Animation::getFrame(std::size_t n) const
 {
     return m_frames[n];
 }
-
-}  // animation

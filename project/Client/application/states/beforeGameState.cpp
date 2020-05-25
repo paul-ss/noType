@@ -20,7 +20,6 @@ void BeforeGameState::OnCreate() {
         StartGameSession();
         GetText();
 
-        // TODO add binding mute, exit
         auto context = GetSharedContext();
         auto fillerItr = context->sharedElements.find(ElementName::Filler);
         if (fillerItr != context->sharedElements.end()) {
