@@ -114,7 +114,7 @@ void GameState::UpdateLeaderPosition(const std::unordered_map<std::string, Netwo
     size_t currPos = 0;
     Network::PlayerInfo leaderInfo;
     for (auto& itr : l_players) {
-        if (currPos < itr.second.position) {
+        if (leaderInfo.position < itr.second.position) {
             leaderInfo = itr.second;
         }
     }
