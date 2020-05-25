@@ -143,14 +143,12 @@ TEST_F(Interaction, delete_player_play) {
   for (int i = 0; i < 5; i++) {
     auto playerInfo = std::make_unique<PlayerInfo>("uuid" + std::to_string(i));
     EXPECT_CALL(*db, FindPlayerInfoByUuid("uuid" + std::to_string(i)))
-        .Times(0);
+        .WillOnce(Return(ByMove(std::move(playerInfo))));
 
   }
 
   EXPECT_CALL(*db, UpadatePlayerInfo_(_))
-      .Times(0);
-  EXPECT_CALL(*db, InsertPlayerInfo_(_))
-      .Times(0);
+      .Times(5);
 
 
   room->setRoomStatus(std::make_shared<RoomPlay>(rc));

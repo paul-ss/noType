@@ -32,9 +32,22 @@ bool RoomPlay::deletePlayer(std::shared_ptr<Room> room, const std::string &clien
     throw RoomException("deletePlayer (PLAY) : Invalid Player UUID at room " + room->_roomUUID);
   }
 
-  if (room->_players.erase(clientUUID) == 0) {
+//  if (room->_players.erase(clientUUID) == 0) {
+//    throw RoomException("deletePlayer (PLAY) : Attempt to delete not existing player at room " + room->_roomUUID);
+//  }
+
+//---- if player wants to send statistic, then room status is PLAY. But it takes much time.
+  if (room->_players.count(clientUUID) == 0) {
     throw RoomException("deletePlayer (PLAY) : Attempt to delete not existing player at room " + room->_roomUUID);
   }
+
+  room->sendOnePlayerStatistic(room->_players.at(clientUUID));
+
+  if (room->_players.erase(clientUUID) == 0) {
+    BOOST_LOG_TRIVIAL(error) << "deletePlayer (PLAY) : Player disappeared somewhere. It's magic";
+  }
+//----
+
 
   if (room->_players.size() == 0) {
     // all players gone, stop async handler
