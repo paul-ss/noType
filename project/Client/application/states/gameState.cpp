@@ -111,8 +111,7 @@ void GameState::Menu() {
 }
 
 void GameState::UpdateLeaderPosition(const std::unordered_map<std::string, Network::PlayerInfo>& l_players) {
-    size_t currPos = 0;
-    Network::PlayerInfo leaderInfo;
+    Network::PlayerInfo leaderInfo = {};
     for (auto& itr : l_players) {
         if (leaderInfo.position < itr.second.position) {
             leaderInfo = itr.second;
