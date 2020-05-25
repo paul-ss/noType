@@ -43,6 +43,9 @@ public:
     void Menu();
 
 private:
+    void refreshBar(const Network::PlayerInfo& l_player, ElementName l_elementName);
+
+private:
     size_t _textPosition;
     size_t _playerPosition;
     std::string _gameCookie;

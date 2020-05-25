@@ -124,7 +124,7 @@ void BeforeGameState::StartGameSession() {
             auto windowSize = renderWindow->getSize();
             sf::Vector2f windowCenter(windowSize.x * 0.5, windowSize.y * 0.5);
             auto timeToStart = std::make_shared<TextField>(ElementName::TimeToStart,
-                    context, windowCenter, "textField.json", std::to_string(_waitTime));
+                    context, windowCenter, "timeToStart.json", std::to_string(_waitTime));
             timeToStart->SetText(std::to_string(_waitTime));
             context->playerId = startGameSessionResponse.playerId;
             _elements.emplace(ElementName::TimeToStart, timeToStart);
@@ -149,29 +149,29 @@ void BeforeGameState::GetText() {
 
         Network::GetTextRequest getTextRequest = {context->uuid};
         auto sendMsg = std::make_unique<Network::Message>
-          (Network::MessageType::GetTextRequest, getTextRequest);
+            (Network::MessageType::GetTextRequest, getTextRequest);
         queueManager->PushToSendingData(std::move(sendMsg));
 
         std::unique_ptr<Network::Message> recvMsg = nullptr;
         while (!recvMsg) {
-          recvMsg = queueManager->PopReceivedData();
+            recvMsg = queueManager->PopReceivedData();
         }
 
         if (recvMsg->GetMessageType() == Network::MessageType::GetTextResponse) {
-          auto data = recvMsg->ExtractData();
-          auto getTextResponse = std::any_cast<Network::GetTextResponse>(data);
-          checkNetStatus(getTextResponse.status, getTextResponse.error);
+            auto data = recvMsg->ExtractData();
+            auto getTextResponse = std::any_cast<Network::GetTextResponse>(data);
+            checkNetStatus(getTextResponse.status, getTextResponse.error);
 
-          // Create text string and share it with game state
-          auto windowSize = renderWindow->getSize();
-          auto smartString = std::make_shared<SmartString>(ElementName::SmartString,
-                                                           context,
-                                                           sf::Vector2f((windowSize.x * 0.5), (windowSize.y * 0.5f)),
-                                                           "smartString.json", getTextResponse.text);
+            // Create text string and share it with game state
+            auto windowSize = renderWindow->getSize();
+            auto smartString = std::make_shared<SmartString>(ElementName::SmartString,
+                    context,
+                    sf::Vector2f((windowSize.x * 0.5), (windowSize.y * 0.5f)),
+                    "smartString.json", getTextResponse.text);
 
           sf::Vector2f smartStrPosition((windowSize.x * 0.5), (windowSize.y * 0.5f));
-          smartString->SetPosition(smartStrPosition);
-          context->sharedElements.emplace(ElementName::SmartString, smartString);
+            smartString->SetPosition(smartStrPosition);
+            context->sharedElements.emplace(ElementName::SmartString, smartString);
         }
 
     } catch (const std::bad_weak_ptr& e) {
@@ -243,29 +243,29 @@ bool BeforeGameState::isGame() {
         auto context = GetSharedContext();
 
         while (true) {
-          Network::RoomStatusRequest roomStatusRequest = {context->uuid};
-          auto sendMsg = std::make_unique<Network::Message>
-            (Network::MessageType::RoomStatusRequest, roomStatusRequest);
-          queueManager->PushToSendingData(std::move(sendMsg));
+            Network::RoomStatusRequest roomStatusRequest = {context->uuid};
+            auto sendMsg = std::make_unique<Network::Message>
+                    (Network::MessageType::RoomStatusRequest, roomStatusRequest);
+            queueManager->PushToSendingData(std::move(sendMsg));
 
-          std::unique_ptr<Network::Message> recvMsg = nullptr;
-          while (!recvMsg) {
+            std::unique_ptr<Network::Message> recvMsg = nullptr;
+            while (!recvMsg) {
             recvMsg = queueManager->PopReceivedData();
-          }
+            }
 
-          if (recvMsg->GetMessageType() == Network::MessageType::RoomStatusResponse) {
+        if (recvMsg->GetMessageType() == Network::MessageType::RoomStatusResponse) {
             auto roomStatusResponse = std::any_cast<Network::RoomStatusResponse>(recvMsg->ExtractData());
             checkNetStatus(roomStatusResponse.status, roomStatusResponse.error);
             if (roomStatusResponse.roomStatus == Network::RoomStatus::Play) {
-              return true;
+                return true;
             } else {
-              return false;
+                return false;
             }
-          } else {
+        } else {
             return false;
-          }
-          std::this_thread::sleep_for(std::chrono::microseconds(300));
-          std::cout << "continue waiting" << std::endl;
+        }
+            std::this_thread::sleep_for(std::chrono::microseconds(300));
+            std::cout << "continue waiting" << std::endl;
         }
     } catch (const std::bad_weak_ptr& e) {
         BOOST_LOG_TRIVIAL(error) << "[beforeGameState - isGame] " << e.what();

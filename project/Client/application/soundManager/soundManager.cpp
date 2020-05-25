@@ -12,6 +12,16 @@ SoundManager::SoundManager(std::weak_ptr<SharedContext> l_sharedContext, float l
         _sharedContext(l_sharedContext) {
 
     PlayMusic(getRandTrack());
+
+    try {
+        std::shared_ptr<SharedContext>context(_sharedContext);
+        std::shared_ptr<EventManager>eMgr(context->eventManager);
+        auto lambdaMute = [this](EventDetails& l_details) { this->Mute(); };
+        eMgr->AddCallback(StateType(0), "Mute", lambdaMute);
+
+    } catch (std::bad_weak_ptr& e) {
+        //log
+    }
 }
 
 void SoundManager::Mute() {

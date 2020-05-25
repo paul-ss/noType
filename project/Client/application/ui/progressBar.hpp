@@ -18,7 +18,7 @@ public:
     void OnRelease() override;
     void ReadIn(const std::string& l_stream) override;
     ElementName OnClick(const sf::Vector2i& l_mousePos) override;
-    void OnHover(const sf::Vector2f& l_mousePos) override;
+    void OnHover() override;
     void OnLeave() override;
 
 private:

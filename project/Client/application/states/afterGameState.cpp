@@ -18,35 +18,39 @@ void AfterGameState::OnCreate() {
     } else {
         BOOST_LOG_TRIVIAL(error) << "[aftergamestate - oncreate] " << "filler not found";
     }
+
     auto positionItr = context->sharedElements.find(ElementName::PlayerPosition);
     if (positionItr != context->sharedElements.end()) {
         _elements.emplace(positionItr->first, positionItr->second);
     } else {
         BOOST_LOG_TRIVIAL(error) << "[aftergamestate - oncreate] " << "position not found";
     }
+    auto positionTextItr = context->sharedElements.find(ElementName::PlayerPositionText);
+    if (positionTextItr != context->sharedElements.end()) {
+        _elements.emplace(positionTextItr->first, positionTextItr->second);
+    } else {
+        BOOST_LOG_TRIVIAL(error) << "[aftergamestate - oncreate] " << "positiontext not found";
+    }
+
     auto aSpeedItr = context->sharedElements.find(ElementName::AverageSpeed);
     if (aSpeedItr != context->sharedElements.end()) {
         _elements.emplace(aSpeedItr->first, aSpeedItr->second);
     } else {
         BOOST_LOG_TRIVIAL(error) << "[aftergamestate - oncreate] " << "average speed not found";
     }
-
-    auto renderWindow = GetRenderWindow();
-    auto windowSize = renderWindow->getSize();
-    auto menu = std::make_shared<Label>(ElementName::MenuButton, context, sf::Vector2f(0, 0), "button.json");
-    auto menuSize = menu->GetSize();
-    sf::Vector2f menuPosition((windowSize.x * 0.5f - windowSize.x * 0.5),
-                              (windowSize.y * 0.5f - windowSize.y * 0.5) - ELEM_MARGIN_Y);
-    menu->SetText("Exit");
-    menu->SetPosition(menuPosition);
-    _elements.emplace(ElementName::MenuButton, menu);
+    auto aSpeedItrTxt = context->sharedElements.find(ElementName::AverageSpeedText);
+    if (aSpeedItrTxt != context->sharedElements.end()) {
+        _elements.emplace(aSpeedItrTxt->first, aSpeedItrTxt->second);
+    } else {
+        BOOST_LOG_TRIVIAL(error) << "[aftergamestate - oncreate] " << "average speed not found";
+    }
 
     auto eMgr = GetEventManager();
     auto lambdaClick = [this](EventDetails& l_details) { this->MouseClick(l_details); };
-    eMgr->AddCallback(StateType::MainMenu, "Mouse_Left", lambdaClick);
+    eMgr->AddCallback(StateType::AfterGame, "Mouse_Left", lambdaClick);
 
     auto lambdaPlay = [this]([[maybe_unused]] EventDetails& l_details) { this->Menu(); };
-    eMgr->AddCallback(StateType::MainMenu, "Intro_Continue", lambdaPlay);
+    eMgr->AddCallback(StateType::AfterGame, "Intro_Continue", lambdaPlay);
 }
 
 void AfterGameState::MouseClick(EventDetails& l_details) {
@@ -68,8 +72,9 @@ void AfterGameState::MouseClick(EventDetails& l_details) {
 void AfterGameState::Draw() {
     drawElement(ElementName::Filler);
     drawElement(ElementName::PlayerPosition);
+    drawElement(ElementName::PlayerPositionText);
     drawElement(ElementName::AverageSpeed);
-    drawElement(ElementName::MenuButton);
+    drawElement(ElementName::AverageSpeedText);
 }
 
 void AfterGameState::Menu() {

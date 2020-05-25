@@ -89,10 +89,25 @@ void MainMenuState::Play() {
     try {
         auto stateMgr = GetStateManager();
         stateMgr->SwitchTo(StateType::BeforeGame);
+        clearButton();
 
     } catch (const std::bad_weak_ptr &e) {
         BOOST_LOG_TRIVIAL(error) << "[menu - play] " << e.what();
     }
+}
+
+void MainMenuState::Update([[maybe_unused]] const sf::Time& l_dT) {
+    auto playItr = _elements.find(ElementName::PlayButton);
+    playItr->second->Update(l_dT.asSeconds());
+    auto quitItr = _elements.find(ElementName::QuitButton);
+    quitItr->second->Update(l_dT.asSeconds());
+}
+
+void MainMenuState::clearButton() {
+    auto playItr = _elements.find(ElementName::PlayButton);
+    playItr->second->OnLeave();
+    auto quitItr = _elements.find(ElementName::QuitButton);
+    quitItr->second->OnLeave();
 }
 
 void MainMenuState::Quit() {
@@ -112,5 +127,4 @@ void MainMenuState::Draw() {
 }
 
 void MainMenuState::Activate() {}
-void MainMenuState::Update([[maybe_unused]] const sf::Time& dT) {}
 void MainMenuState::Deactivate() {}

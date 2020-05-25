@@ -32,11 +32,14 @@ void GameState::OnCreate() {
         }
 
         auto windowSize = renderWindow->getSize();
-        auto pb = std::make_shared<ProgressBar>(ElementName::LeaderPosition, context,
-                sf::Vector2f(windowSize.x * 0.5, 0), "progressBar.json");
-        _elements.emplace(ElementName::LeaderPosition, pb);
+        auto progBarLeader = std::make_shared<ProgressBar>(ElementName::LeaderBar, context,
+                sf::Vector2f(windowSize.x * 0.5, 0.1), "leaderProgressBar.json");
+        sf::Vector2f offset = progBarLeader->GetSize();
+        auto progBarPlayer = std::make_shared<ProgressBar>(ElementName::PlayerBar, context,
+        sf::Vector2f(windowSize.x * 0.5, offset.y * 1.2), "playerProgressBar.json");
+        _elements.emplace(ElementName::LeaderBar, progBarLeader);
+        _elements.emplace(ElementName::PlayerBar, progBarPlayer);
 
-        // add mute, back to menu button
         auto lambdaQuit = [this]([[maybe_unused]] EventDetails& l_details) { this->Menu(); };
         eMgr->AddCallback(StateType::Game, "Key_Escape", lambdaQuit);
 
@@ -109,22 +112,13 @@ void GameState::Menu() {
 
 void GameState::UpdateLeaderPosition(const std::unordered_map<std::string, Network::PlayerInfo>& l_players) {
     size_t currPos = 0;
+    Network::PlayerInfo leaderInfo;
     for (auto& itr : l_players) {
         if (currPos < itr.second.position) {
-            currPos = itr.second.position;
+            leaderInfo = itr.second;
         }
     }
-    auto itrPb = _elements.find(ElementName::LeaderPosition);
-    if (itrPb == _elements.end()) {
-        BOOST_LOG_TRIVIAL(error) << "[game - updateleaderposition] " << "leaderposition not found";
-    }
-    auto itrStr = _elements.find(ElementName::SmartString);
-    if (itrStr == _elements.end()) {
-        BOOST_LOG_TRIVIAL(error) << "[game - updateleaderposition] " << "leaderposition not found";
-    }
-    auto str = std::dynamic_pointer_cast<SmartString>(itrStr->second);
-    itrPb->second->Update(static_cast<float>(currPos) / static_cast<float>(str->GetStringSize()));
-    //itrPb->second->Update(50.0f);
+    refreshBar(leaderInfo, ElementName::LeaderBar);
 }
 
 void GameState::UpdatePlayerPosition(const std::unordered_map<std::string, Network::PlayerInfo>& l_players) {
@@ -151,6 +145,31 @@ void GameState::UpdatePlayerPosition(const std::unordered_map<std::string, Netwo
 
     _playerPosition = std::distance(playersPositions.begin(), it);
 
+    refreshBar(itr->second, ElementName::PlayerBar);
+
+    } catch (std::bad_weak_ptr& e) {
+        //log
+    }
+}
+
+void GameState::refreshBar(const Network::PlayerInfo& l_player, ElementName l_elementName) {
+    try {
+        auto itrPb = _elements.find(l_elementName);
+        if (itrPb == _elements.end()) {
+            BOOST_LOG_TRIVIAL(error) << "[game - refreshBar] " << "bar not found";
+        }
+        auto itrStr = _elements.find(ElementName::SmartString);
+        if (itrStr == _elements.end()) {
+            BOOST_LOG_TRIVIAL(error) << "[game - refreshBar] " << "smartstring not found";
+        }
+        auto str = std::dynamic_pointer_cast<SmartString>(itrStr->second);
+        itrPb->second->Update(static_cast<float>(l_player.position) / static_cast<float>(str->GetStringSize()));
+        if (l_elementName == ElementName::PlayerBar) {
+            itrPb->second->SetText("(You) " + l_player.name);
+        } else {
+            itrPb->second->SetText("(Leader) " + l_player.name);
+        }
+
     } catch (std::bad_weak_ptr& e) {
         //log
     }
@@ -162,13 +181,20 @@ void GameState::GetPlayerPosition() {
         auto renderWindow = GetRenderWindow();
         auto windowSize = renderWindow->getSize();
 
-        sf::Vector2f windowCenter(windowSize.x * 0.5, windowSize.y * 0.5);
-        auto playerPosition = std::make_shared<TextField>(ElementName::PlayerPosition,
-                context, windowCenter, "textField.json", std::to_string(_averageSpeed));
-        context->sharedElements.emplace(ElementName::PlayerPosition, playerPosition);
+        auto playerPos = std::make_shared<TextField>(ElementName::PlayerPosition,
+                context, sf::Vector2f(0,0), "textField.json", std::to_string(_playerPosition));
+        playerPos->SetPosition(
+                sf::Vector2f(windowSize.x * 0.5 - 500, windowSize.y * 0.5));
+        context->sharedElements.emplace(ElementName::PlayerPosition, playerPos);
+
+        auto posText = std::make_shared<TextField>(ElementName::PlayerPositionText,
+                context, sf::Vector2f(0, 0), "textField.json", "Pos.");
+        posText->SetPosition(sf::Vector2f(windowSize.x * 0.5 - 500,
+                windowSize.y * 0.5 + 200));
+        context->sharedElements.emplace(ElementName::PlayerPositionText, posText);
 
     } catch (std::bad_weak_ptr& e) {
-        BOOST_LOG_TRIVIAL(error) << "[game - getaveragespeed] " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "[game - getplayerposition] " << e.what();
     }
 }
 
@@ -178,10 +204,16 @@ void GameState::GetAverageSpeed() {
         auto renderWindow = GetRenderWindow();
         auto windowSize = renderWindow->getSize();
 
-        sf::Vector2f windowCenter(windowSize.x * 0.5, windowSize.y * 0.5);
         auto averageSpeed = std::make_shared<TextField>(ElementName::AverageSpeed,
-                context, windowCenter, "textField.json", std::to_string(_averageSpeed));
+                context,  sf::Vector2f(0,0), "textField.json", std::to_string(_averageSpeed));
+        averageSpeed->SetPosition(sf::Vector2f(windowSize.x * 0.5 + 500, windowSize.y * 0.5));
         context->sharedElements.emplace(ElementName::AverageSpeed, averageSpeed);
+
+        auto averageSpeedTxt = std::make_shared<TextField>(ElementName::AverageSpeedText,
+                context, sf::Vector2f(0, 0), "textField.json", "Speed");
+        averageSpeedTxt->SetPosition(sf::Vector2f(windowSize.x * 0.5 + 500,
+                windowSize.y * 0.5 + 200));
+        context->sharedElements.emplace(ElementName::AverageSpeedText, averageSpeedTxt);
     } catch (std::bad_weak_ptr& e) {
         BOOST_LOG_TRIVIAL(error) << "[game - getaveragespeed] " << e.what();
     }
@@ -273,7 +305,8 @@ void GameState::AfterGame() {
 void GameState::Draw() {
     drawElement(ElementName::Filler);
     drawElement(ElementName::SmartString);
-    drawElement(ElementName::LeaderPosition);
+    drawElement(ElementName::LeaderBar);
+    drawElement(ElementName::PlayerBar);
 }
 
 void GameState::Activate() {}

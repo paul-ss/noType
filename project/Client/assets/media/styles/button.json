@@ -1,8 +1,8 @@
 {
     "Neutral" : {
-        "size" : [150, 150],
+        "size" : [200, 100],
         "fullScreen" : "false",
-        "bgColor" : [0, 255, 0 ,255],
+        "bgColor" : [218, 247, 166 ,255],
         "bgImage" : "",
         "bgImgColor" : [255, 0, 0, 255],
         "textColor" : [0, 0, 255, 255],
@@ -14,9 +14,9 @@
         "glyphPadding" : [150, 16]
     },
     "Hover" : {
-        "size" : [320, 40],
+        "size" : [230, 130],
         "fullScreen" : "false",
-        "bgColor" : [0,255,0 ,255],
+        "bgColor" : [236, 56, 222],
         "bgImage" : "",
         "bgImgColor" : [255, 0, 0, 255],
         "textColor" : [0, 0, 255, 255],
@@ -28,7 +28,7 @@
         "glyphPadding" : [150, 16]
     },
     "Clicked" : {
-        "size" : [300, 32],
+        "size" : [250, 150],
         "fullScreen" : "false",
         "bgColor" : [0,255,0 ,255],
         "bgImage" : "",

@@ -42,5 +42,5 @@ ElementName Filler::OnClick([[maybe_unused]] const sf::Vector2i& l_mousePos) {
 void Filler::Update([[maybe_unused]] float l_dT) {}
 void Filler::ReadIn([[maybe_unused]] const std::string& l_stream) {}
 void Filler::OnRelease() {}
-void Filler::OnHover([[maybe_unused]] const sf::Vector2f& l_mousePos) {}
+void Filler::OnHover() {}
 void Filler::OnLeave() {}

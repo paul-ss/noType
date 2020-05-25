@@ -1,13 +1,13 @@
 {
     "Neutral" : {
-        "size" : [500, 300],
+        "size" : [500, 70],
         "fullScreen" : "false",
-        "bgColor" : [255, 0, 0, 255],
+        "bgColor" : [247, 99, 202, 255],
         "bgImage" : "",
         "bgImgColor" : [255, 0, 0, 255],
-        "textColor" : [0, 0, 255, 255],
-        "textFont" : "",
-        "textPadding" : [0, 16],
+        "textColor" : [255, 0, 0, 255],
+        "textFont" : "Main",
+        "textPadding" : [260, 16],
         "textSize" : 30,
         "textOriginCenter" : "true",
         "glyph" : "",

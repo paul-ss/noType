@@ -36,11 +36,12 @@ void ProgressBar::Draw() {
         std::shared_ptr<Window>window(sharedContext->window);
         std::shared_ptr<sf::RenderWindow>renderWindow(window->GetRenderWindow());
         renderWindow->draw(_progressBar);
+        renderWindow->draw(_visual.text);
 
     } catch (std::bad_weak_ptr& e) {
         //log
     }
 }
 void ProgressBar::ReadIn([[maybe_unused]] const std::string& l_stream) {}
-void ProgressBar::OnHover([[maybe_unused]] const sf::Vector2f& l_mousePos) {}
+void ProgressBar::OnHover() {}
 void ProgressBar::OnLeave() {}

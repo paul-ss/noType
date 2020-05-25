@@ -36,5 +36,5 @@ ElementName TextField::OnClick([[maybe_unused]] const sf::Vector2i& l_mousePos) 
 void TextField::Update([[maybe_unused]] float l_dT) {}
 void TextField::ReadIn([[maybe_unused]] const std::string& l_stream) {}
 void TextField::OnRelease() {}
-void TextField::OnHover([[maybe_unused]] const sf::Vector2f& l_mousePos) {}
+void TextField::OnHover() {}
 void TextField::OnLeave() {}

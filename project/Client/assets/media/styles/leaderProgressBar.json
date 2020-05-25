@@ -1,14 +1,14 @@
 {
     "Neutral" : {
-        "size" : [0, 0],
+        "size" : [500, 70],
         "fullScreen" : "false",
-        "bgColor" : [255, 0, 0, 255],
-        "bgImage" : "Rose",
+        "bgColor" : [255, 195, 0  , 255],
+        "bgImage" : "",
         "bgImgColor" : [255, 0, 0, 255],
-        "textColor" : [255, 255, 255, 255],
+        "textColor" : [255, 0, 0, 255],
         "textFont" : "Main",
-        "textPadding" : [0, 450],
-        "textSize" : 60,
+        "textPadding" : [260, 16],
+        "textSize" : 30,
         "textOriginCenter" : "true",
         "glyph" : "",
         "glyphPadding" : [150, 16]

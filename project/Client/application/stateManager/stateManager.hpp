@@ -11,7 +11,7 @@
 
 struct SharedContext;
 
-enum class StateType{
+enum class StateType {
     Intro = 1,
     MainMenu,
     BeforeGame,

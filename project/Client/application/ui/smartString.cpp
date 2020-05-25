@@ -126,6 +126,6 @@ ElementName SmartString::OnClick([[maybe_unused]] const sf::Vector2i& l_mousePos
 
 void SmartString::ReadIn([[maybe_unused]] const std::string& l_stream) {}
 void SmartString::OnRelease() {}
-void SmartString::OnHover([[maybe_unused]] const sf::Vector2f& l_mousePos) {}
+void SmartString::OnHover() {}
 void SmartString::OnLeave() {}
 void SmartString::Update([[maybe_unused]] float l_dT) {}

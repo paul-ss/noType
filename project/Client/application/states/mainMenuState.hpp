@@ -26,4 +26,7 @@ public:
 
     void Play();
     void Quit();
+
+private:
+    void clearButton();
 };

@@ -37,6 +37,7 @@ project/Server/cmake-build-debug/*
 cmake-build-debug
 .vscode
 cmake-build-debug
+cmake-build-release
 
 #Local
 .DS_Store

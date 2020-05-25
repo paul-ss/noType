@@ -13,15 +13,13 @@ ElementName Label::OnClick(const sf::Vector2i& l_mousePos) {
     if (styleItr == _style.end()) {
         //log
     }
-    if (styleItr->second->isFullScreen) {
-        return ElementName::None;
-    }
+
     float halfX = GetSize().x / 2.0f;
     float halfY = GetSize().y / 2.0f;
     if (l_mousePos.x >= GetPosition().x - halfX &&
-        l_mousePos.x <= GetPosition().x + halfX &&
-        l_mousePos.y >= GetPosition().y - halfY &&
-        l_mousePos.y <= GetPosition().y + halfY) {
+            l_mousePos.x <= GetPosition().x + halfX &&
+            l_mousePos.y >= GetPosition().y - halfY &&
+            l_mousePos.y <= GetPosition().y + halfY) {
         _state = ElementState::Clicked;
         return _name;
     }
@@ -32,7 +30,7 @@ void Label::OnRelease() {
     _state = ElementState::Hover;
 }
 
-void Label::OnHover([[maybe_unused]] const sf::Vector2f& l_mousePos) {
+void Label::OnHover() {
     _state = ElementState::Hover;
 }
 
@@ -40,7 +38,29 @@ void Label::OnLeave() {
     _state = ElementState::Neutral;
 }
 
-void Label::Update([[maybe_unused]] float l_dT) {}
+void Label::Update([[maybe_unused]] float l_dT) {
+    try {
+        std::shared_ptr<SharedContext>sharedContext(_sharedContext);
+        std::shared_ptr<EventManager>eMgr(sharedContext->eventManager);
+        std::shared_ptr<Window>window(sharedContext->window);
+        std::shared_ptr<sf::RenderWindow>renderWindow(window->GetRenderWindow());
+        sf::Vector2i mousePos = eMgr->GetMousePos(renderWindow);
+
+        float halfX = GetSize().x / 2.0f;
+        float halfY = GetSize().y / 2.0f;
+        if (mousePos.x >= GetPosition().x - halfX &&
+                mousePos.x <= GetPosition().x + halfX &&
+                mousePos.y >= GetPosition().y - halfY &&
+                mousePos.y <= GetPosition().y + halfY) {
+            OnHover();
+        } else {
+            OnLeave();
+        }
+
+    } catch (std::bad_weak_ptr& e) {
+        //log
+    }
+}
 
 void Label::draw(const std::shared_ptr<Style>& l_style) {
     try {

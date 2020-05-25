@@ -25,9 +25,12 @@ enum class ElementName {
     MenuButton,
     MuteButton,
     TimeToStart,
-    LeaderPosition,
+    LeaderBar,
+    PlayerBar,
     PlayerPosition,
+    PlayerPositionText,
     AverageSpeed,
+    AverageSpeedText,
     SmartString,
 };
 
@@ -83,7 +86,7 @@ public:
     virtual void ReadIn([[maybe_unused]] const std::string& l_stream) = 0;
     virtual ElementName OnClick([[maybe_unused]] const sf::Vector2i& l_mousePos) = 0;
     virtual void OnRelease() = 0;
-    virtual void OnHover([[maybe_unused]] const sf::Vector2f& l_mousePos) = 0;
+    virtual void OnHover() = 0;
     virtual void OnLeave() = 0;
 
 public:
