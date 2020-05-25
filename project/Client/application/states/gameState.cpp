@@ -133,7 +133,7 @@ void GameState::UpdatePlayerPosition(const std::unordered_map<std::string, Netwo
         playersPositions.emplace_back(playerId, playerInfo.position);
     }
     std::sort(playersPositions.begin(), playersPositions.end(),[](const auto& lhs, const auto& rhs){
-        return lhs.second < rhs.second;
+        return lhs.second > rhs.second;
     });
 
     auto it = std::find_if(playersPositions.begin(), playersPositions.end(), [&](const auto& lhs){
@@ -143,7 +143,7 @@ void GameState::UpdatePlayerPosition(const std::unordered_map<std::string, Netwo
         return false;
     });
 
-    _playerPosition = std::distance(playersPositions.begin(), it);
+    _playerPosition = std::distance(playersPositions.begin(), it) + 1;
 
     refreshBar(itr->second, ElementName::PlayerBar);
 
@@ -227,6 +227,10 @@ void GameState::CountAverageSpeed(const double l_speed) {
 
 void GameState::OnDestroy() {
     try {
+        _elements.erase(ElementName::SmartString);
+        auto context = GetSharedContext();
+        context->sharedElements.erase(ElementName::SmartString);
+
         auto eMgr = GetEventManager();
         eMgr->RemoveCallback(StateType::Game, "Key_Escape");
         eMgr->RemoveCallback(StateType::Game, "Text_Entered");
