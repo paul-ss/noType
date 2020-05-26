@@ -23,4 +23,7 @@ public:
 public:
     void MouseClick(EventDetails& l_details);
     void Menu();
+
+private:
+    void clearButton();
 };

@@ -3,10 +3,9 @@
 #include "logger.hpp"
 
 TextField::TextField(const ElementName l_name, std::weak_ptr<SharedContext> l_sharedContext,
-        const sf::Vector2f& l_position,
         const std::string& l_style,
         const std::string& l_text) :
-        BaseElement(l_name, l_sharedContext, l_position, l_style) {
+        BaseElement(l_name, l_sharedContext, l_style) {
 
     _visual.text.setString(l_text);
 }
@@ -18,7 +17,6 @@ void TextField::Draw() {
         std::shared_ptr<sf::RenderWindow>renderWindow(window->GetRenderWindow());
         auto styleItr = _style.find(ElementState::Neutral);
         if (styleItr == _style.end()) {
-            BOOST_LOG_TRIVIAL(error) << "[String - draw] neutral state not found";
             return;
         }
         applyStyle(styleItr->second);

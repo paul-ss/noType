@@ -1,7 +1,6 @@
 #include "afterGameState.hpp"
 #include "sharedContext.hpp"
 #include "label.hpp"
-#include "textField.hpp"
 #include "logger.hpp"
 
 #define ELEM_MARGIN_Y 100
@@ -45,12 +44,16 @@ void AfterGameState::OnCreate() {
         BOOST_LOG_TRIVIAL(error) << "[aftergamestate - oncreate] " << "average speed not found";
     }
 
+    auto menu = std::make_shared<Label>(ElementName::MenuButton, context, "button.json");
+    menu->SetText("Menu");
+    _elements.emplace(ElementName::MenuButton, menu);
+
     auto eMgr = GetEventManager();
     auto lambdaClick = [this](EventDetails& l_details) { this->MouseClick(l_details); };
     eMgr->AddCallback(StateType::AfterGame, "Mouse_Left", lambdaClick);
 
     auto lambdaPlay = [this]([[maybe_unused]] EventDetails& l_details) { this->Menu(); };
-    eMgr->AddCallback(StateType::AfterGame, "Intro_Continue", lambdaPlay);
+    eMgr->AddCallback(StateType::AfterGame, "Key_Enter", lambdaPlay);
 }
 
 void AfterGameState::MouseClick(EventDetails& l_details) {
@@ -75,14 +78,24 @@ void AfterGameState::Draw() {
     drawElement(ElementName::PlayerPositionText);
     drawElement(ElementName::AverageSpeed);
     drawElement(ElementName::AverageSpeedText);
+    drawElement(ElementName::MenuButton);
+}
+
+void AfterGameState::clearButton() {
+    auto menuItr = _elements.find(ElementName::MenuButton);
+    if (menuItr == _elements.end()) {
+        return;
+    }
+    menuItr->second->OnLeave();
 }
 
 void AfterGameState::Menu() {
     try {
         auto stateMgr = GetStateManager();
 
+        clearButton();
         stateMgr->SwitchTo(StateType::MainMenu);
-        stateMgr->Remove(StateType::Intro);
+        stateMgr->Remove(StateType::AfterGame);
 
     } catch (const std::bad_weak_ptr &e) {
         BOOST_LOG_TRIVIAL(error) << "[aftergamestate - menu] " << e.what();
@@ -93,15 +106,18 @@ void AfterGameState::OnDestroy() {
     try {
         auto eMgr = GetEventManager();
 
-        eMgr->RemoveCallback(StateType::MainMenu, "Key_Enter");
-        eMgr->RemoveCallback(StateType::MainMenu, "Mouse_Left");
+        eMgr->RemoveCallback(StateType::AfterGame, "Key_Enter");
+        eMgr->RemoveCallback(StateType::AfterGame, "Mouse_Left");
 
     } catch (const std::bad_weak_ptr &e) {
         BOOST_LOG_TRIVIAL(error) << "[menu - ondestroy] " << e.what();
     }
 }
 
+void AfterGameState::Update(const sf::Time& l_time) {
+    auto playItr = _elements.find(ElementName::MenuButton);
+    playItr->second->Update(l_time.asSeconds());
+}
+
 void AfterGameState::Activate() {}
 void AfterGameState::Deactivate() {}
-
-void AfterGameState::Update(const sf::Time& l_time) {}

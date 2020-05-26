@@ -6,8 +6,9 @@ SpriteAnimation::SpriteAnimation(std::weak_ptr<SharedContext> l_sharedContext,
         const sf::Vector2f& l_position,
         const sf::Vector2i& l_size,
         const std::string& l_file) :
-        _sharedContext(l_sharedContext),
-        _animatedSprite(sf::seconds(0.05), true, false) {
+        _animatedSprite(sf::seconds(0.05), true, false),
+        _sharedContext(l_sharedContext)
+        {
 
     std::shared_ptr<SharedContext>context(_sharedContext);
     std::shared_ptr<Window>window(context->window);

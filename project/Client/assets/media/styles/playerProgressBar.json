@@ -7,8 +7,8 @@
         "bgImgColor" : [255, 0, 0, 255],
         "textColor" : [255, 0, 0, 255],
         "textFont" : "Main",
-        "textPadding" : [260, 16],
-        "textSize" : 30,
+        "textPadding" : [260, 0],
+        "textSize" : 50,
         "textOriginCenter" : "true",
         "glyph" : "",
         "glyphPadding" : [150, 16]

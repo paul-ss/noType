@@ -3,9 +3,8 @@
 #include "logger.hpp"
 
 ProgressBar::ProgressBar(const ElementName l_name, std::weak_ptr<SharedContext> l_sharedContext,
-        const sf::Vector2f& l_position,
         const std::string& l_style) :
-        BaseElement(l_name, l_sharedContext, l_position, l_style) {
+        BaseElement(l_name, l_sharedContext, l_style) {
 
     auto styleItr = _style.find(ElementState::Neutral);
     if (styleItr == _style.end()) {
@@ -14,14 +13,14 @@ ProgressBar::ProgressBar(const ElementName l_name, std::weak_ptr<SharedContext> 
     }
     applyStyle(styleItr->second);
 
-    _progressBar.setPosition(l_position.x, l_position.y);
+    _progressBar.setPosition(_position.x, _position.y);
     _progressBar.setShowBackgroundAndFrame(true);
     _progressBar.setSize(_visual.backgroundSolid.getSize());
     _progressBar.setOrigin(_progressBar.getLocalBounds().width * 0.5, 0);
     _progressBar.setColor(_visual.backgroundSolid.getFillColor());
 }
 
-ElementName ProgressBar::OnClick(const sf::Vector2i& l_mousePos) {
+ElementName ProgressBar::OnClick([[maybe_unused]] const sf::Vector2i& l_mousePos) {
     return ElementName::None;
 }
 

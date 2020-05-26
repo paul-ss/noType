@@ -101,7 +101,6 @@ void BeforeGameState::Connect() {
 void BeforeGameState::StartGameSession() {
     try {
         auto context = GetSharedContext();
-        auto renderWindow = GetRenderWindow();
         auto queueManager = GetQueueManager();
 
         Network::StartGameSessionRequest startGameRequest = {context->uuid};
@@ -120,11 +119,8 @@ void BeforeGameState::StartGameSession() {
             checkNetStatus(startGameSessionResponse.status, startGameSessionResponse.error);
             _waitTime = startGameSessionResponse.waitTime + FIX_COLLISION;
 
-            auto windowSize = renderWindow->getSize();
-            sf::Vector2f windowCenter(windowSize.x * 0.5, windowSize.y * 0.5);
             auto timeToStart = std::make_shared<TextField>(ElementName::TimeToStart,
-                    context, windowCenter, "timeToStart.json", std::to_string(_waitTime));
-            timeToStart->SetText(std::to_string(_waitTime));
+                    context, "timeToStart.json", std::to_string(_waitTime));
             context->playerId = startGameSessionResponse.playerId;
             _elements.emplace(ElementName::TimeToStart, timeToStart);
         }
@@ -143,7 +139,6 @@ void BeforeGameState::StartGameSession() {
 void BeforeGameState::GetText() {
     try {
         auto context = GetSharedContext();
-        auto renderWindow = GetRenderWindow();
         auto queueManager = GetQueueManager();
 
         Network::GetTextRequest getTextRequest = {context->uuid};
@@ -162,14 +157,8 @@ void BeforeGameState::GetText() {
             checkNetStatus(getTextResponse.status, getTextResponse.error);
 
             // Create text string and share it with game state
-            auto windowSize = renderWindow->getSize();
             auto smartString = std::make_shared<SmartString>(ElementName::SmartString,
-                    context,
-                    sf::Vector2f((windowSize.x * 0.5), (windowSize.y * 0.5f)),
-                    "smartString.json", getTextResponse.text);
-
-          sf::Vector2f smartStrPosition((windowSize.x * 0.5), (windowSize.y * 0.5f));
-            smartString->SetPosition(smartStrPosition);
+                    context, "smartString.json", getTextResponse.text);
             context->sharedElements.emplace(ElementName::SmartString, smartString);
         }
 

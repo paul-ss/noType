@@ -2,18 +2,18 @@
 #include "sharedContext.hpp"
 
 #define PATH_TO_STYLES "assets/media/styles/"
+#define POSITION_FILE "assets/media/styles/position.json"
 
 BaseElement::BaseElement(const ElementName l_name,
         std::weak_ptr<SharedContext> l_sharedContext,
-        const sf::Vector2f& l_position,
         const std::string& l_style) :
         _name(l_name),
-        _position(l_position),
         _state(ElementState::Neutral),
         _sharedContext(l_sharedContext) {
 
     loadStyle(l_style);
-        }
+    loadPosition(l_name, POSITION_FILE);
+}
 
 void BaseElement::applyStyle(const std::shared_ptr<Style>& l_style) {
     try {
@@ -178,6 +178,57 @@ void BaseElement::loadStyle(const std::string& l_path) {
         BOOST_LOG_TRIVIAL(error) << e.what() << " not valid json file: " << l_path;
     } catch (const std::bad_weak_ptr& e) {
         BOOST_LOG_TRIVIAL(error) << "[loadstyles - baseelement] " << e.what();
+    }
+}
+
+static std::string enumToStr(ElementName l_type) {
+    switch (l_type) {
+        case ElementName::Filler:
+            return "Filler";
+        case ElementName::IntroText:
+            return "IntroText";
+        case ElementName::PlayButton:
+            return "PlayButton";
+        case ElementName::QuitButton:
+            return "QuitButton";
+        case ElementName::TimeToStart:
+            return "TimeToStart";
+        case ElementName::LeaderBar:
+            return "LeaderBar";
+        case ElementName::PlayerBar:
+            return "PlayerBar";
+        case ElementName::MenuButton:
+            return "MenuButton";
+        case ElementName::PlayerPosition:
+            return "PlayerPosition";
+        case ElementName::PlayerPositionText:
+            return "PlayerPositionText";
+        case ElementName::AverageSpeed:
+            return "AverageSpeed";
+        case ElementName::AverageSpeedText:
+            return "AverageSpeedText";
+        case ElementName::SmartString:
+            return "SmartString";
+        default:
+            BOOST_LOG_TRIVIAL(error) << "[enumtostr] element type not found";
+    }
+    return std::string();
+}
+
+void BaseElement::loadPosition(const ElementName l_element, const std::string& l_path) {
+    try {
+        boost::property_tree::ptree root;
+        boost::property_tree::read_json(l_path, root);
+
+        std::vector<int> positionVec;
+        for (boost::property_tree::ptree::value_type& glyphPadding : root.get_child("position." + enumToStr(l_element))) {
+            positionVec.push_back(glyphPadding.second.get_value<int>());
+        }
+        _position.x = positionVec[0];
+        _position.y = positionVec[1];
+
+    } catch (const boost::property_tree::ptree_error& e) {
+        BOOST_LOG_TRIVIAL(error) << e.what() << "[loadPosition] not valid json file: " << l_path;
     }
 }
 

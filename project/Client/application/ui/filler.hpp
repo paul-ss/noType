@@ -5,7 +5,7 @@
 class Filler : public BaseElement {
 public:
     explicit Filler(const ElementName l_name, std::weak_ptr<SharedContext> l_sharedContext,
-            const sf::Vector2f& l_position, const std::string& l_style);
+        const std::string& l_style);
 
     ~Filler() override;
 

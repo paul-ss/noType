@@ -3,9 +3,8 @@
 #include "logger.hpp"
 
 Filler::Filler(const ElementName l_name, std::weak_ptr<SharedContext> l_sharedContext,
-        const sf::Vector2f& l_position,
         const std::string& l_style) :
-        BaseElement(l_name, l_sharedContext, l_position, l_style) {}
+        BaseElement(l_name, l_sharedContext, l_style) {}
 
 Filler::~Filler() {}
 

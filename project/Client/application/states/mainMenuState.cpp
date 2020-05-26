@@ -11,7 +11,6 @@ MainMenuState::MainMenuState(std::weak_ptr<SharedContext> l_context)
 void MainMenuState::OnCreate() {
     try {
         auto context = GetSharedContext();
-        auto renderWindow = GetRenderWindow();
 
         auto itr = context->sharedElements.find(ElementName::Filler);
         if (itr != context->sharedElements.end()) {
@@ -20,21 +19,12 @@ void MainMenuState::OnCreate() {
             BOOST_LOG_TRIVIAL(error) << "[menu - oncreate] " << "Filler not found";
         }
 
-        auto windowSize = renderWindow->getSize();
-        auto play = std::make_shared<Label>(ElementName::PlayButton, context, sf::Vector2f(0, 0), "button.json");
-        auto playSize = play->GetSize();
-        sf::Vector2f playPosition((windowSize.x * 0.5f - playSize.x * 0.5),
-                (windowSize.y * 0.5f - playSize.y * 0.5) - ELEM_MARGIN_Y);
+        auto play = std::make_shared<Label>(ElementName::PlayButton, context, "button.json");
         play->SetText("Play");
-        play->SetPosition(playPosition);
         _elements.emplace(ElementName::PlayButton, play);
 
-        auto quit = std::make_shared<Label>(ElementName::QuitButton, context, sf::Vector2f(0, 0), "button.json");
-        auto quitSize = quit->GetSize();
-        sf::Vector2f quitPosition((windowSize.x * 0.5f - quitSize.x * 0.5),
-                (windowSize.y * 0.5f - quitSize.y * 0.5) + ELEM_MARGIN_Y);
+        auto quit = std::make_shared<Label>(ElementName::QuitButton, context, "button.json");
         quit->SetText("Quit");
-        quit->SetPosition(quitPosition);
         _elements.emplace(ElementName::QuitButton, quit);
 
         auto eMgr = GetEventManager();
@@ -105,8 +95,14 @@ void MainMenuState::Update([[maybe_unused]] const sf::Time& l_dT) {
 
 void MainMenuState::clearButton() {
     auto playItr = _elements.find(ElementName::PlayButton);
+    if (playItr == _elements.end()) {
+        return;
+    }
     playItr->second->OnLeave();
     auto quitItr = _elements.find(ElementName::QuitButton);
+    if (quitItr == _elements.end()) {
+        return;
+    }
     quitItr->second->OnLeave();
 }
 

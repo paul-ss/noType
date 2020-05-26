@@ -22,9 +22,8 @@ enum class ElementName {
     IntroText,
     PlayButton,
     QuitButton,
-    MenuButton,
-    MuteButton,
     TimeToStart,
+    MenuButton,
     LeaderBar,
     PlayerBar,
     PlayerPosition,
@@ -32,7 +31,6 @@ enum class ElementName {
     AverageSpeed,
     AverageSpeedText,
     SmartString,
-    Pockemon
 };
 
 struct Style {
@@ -78,7 +76,7 @@ using ElementStyles = std::unordered_map<ElementState, std::shared_ptr<Style>>;
 class BaseElement {
 public:
     BaseElement(const ElementName l_name, std::weak_ptr<SharedContext> l_sharedContext,
-            const sf::Vector2f& l_position, const std::string& l_style);
+            const std::string& l_style);
 
     virtual ~BaseElement() = default;
 
@@ -100,6 +98,7 @@ public:
 protected:
     void applyStyle(const std::shared_ptr<Style>& l_style);
     void loadStyle(const std::string& l_path);
+    void loadPosition(const ElementName l_element, const std::string& l_path);
 
 protected:
     ElementName _name;

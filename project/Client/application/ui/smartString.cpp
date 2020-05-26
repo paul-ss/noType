@@ -7,10 +7,9 @@
 #define STRING_SIZE 60
 
 SmartString::SmartString(const ElementName l_name, std::weak_ptr<SharedContext> l_sharedContext,
-            const sf::Vector2f& l_position,
             const std::string& l_style,
             const std::string& l_reference) :
-            BaseElement(l_name, l_sharedContext, l_position, l_style),
+            BaseElement(l_name, l_sharedContext, l_style),
             _isValid(true),
             _textPosition(0),
             _reference(l_reference) {
@@ -44,8 +43,8 @@ SmartString::SmartString(const ElementName l_name, std::weak_ptr<SharedContext> 
     _coloredText << _reference << _visual.text.getFillColor();
 
     _coloredText.setCharacterSize(_visual.text.getCharacterSize());
-    _coloredText.setPosition(l_position.x - _coloredText.getGlobalBounds().width * 0.5,
-                            l_position.y);
+    _coloredText.setPosition(_position.x - _coloredText.getGlobalBounds().width * 0.5,
+                            _position.y);
 }
 
 size_t SmartString::GetStringSize() {

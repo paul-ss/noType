@@ -11,21 +11,18 @@ IntroState::IntroState(std::weak_ptr<SharedContext> l_context)
 void IntroState::OnCreate() {
     try {
         auto context = GetSharedContext();
-        auto renderWindow = GetRenderWindow();
 
-        sf::Vector2u windowSize = renderWindow->getSize();
-        sf::Vector2f windowCenter(windowSize.x * 0.5, windowSize.y * 0.5);
-        auto filler = std::make_shared<Filler>(ElementName::Filler, context, windowCenter, "filler.json");
-        sf::Vector2f fillerPosition(windowSize.x * 0.5f - filler->GetSize().x * 0.5,
-                windowSize.y * 0.5f);
-        filler->SetPosition(fillerPosition);
+        auto filler = std::make_shared<Filler>(ElementName::Filler, context, "filler.json");
         context->sharedElements.emplace(ElementName::Filler, filler);
         _elements.emplace(ElementName::Filler, filler);
 
         auto introText = std::make_shared<TextField>(ElementName::IntroText, context,
-                windowCenter, "introText.json", "SPACE  TO  CONTINUE");
+                "introText.json", "SPACE  TO  CONTINUE");
         _elements.emplace(ElementName::IntroText, introText);
 
+        auto renderWindow = GetRenderWindow();
+        sf::Vector2u windowSize = renderWindow->getSize();
+        sf::Vector2f windowCenter(windowSize.x * 0.5, windowSize.y * 0.5);
         _animation = std::make_shared<SpriteAnimation>(context, windowCenter, sf::Vector2i(66, 62), "Pockemon");
 
         auto eMgr = GetEventManager();

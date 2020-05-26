@@ -15,7 +15,6 @@ void GameState::OnCreate() {
     try {
         auto context = GetSharedContext();
         auto eMgr = GetEventManager();
-        auto renderWindow = GetRenderWindow();
 
         auto smartStringItr = context->sharedElements.find(ElementName::SmartString);
         if (smartStringItr != context->sharedElements.end()) {
@@ -31,12 +30,10 @@ void GameState::OnCreate() {
             BOOST_LOG_TRIVIAL(error) << "[beforeGameState - oncreate] " << "filler not found";
         }
 
-        auto windowSize = renderWindow->getSize();
         auto progBarLeader = std::make_shared<ProgressBar>(ElementName::LeaderBar, context,
-                sf::Vector2f(windowSize.x * 0.5, 0.1), "leaderProgressBar.json");
-        sf::Vector2f offset = progBarLeader->GetSize();
+                "leaderProgressBar.json");
         auto progBarPlayer = std::make_shared<ProgressBar>(ElementName::PlayerBar, context,
-        sf::Vector2f(windowSize.x * 0.5, offset.y * 1.2), "playerProgressBar.json");
+        "playerProgressBar.json");
         _elements.emplace(ElementName::LeaderBar, progBarLeader);
         _elements.emplace(ElementName::PlayerBar, progBarPlayer);
 
@@ -195,19 +192,13 @@ void GameState::refreshBar(const Network::PlayerInfo& l_player, ElementName l_el
 void GameState::GetPlayerPosition() {
     try {
         auto context = GetSharedContext();
-        auto renderWindow = GetRenderWindow();
-        auto windowSize = renderWindow->getSize();
 
         auto playerPos = std::make_shared<TextField>(ElementName::PlayerPosition,
-                context, sf::Vector2f(0,0), "textField.json", std::to_string(_playerPosition));
-        playerPos->SetPosition(
-                sf::Vector2f(windowSize.x * 0.5 - 500, windowSize.y * 0.5));
+                context, "textField.json", std::to_string(_playerPosition));
         context->sharedElements.emplace(ElementName::PlayerPosition, playerPos);
 
         auto posText = std::make_shared<TextField>(ElementName::PlayerPositionText,
-                context, sf::Vector2f(0, 0), "textField.json", "Pos.");
-        posText->SetPosition(sf::Vector2f(windowSize.x * 0.5 - 500,
-                windowSize.y * 0.5 + 200));
+                context, "textField.json", "Pos.");
         context->sharedElements.emplace(ElementName::PlayerPositionText, posText);
 
     } catch (std::bad_weak_ptr& e) {
@@ -218,19 +209,15 @@ void GameState::GetPlayerPosition() {
 void GameState::GetAverageSpeed() {
     try {
         auto context = GetSharedContext();
-        auto renderWindow = GetRenderWindow();
-        auto windowSize = renderWindow->getSize();
 
         auto averageSpeed = std::make_shared<TextField>(ElementName::AverageSpeed,
-                context,  sf::Vector2f(0,0), "textField.json", std::to_string(_averageSpeed));
-        averageSpeed->SetPosition(sf::Vector2f(windowSize.x * 0.5 + 500, windowSize.y * 0.5));
+                context, "textField.json", std::to_string(static_cast<size_t>(_averageSpeed)));
         context->sharedElements.emplace(ElementName::AverageSpeed, averageSpeed);
 
         auto averageSpeedTxt = std::make_shared<TextField>(ElementName::AverageSpeedText,
-                context, sf::Vector2f(0, 0), "textField.json", "Speed");
-        averageSpeedTxt->SetPosition(sf::Vector2f(windowSize.x * 0.5 + 500,
-                windowSize.y * 0.5 + 200));
+                context, "textField.json", "Speed");
         context->sharedElements.emplace(ElementName::AverageSpeedText, averageSpeedTxt);
+
     } catch (std::bad_weak_ptr& e) {
         BOOST_LOG_TRIVIAL(error) << "[game - getaveragespeed] " << e.what();
     }
