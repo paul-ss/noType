@@ -30,3 +30,17 @@
 *.exe
 *.out
 *.app
+
+#IDE
+.idea
+project/Server/cmake-build-debug/*
+project/Server/cmake-build-clang/*
+.vscode
+
+#Local
+.DS_Store
+build
+notype
+logNoType.txt
+Dockerfile
+server.log
