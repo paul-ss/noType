@@ -2,10 +2,10 @@
     "Neutral" : {
         "size" : [500, 70],
         "fullScreen" : "false",
-        "bgColor" : [247, 99, 202, 255],
+        "bgColor" : [247, 250, 1, 255],
         "bgImage" : "",
         "bgImgColor" : [255, 0, 0, 255],
-        "textColor" : [255, 0, 0, 255],
+        "textColor" : [247, 250, 1, 255],
         "textFont" : "Main",
         "textPadding" : [260, 0],
         "textSize" : 50,

@@ -1,0 +1,22 @@
+name: notype
+summary: game client
+description: Simple typeracer game.
+version: '0.1'
+confinement: strict
+
+apps:
+  notype:
+    command: notype
+    plugs: [network, network-bind, x11, opengl, home, pulseaudio]
+
+parts:
+  notype:
+    plugin: cmake
+    source: .
+    build-packages:
+    - g++
+    - make
+    - cmake
+    stage-packages:
+    - libsfml-dev
+    - libboost-all-dev

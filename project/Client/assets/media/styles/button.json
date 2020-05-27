@@ -2,7 +2,7 @@
     "Neutral" : {
         "size" : [200, 100],
         "fullScreen" : "false",
-        "bgColor" : [218, 247, 166 ,255],
+        "bgColor" : [106, 142, 255, 255],
         "bgImage" : "",
         "bgImgColor" : [255, 0, 0, 255],
         "textColor" : [0, 0, 255, 255],
@@ -16,10 +16,10 @@
     "Hover" : {
         "size" : [230, 130],
         "fullScreen" : "false",
-        "bgColor" : [236, 56, 222],
+        "bgColor" : [112, 0, 255, 255],
         "bgImage" : "",
         "bgImgColor" : [255, 0, 0, 255],
-        "textColor" : [0, 0, 255, 255],
+        "textColor" : [255, 255, 255, 255],
         "textFont" : "Main",
         "textPadding" : [0, 0],
         "textSize" : 30,

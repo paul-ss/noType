@@ -5,7 +5,7 @@
         "bgColor" : [255, 120, 0, 255],
         "bgImage" : "",
         "bgImgColor" : [0, 0, 255, 255],
-        "textColor" : [255, 120, 0, 255],
+        "textColor" : [255, 255, 255, 255],
         "textFont" : "Main",
         "textPadding" : [0, 0],
         "textSize" : 400,
