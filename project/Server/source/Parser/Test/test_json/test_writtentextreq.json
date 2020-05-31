@@ -1,7 +1,0 @@
-{
-  "typeOfCommand": 10,
-  "connectionUUID": "test_connection",
-  "clientUUID": "test_client",
-  "key": "test_key",
-  "writtenText": "test_text"
-}
