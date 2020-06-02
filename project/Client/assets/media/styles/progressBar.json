@@ -1,0 +1,30 @@
+{
+    "Neutral" : {
+        "size" : [500, 70],
+        "fullScreen" : "false",
+        "bgColor" : [255, 0, 0, 255],
+        "bgImage" : "",
+        "bgImgColor" : [255, 0, 0, 255],
+        "textColor" : [247, 250, 1, 255],
+        "textFont" : "Main",
+        "textPadding" : [600, 16],
+        "textSize" : 50,
+        "textOriginCenter" : "true",
+        "glyph" : "",
+        "glyphPadding" : [150, 16]
+    },
+    "Player" : {
+        "size" : [500, 70],
+        "fullScreen" : "false",
+        "bgColor" : [0, 255, 0, 255],
+        "bgImage" : "",
+        "bgImgColor" : [0, 255, 0, 255],
+        "textColor" : [1, 250, 250, 255],
+        "textFont" : "Main",
+        "textPadding" : [600, 0],
+        "textSize" : 50,
+        "textOriginCenter" : "true",
+        "glyph" : "",
+        "glyphPadding" : [150, 16]
+    }
+}
