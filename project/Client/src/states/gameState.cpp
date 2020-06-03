@@ -192,7 +192,6 @@ void GameState::UpdatePosition(const std::unordered_map<
             refreshBar(playersPositions[2], ElementName::ProgressBar3);
             refreshBar(playersPositions[3], ElementName::ProgressBar4);
             refreshBar(playersPositions[4], ElementName::ProgressBar5);
-            break;
     }
 
     auto it = std::find_if(playersPositions.begin(), playersPositions.end(), [&](const auto& lhs) {
@@ -353,7 +352,8 @@ void GameState::CheckRoomStatus() {
             UpdatePosition(roomStatusResponse.playersInfo);
 
             if (roomStatusResponse.roomStatus == Network::RoomStatus::End ||
-                    itr->second.status == Network::PlayerInfo::Status::Finish) {
+                    itr->second.status == Network::PlayerInfo::Status::Finish ||
+                    itr->second.status == Network::PlayerInfo::Status::Win) {
                 AfterGame();
             }
         }
