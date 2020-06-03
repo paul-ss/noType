@@ -1,20 +1,20 @@
 {
     "position" : {
-        "Filler" : [960, 640],
+        "Filler" : [960, 540],
         "IntroText" : [960, 640],
-        "PlayButton" : [960, 540],
-        "QuitButton" : [960, 740],
-        "TimeToStart" : [960, 640],
+        "PlayButton" : [960, 440],
+        "QuitButton" : [960, 640],
+        "TimeToStart" : [960, 540],
         "ProgressBar1" : [960, 20],
         "ProgressBar2" : [960, 100],
         "ProgressBar3" : [960, 180],
         "ProgressBar4" : [960, 260],
         "ProgressBar5" : [960, 340],
-        "PlayerPosition" : [1520, 640],
-        "PlayerPositionText" : [1520, 840],
+        "PlayerPosition" : [1520, 440],
+        "PlayerPositionText" : [1520, 640],
         "MenuButton" : [960, 1040],
-        "AverageSpeed" : [780, 640],
-        "AverageSpeedText" : [780, 840],
+        "AverageSpeed" : [780, 440],
+        "AverageSpeedText" : [780, 640],
         "SmartString" : [960, 520]
     }
 }
