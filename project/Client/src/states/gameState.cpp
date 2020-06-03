@@ -300,6 +300,11 @@ void GameState::OnDestroy() {
         _elements.erase(ElementName::SmartString);
         auto context = GetSharedContext();
         context->sharedElements.erase(ElementName::SmartString);
+        context->sharedElements.erase(ElementName::ProgressBar1);
+        context->sharedElements.erase(ElementName::ProgressBar2);
+        context->sharedElements.erase(ElementName::ProgressBar3);
+        context->sharedElements.erase(ElementName::ProgressBar4);
+        context->sharedElements.erase(ElementName::ProgressBar5);
 
         auto eMgr = GetEventManager();
         eMgr->RemoveCallback(StateType::Game, "Key_Escape");
@@ -338,8 +343,6 @@ void GameState::CheckRoomStatus() {
             auto data = recvMsg->ExtractData();
             auto roomStatusResponse = std::any_cast<Network::RoomStatusResponse>(data);
 
-            UpdatePosition(roomStatusResponse.playersInfo);
-
             auto itr = roomStatusResponse.playersInfo.find(context->playerId);
             if (itr == roomStatusResponse.playersInfo.end()) {
                 BOOST_LOG_TRIVIAL(error) << "[game - checkroomstatus] " << "player uuid not found";
@@ -347,7 +350,7 @@ void GameState::CheckRoomStatus() {
             }
             CountAverageSpeed(itr->second.speed);
             _textPosition = itr->second.position;
-            //UpdatePlayerPosition(roomStatusResponse.playersInfo);
+            UpdatePosition(roomStatusResponse.playersInfo);
 
             if (roomStatusResponse.roomStatus == Network::RoomStatus::End ||
                     itr->second.status == Network::PlayerInfo::Status::Finish) {
