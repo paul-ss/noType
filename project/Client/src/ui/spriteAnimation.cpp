@@ -30,7 +30,7 @@ void SpriteAnimation::Draw() {
         renderWindow->draw(_animatedSprite);
 
     } catch (const std::bad_weak_ptr& e) {
-        //log
+        BOOST_LOG_TRIVIAL(error) << "[spriteanimation - draw] " << e.what();
     }
 }
 
@@ -49,12 +49,12 @@ void SpriteAnimation::addFrame(const std::string& l_file, const sf::Vector2i& l_
                 }
             }
         } else {
-            //log
+            BOOST_LOG_TRIVIAL(error) << "[spriteanimation - addframe] resource not found";
             return;
         }
 
     } catch (const std::bad_weak_ptr& e) {
-        //log
+        BOOST_LOG_TRIVIAL(error) << "[spriteanimation - addframe] " << e.what();
     }
 }
 

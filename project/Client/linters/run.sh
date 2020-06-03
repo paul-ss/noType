@@ -8,10 +8,10 @@ function print_header() {
 }
 
 print_header "RUN cppcheck"
-cppcheck source --enable=all --error-exitcode=1 -I application/*
+cppcheck source --enable=all --error-exitcode=1 -I src/*
 
 print_header "RUN cpplint.py"
-python2.7 ./linters/cpplint/cpplint.py --extensions=c --headers=h,hpp --filter=-runtime/references,-legal/copyright,-build/include_subdir,-whitespace/line_length application/*
+python2.7 ./linters/cpplint/cpplint.py --extensions=c --headers=h,hpp --filter=-runtime/references,-legal/copyright,-build/include_subdir,-whitespace/line_length src/*
 
 print_header "RUN PVS-Studio"
 pvs-studio-analyzer analyze -l linters/pvs/PVS-Studio.lic -o linter/pvs/project.log

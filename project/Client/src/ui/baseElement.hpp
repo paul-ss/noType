@@ -37,6 +37,7 @@ enum class ElementName {
 
 struct Style {
     explicit Style():
+            isFullScreen(false),
             backgroundImageColor(255, 255, 255, 255),
             textSize(12),
             textCenterOrigin(false) {

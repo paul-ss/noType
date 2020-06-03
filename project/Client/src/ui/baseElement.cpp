@@ -242,7 +242,7 @@ void BaseElement::loadPosition(const ElementName l_element, const std::string& l
     } catch (const boost::property_tree::ptree_error& e) {
         BOOST_LOG_TRIVIAL(error) << e.what() << "[loadPosition] not valid json file: " << l_path;
     } catch (const std::bad_weak_ptr& e) {
-        //log
+        BOOST_LOG_TRIVIAL(error) << "[baseelement - loadposition] " << e.what();
     }
 }
 

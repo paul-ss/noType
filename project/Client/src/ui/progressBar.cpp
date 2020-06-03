@@ -16,7 +16,7 @@ ProgressBar::ProgressBar(const ElementName l_name, std::weak_ptr<SharedContext> 
 
     auto styleItr = _style.find(ElementState::Neutral);
     if (styleItr == _style.end()) {
-        //log
+        BOOST_LOG_TRIVIAL(error) << "[ProgressBar - ProgressBar] style neutral not found";
         return;
     }
     applyStyle(styleItr->second);
@@ -43,7 +43,7 @@ void ProgressBar::Draw() {
     if (_state == ElementState::Neutral) {
         auto styleItr = _style.find(ElementState::Neutral);
         if (styleItr == _style.end()) {
-            //log
+            BOOST_LOG_TRIVIAL(error) << "[ProgressBar - draw] style neutral not found";
             return;
         }
         applyStyle(styleItr->second);
@@ -53,7 +53,7 @@ void ProgressBar::Draw() {
     if (_state == ElementState::Player) {
         auto styleItr = _style.find(ElementState::Player);
         if (styleItr == _style.end()) {
-            //log
+            BOOST_LOG_TRIVIAL(error) << "[ProgressBar - draw] style player not found";
             return;
         }
         applyStyle(styleItr->second);
@@ -71,7 +71,7 @@ void ProgressBar::draw() {
         renderWindow->draw(_visual.text);
 
     } catch (std::bad_weak_ptr& e) {
-        //log
+        BOOST_LOG_TRIVIAL(error) << "[ProgressBar - draw] " << e.what();
     }
 }
 

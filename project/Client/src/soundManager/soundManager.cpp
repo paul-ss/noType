@@ -7,6 +7,7 @@
 #include "logger.hpp"
 
 SoundManager::SoundManager(std::weak_ptr<SharedContext> l_sharedContext, float l_volume) :
+        _elapsed(0),
         _volume(l_volume),
         _status(sf::SoundSource::Stopped),
         _sharedContext(l_sharedContext) {
@@ -20,7 +21,7 @@ SoundManager::SoundManager(std::weak_ptr<SharedContext> l_sharedContext, float l
         eMgr->AddCallback(StateType(0), "Mute", lambdaMute);
 
     } catch (std::bad_weak_ptr& e) {
-        //log
+        BOOST_LOG_TRIVIAL(error) << "[soundmanager - soundmanager] " << e.what();
     }
 }
 

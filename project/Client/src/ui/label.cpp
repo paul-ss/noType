@@ -11,7 +11,7 @@ Label::~Label() {}
 ElementName Label::OnClick(const sf::Vector2i& l_mousePos) {
     auto styleItr = _style.find(ElementState::Neutral);
     if (styleItr == _style.end()) {
-        //log
+        BOOST_LOG_TRIVIAL(error) << "[Label - OnClick] style neutral not found";
     }
 
     float halfX = GetSize().x / 2.0f;
@@ -54,7 +54,7 @@ void Label::Update([[maybe_unused]] float l_dT) {
         }
 
     } catch (std::bad_weak_ptr& e) {
-        //log
+        BOOST_LOG_TRIVIAL(error) << "[Label - Draw] " << e.what();
     }
 }
 
@@ -79,7 +79,7 @@ void Label::draw(const std::shared_ptr<Style>& l_style) {
             renderWindow->draw(_visual.glyph);
         }
     } catch (std::bad_weak_ptr& e) {
-        //log
+        BOOST_LOG_TRIVIAL(error) << "[Label - Draw] " << e.what();
     }
 }
 
@@ -87,7 +87,7 @@ void Label::Draw() {
     if (_state == ElementState::Neutral) {
         auto styleItr = _style.find(ElementState::Neutral);
         if (styleItr == _style.end()) {
-            //log
+            BOOST_LOG_TRIVIAL(error) << "[Label - Draw] style neutral not found";
             return;
         }
         applyStyle(styleItr->second);
@@ -97,7 +97,7 @@ void Label::Draw() {
     if (_state == ElementState::Clicked) {
         auto styleItr = _style.find(ElementState::Clicked);
         if (styleItr == _style.end()) {
-            //log
+            BOOST_LOG_TRIVIAL(error) << "[Label - Draw] style clicked not found";
             return;
         }
         applyStyle(styleItr->second);
@@ -108,14 +108,14 @@ void Label::Draw() {
     if (_state == ElementState::Hover) {
         auto styleItr = _style.find(ElementState::Hover);
         if (styleItr == _style.end()) {
-            //log
+            BOOST_LOG_TRIVIAL(error) << "[Label - Draw] style hover not found";
             return;
         }
         applyStyle(styleItr->second);
         draw(styleItr->second);
         return;
     }
-    //log
+    BOOST_LOG_TRIVIAL(error) << "[Label - Draw] style not found";
 }
 
 void Label::ReadIn([[maybe_unused]] const std::string& l_stream) {}

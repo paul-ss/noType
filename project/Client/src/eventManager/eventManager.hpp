@@ -25,7 +25,7 @@ Keyboard = sf::Event::Count + 1, Mouse, Joystick
 
 struct EventInfo {
     EventInfo() : code(0) {}
-    EventInfo(int l_event) : code(l_event) {}
+    explicit EventInfo(int l_event) : code(l_event) {}
     ~EventInfo() {}
     union {
         int code;
@@ -33,7 +33,7 @@ struct EventInfo {
 };
 
 struct EventDetails {
-    EventDetails(const std::string& l_bindName) : name(l_bindName) {
+    explicit EventDetails(const std::string& l_bindName) : name(l_bindName) {
         Clear();
     }
 
@@ -56,7 +56,7 @@ struct EventDetails {
 
 using Events = std::vector<std::pair<EventType, EventInfo> >;
 struct Binding {
-    Binding(const std::string& l_name): name(l_name), count(0), details(l_name) {}
+    explicit Binding(const std::string& l_name): name(l_name), count(0), details(l_name) {}
     ~Binding() {}
 
     void BindEvent(EventType l_type, EventInfo l_info = EventInfo()) {

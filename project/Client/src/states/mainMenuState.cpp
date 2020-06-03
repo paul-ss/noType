@@ -28,13 +28,13 @@ void MainMenuState::OnCreate() {
         _elements.emplace(ElementName::QuitButton, quit);
 
         auto eMgr = GetEventManager();
-        auto lambdaQuit = [this]([[maybe_unused]] EventDetails& l_details) { this->Quit(); };
+        auto lambdaQuit = [this]([[maybe_unused]] const EventDetails& l_details) { this->Quit(); };
         eMgr->AddCallback(StateType::MainMenu, "Key_Escape", lambdaQuit);
 
-        auto lambdaClick = [this](EventDetails& l_details) { this->MouseClick(l_details); };
+        auto lambdaClick = [this](const EventDetails& l_details) { this->MouseClick(l_details); };
         eMgr->AddCallback(StateType::MainMenu, "Mouse_Left", lambdaClick);
 
-        auto lambdaPlay = [this]([[maybe_unused]] EventDetails& l_details) { this->Play(); };
+        auto lambdaPlay = [this]([[maybe_unused]] const EventDetails& l_details) { this->Play(); };
         eMgr->AddCallback(StateType::MainMenu, "Key_Enter", lambdaPlay);
 
     } catch (const std::bad_weak_ptr &e) {
@@ -55,7 +55,7 @@ void MainMenuState::OnDestroy() {
     }
 }
 
-void MainMenuState::MouseClick(EventDetails& l_details) {
+void MainMenuState::MouseClick(const EventDetails& l_details) {
     sf::Vector2i mousePos = l_details.mouse;
     for (auto& itr : _elements) {
         auto clicked = itr.second->OnClick(mousePos);

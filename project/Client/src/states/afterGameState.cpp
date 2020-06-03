@@ -49,14 +49,14 @@ void AfterGameState::OnCreate() {
     _elements.emplace(ElementName::MenuButton, menu);
 
     auto eMgr = GetEventManager();
-    auto lambdaClick = [this](EventDetails& l_details) { this->MouseClick(l_details); };
+    auto lambdaClick = [this](const EventDetails& l_details) { this->MouseClick(l_details); };
     eMgr->AddCallback(StateType::AfterGame, "Mouse_Left", lambdaClick);
 
-    auto lambdaPlay = [this]([[maybe_unused]] EventDetails& l_details) { this->Menu(); };
+    auto lambdaPlay = [this]([[maybe_unused]] const EventDetails& l_details) { this->Menu(); };
     eMgr->AddCallback(StateType::AfterGame, "Key_Enter", lambdaPlay);
 }
 
-void AfterGameState::MouseClick(EventDetails& l_details) {
+void AfterGameState::MouseClick(const EventDetails& l_details) {
     sf::Vector2i mousePos = l_details.mouse;
     for (auto& itr : _elements) {
         auto clicked = itr.second->OnClick(mousePos);

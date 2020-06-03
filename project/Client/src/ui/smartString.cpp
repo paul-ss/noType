@@ -32,7 +32,7 @@ SmartString::SmartString(const ElementName l_name, std::weak_ptr<SharedContext> 
 
     auto styleItr = _style.find(ElementState::Neutral);
     if (styleItr == _style.end()) {
-        //log
+        BOOST_LOG_TRIVIAL(error) << "[smartstring - smartstring] style not found";
         return;
     }
 

@@ -21,8 +21,8 @@ public:
     void Draw() override;
 
 public:
-    void MouseClick(EventDetails& l_details);
-    void MouseRelease(EventDetails& l_details);
+    void MouseClick(const EventDetails& l_details);
+    void MouseRelease(const EventDetails& l_details);
 
     void Play();
     void Quit();

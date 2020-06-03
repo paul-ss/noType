@@ -9,7 +9,10 @@
 #include "exceptions.hpp"
 
 GameState::GameState(std::weak_ptr<SharedContext> l_context)
-    : BaseState(l_context) {}
+    : BaseState(l_context),
+    _textPosition(0),
+    _timePass(0),
+    _averageSpeed(0) {}
 
 void GameState::OnCreate() {
     try {
@@ -51,10 +54,10 @@ void GameState::OnCreate() {
             _elements.emplace(progBar5->first, progBar5->second);
         }
 
-        auto lambdaQuit = [this]([[maybe_unused]] EventDetails& l_details) { this->Menu(); };
+        auto lambdaQuit = [this]([[maybe_unused]] const EventDetails& l_details) { this->Menu(); };
         eMgr->AddCallback(StateType::Game, "Key_Escape", lambdaQuit);
 
-        auto lambdaTextEntered = [this]([[maybe_unused]] EventDetails& l_details) {
+        auto lambdaTextEntered = [this]([[maybe_unused]] const EventDetails& l_details) {
                 this->TextEntered(l_details);
         };
 
@@ -66,7 +69,7 @@ void GameState::OnCreate() {
     }
 }
 
-void GameState::TextEntered(EventDetails& l_details) {
+void GameState::TextEntered(const EventDetails& l_details) {
     auto itr = _elements.find(ElementName::SmartString);
     if (itr == _elements.end()) {
         BOOST_LOG_TRIVIAL(error) << "[game - textentered] " << "smartstring not found";
@@ -150,31 +153,31 @@ void GameState::UpdatePosition(const std::unordered_map<
     auto context = GetSharedContext();
     auto itr = l_players.find(context->playerId);
     if (itr == l_players.end()) {
-        //log
+        BOOST_LOG_TRIVIAL(error) << "[gamestate - updateposition] player not found";
     }
     std::vector<std::pair<std::string, Network::PlayerInfo>> playersPositions;
     for (const auto& [playerId, playerInfo]: l_players) {
         playersPositions.emplace_back(playerId, playerInfo);
 
         if (playerInfo.status == Network::PlayerInfo::Status::Win) {
-          auto res = _finishedPlayers.emplace(playerId, std::pair{playerInfo, _lastFinishedPLayerPosition + 1});
-          if (res.second) {
+            auto res = _finishedPlayers.emplace(playerId, std::pair{playerInfo, _lastFinishedPLayerPosition + 1});
+            if (res.second) {
             ++_lastFinishedPLayerPosition;
-          }
+            }
         }
     }
 
     for (const auto& [playerId, playerInfo]: l_players) {
-      if (playerInfo.status == Network::PlayerInfo::Status::Finish) {
-        auto res = _finishedPlayers.emplace(playerId, std::pair{playerInfo, _lastFinishedPLayerPosition + 1});
-        if (res.second) {
-          ++_lastFinishedPLayerPosition;
+        if (playerInfo.status == Network::PlayerInfo::Status::Finish) {
+            auto res = _finishedPlayers.emplace(playerId, std::pair{playerInfo, _lastFinishedPLayerPosition + 1});
+            if (res.second) {
+                ++_lastFinishedPLayerPosition;
+            }
         }
-      }
     }
 
     std::sort(playersPositions.begin(), playersPositions.end(),
-      [](const auto& lhs, const auto& rhs) {
+            [](const auto& lhs, const auto& rhs) {
         return lhs.second.position > rhs.second.position;
     });
 
@@ -213,24 +216,24 @@ void GameState::UpdatePosition(const std::unordered_map<
     }
 
     auto it = std::find_if(playersPositions.begin(), playersPositions.end(), [&](const auto& lhs) {
-      if (context->playerId == lhs.first) {
-        return true;
-      }
-      return false;
+        if (context->playerId == lhs.first) {
+            return true;
+        }
+        return false;
     });
 
     if (it->second.status == Network::PlayerInfo::Status::Win) {
-      _playerPosition = 1;
-      return;
+        _playerPosition = 1;
+        return;
     } else if (it->second.status == Network::PlayerInfo::Status::Finish) {
-      _playerPosition = _finishedPlayers.size();
-      return;
+        _playerPosition = _finishedPlayers.size();
+        return;
     }
 
     _playerPosition = std::distance(playersPositions.begin(), it) + 1;
 
     } catch (std::bad_weak_ptr& e) {
-        //log
+        BOOST_LOG_TRIVIAL(error) << "[gamestate - updateposition] "<< e.what();
     }
 }
 
@@ -276,7 +279,7 @@ void GameState::refreshBar(std::pair<std::string, Network::PlayerInfo>& l_player
         }
 
     } catch (std::bad_weak_ptr& e) {
-        //log
+        BOOST_LOG_TRIVIAL(error) << "[gamestate - refreshbar] "<< e.what();
     }
 }
 

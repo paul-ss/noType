@@ -37,7 +37,7 @@ public:
     void UpdatePosition(const std::unordered_map<std::string, Network::PlayerInfo>& l_players);
     void SharePlayerPosition();
 
-    void TextEntered(EventDetails& l_details);
+    void TextEntered(const EventDetails& l_details);
     void AfterGame();
     void Menu();
 
