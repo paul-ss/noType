@@ -153,20 +153,28 @@ void GameState::UpdatePosition(const std::unordered_map<
         //log
     }
     std::vector<std::pair<std::string, Network::PlayerInfo>> playersPositions;
-    for (auto& [playerId, playerInfo]: l_players) {
+    for (const auto& [playerId, playerInfo]: l_players) {
         playersPositions.emplace_back(playerId, playerInfo);
 
-        auto itrStr = _elements.find(ElementName::SmartString);
-        if (itrStr == _elements.end()) {
-            BOOST_LOG_TRIVIAL(error) << "[game - updatePosition] " << "smartstring not found";
-        }
-        auto str = std::dynamic_pointer_cast<SmartString>(itrStr->second);
-        if (playerInfo.position == str->GetStringSize()) {
-            _finishedPlayers.emplace_back(playerId, playerInfo);
+        if (playerInfo.status == Network::PlayerInfo::Status::Win) {
+          auto res = _finishedPlayers.emplace(playerId, std::pair{playerInfo, _lastFinishedPLayerPosition + 1});
+          if (res.second) {
+            ++_lastFinishedPLayerPosition;
+          }
         }
     }
-    std::sort(playersPositions.begin(), playersPositions.end(),[](const std::pair<std::string, Network::PlayerInfo>& lhs,
-            const std::pair<std::string, Network::PlayerInfo>& rhs) {
+
+    for (const auto& [playerId, playerInfo]: l_players) {
+      if (playerInfo.status == Network::PlayerInfo::Status::Finish) {
+        auto res = _finishedPlayers.emplace(playerId, std::pair{playerInfo, _lastFinishedPLayerPosition + 1});
+        if (res.second) {
+          ++_lastFinishedPLayerPosition;
+        }
+      }
+    }
+
+    std::sort(playersPositions.begin(), playersPositions.end(),
+      [](const auto& lhs, const auto& rhs) {
         return lhs.second.position > rhs.second.position;
     });
 
@@ -205,13 +213,21 @@ void GameState::UpdatePosition(const std::unordered_map<
     }
 
     auto it = std::find_if(playersPositions.begin(), playersPositions.end(), [&](const auto& lhs) {
-        if (context->playerId == lhs.first) {
+      if (context->playerId == lhs.first) {
         return true;
-        }
-        return false;
+      }
+      return false;
     });
 
-    //_playerPosition = std::distance(playersPositions.begin(), it) + 1;
+    if (it->second.status == Network::PlayerInfo::Status::Win) {
+      _playerPosition = 1;
+      return;
+    } else if (it->second.status == Network::PlayerInfo::Status::Finish) {
+      _playerPosition = _finishedPlayers.size();
+      return;
+    }
+
+    _playerPosition = std::distance(playersPositions.begin(), it) + 1;
 
     } catch (std::bad_weak_ptr& e) {
         //log
@@ -267,14 +283,9 @@ void GameState::refreshBar(std::pair<std::string, Network::PlayerInfo>& l_player
 void GameState::SharePlayerPosition() {
     try {
         auto context = GetSharedContext();
-        int playerPosition = -1;
-        for (size_t i = 0; i < _finishedPlayers.size(); ++i) {
-            if (context->playerId == _finishedPlayers[i].first) {
-                playerPosition = i;
-            }
-        }
+
         auto playerPos = std::make_shared<TextField>(ElementName::PlayerPosition,
-                context, "textField.json", std::to_string(playerPosition));
+                context, "textField.json", std::to_string(_playerPosition));
         context->sharedElements.emplace(ElementName::PlayerPosition, playerPos);
 
         auto posText = std::make_shared<TextField>(ElementName::PlayerPositionText,

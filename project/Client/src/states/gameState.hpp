@@ -46,10 +46,14 @@ private:
 
 private:
     size_t _textPosition;
-    //size_t _playerPosition;
-    std::vector<std::pair<std::string, Network::PlayerInfo>> _finishedPlayers;
+    size_t _playerPosition = 0;
+
     std::string _gameCookie;
     float _timePass;
     double _averageSpeed;
     std::vector<double> _currentSpeed;
+
+private:
+    std::unordered_map<std::string, std::pair<Network::PlayerInfo, size_t>> _finishedPlayers;
+    size_t _lastFinishedPLayerPosition = 0;
 };
