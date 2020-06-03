@@ -28,15 +28,14 @@ public:
     void Draw() override;
 
 public:
-    void GetAverageSpeed();
+    void ShareAverageSpeed();
     void CountAverageSpeed(const double l_speed);
 
-    //void UpdateLeaderPosition(const std::unordered_map<std::string, Network::PlayerInfo>& l_players);
     void CheckRoomStatus();
     void UpdatePosition(const std::string& l_validatedBlock);
 
     void UpdatePosition(const std::unordered_map<std::string, Network::PlayerInfo>& l_players);
-    void GetPlayerPosition();
+    void SharePlayerPosition();
 
     void TextEntered(EventDetails& l_details);
     void AfterGame();
@@ -47,7 +46,8 @@ private:
 
 private:
     size_t _textPosition;
-    size_t _playerPosition;
+    //size_t _playerPosition;
+    std::vector<std::pair<std::string, Network::PlayerInfo>> _finishedPlayers;
     std::string _gameCookie;
     float _timePass;
     double _averageSpeed;

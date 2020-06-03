@@ -155,8 +155,18 @@ void GameState::UpdatePosition(const std::unordered_map<
     std::vector<std::pair<std::string, Network::PlayerInfo>> playersPositions;
     for (auto& [playerId, playerInfo]: l_players) {
         playersPositions.emplace_back(playerId, playerInfo);
+
+        auto itrStr = _elements.find(ElementName::SmartString);
+        if (itrStr == _elements.end()) {
+            BOOST_LOG_TRIVIAL(error) << "[game - updatePosition] " << "smartstring not found";
+        }
+        auto str = std::dynamic_pointer_cast<SmartString>(itrStr->second);
+        if (playerInfo.position == str->GetStringSize()) {
+            _finishedPlayers.emplace_back(playerId, playerInfo);
+        }
     }
-    std::sort(playersPositions.begin(), playersPositions.end(),[](const std::pair<std::string, Network::PlayerInfo>& lhs, const std::pair<std::string, Network::PlayerInfo>& rhs) {
+    std::sort(playersPositions.begin(), playersPositions.end(),[](const std::pair<std::string, Network::PlayerInfo>& lhs,
+            const std::pair<std::string, Network::PlayerInfo>& rhs) {
         return lhs.second.position > rhs.second.position;
     });
 
@@ -201,7 +211,7 @@ void GameState::UpdatePosition(const std::unordered_map<
         return false;
     });
 
-    _playerPosition = std::distance(playersPositions.begin(), it) + 1;
+    //_playerPosition = std::distance(playersPositions.begin(), it) + 1;
 
     } catch (std::bad_weak_ptr& e) {
         //log
@@ -254,12 +264,17 @@ void GameState::refreshBar(std::pair<std::string, Network::PlayerInfo>& l_player
     }
 }
 
-void GameState::GetPlayerPosition() {
+void GameState::SharePlayerPosition() {
     try {
         auto context = GetSharedContext();
-
+        int playerPosition = -1;
+        for (size_t i = 0; i < _finishedPlayers.size(); ++i) {
+            if (context->playerId == _finishedPlayers[i].first) {
+                playerPosition = i;
+            }
+        }
         auto playerPos = std::make_shared<TextField>(ElementName::PlayerPosition,
-                context, "textField.json", std::to_string(_playerPosition));
+                context, "textField.json", std::to_string(playerPosition));
         context->sharedElements.emplace(ElementName::PlayerPosition, playerPos);
 
         auto posText = std::make_shared<TextField>(ElementName::PlayerPositionText,
@@ -271,7 +286,7 @@ void GameState::GetPlayerPosition() {
     }
 }
 
-void GameState::GetAverageSpeed() {
+void GameState::ShareAverageSpeed() {
     try {
         auto context = GetSharedContext();
 
@@ -368,8 +383,8 @@ void GameState::CheckRoomStatus() {
 
 void GameState::AfterGame() {
     try {
-        GetAverageSpeed();
-        GetPlayerPosition();
+        ShareAverageSpeed();
+        SharePlayerPosition();
         auto stateMgr = GetStateManager();
         stateMgr->SwitchTo(StateType::AfterGame);
         stateMgr->Remove(StateType::Game);
