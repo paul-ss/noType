@@ -43,7 +43,7 @@ public:
     void Menu();
 
 private:
-    void refreshBar(std::pair<std::string, size_t> l_position, ElementName l_elementName);
+    void refreshBar(std::pair<std::string, Network::PlayerInfo>& l_position, ElementName l_elementName);
 
 private:
     size_t _textPosition;

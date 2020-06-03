@@ -2,7 +2,7 @@
 #include "sharedContext.hpp"
 
 #define PATH_TO_STYLES "assets/media/styles/"
-#define POSITION_FILE "assets/media/styles/position.json"
+#define POSITION_DIR "assets/media/styles/positions/"
 
 BaseElement::BaseElement(const ElementName l_name,
         std::weak_ptr<SharedContext> l_sharedContext,
@@ -12,7 +12,7 @@ BaseElement::BaseElement(const ElementName l_name,
         _sharedContext(l_sharedContext) {
 
     loadStyle(l_style);
-    loadPosition(l_name, POSITION_FILE);
+    loadPosition(l_name, POSITION_DIR);
 }
 
 void BaseElement::applyStyle(const std::shared_ptr<Style>& l_style) {
@@ -220,8 +220,17 @@ static std::string enumToStr(ElementName l_type) {
 
 void BaseElement::loadPosition(const ElementName l_element, const std::string& l_path) {
     try {
+        std::shared_ptr<SharedContext>context(_sharedContext);
+        std::shared_ptr<Window>window(context->window);
+        std::shared_ptr<sf::RenderWindow>renderWindow(window->GetRenderWindow());
+
+        std::string path = l_path + "1920x1080.json";
+        if (renderWindow->getSize().x == 2880 && renderWindow->getSize().y == 1800) {
+            path = l_path + "2880x1800.json";
+        }
+
         boost::property_tree::ptree root;
-        boost::property_tree::read_json(l_path, root);
+        boost::property_tree::read_json(path, root);
 
         std::vector<int> positionVec;
         for (boost::property_tree::ptree::value_type& glyphPadding : root.get_child("position." + enumToStr(l_element))) {
@@ -232,6 +241,8 @@ void BaseElement::loadPosition(const ElementName l_element, const std::string& l
 
     } catch (const boost::property_tree::ptree_error& e) {
         BOOST_LOG_TRIVIAL(error) << e.what() << "[loadPosition] not valid json file: " << l_path;
+    } catch (const std::bad_weak_ptr& e) {
+        //log
     }
 }
 

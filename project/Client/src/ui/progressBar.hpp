@@ -24,7 +24,7 @@ public:
     void SetEnemyStyle();
 
 private:
-    void draw(const std::shared_ptr<Style>& l_style);
+    void draw();
     void applyStyleProgressBar();
 
 private:

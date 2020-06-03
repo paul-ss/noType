@@ -48,7 +48,7 @@ void ProgressBar::Draw() {
         }
         applyStyle(styleItr->second);
         applyStyleProgressBar();
-        draw(styleItr->second);
+        draw();
     }
     if (_state == ElementState::Player) {
         auto styleItr = _style.find(ElementState::Player);
@@ -58,11 +58,11 @@ void ProgressBar::Draw() {
         }
         applyStyle(styleItr->second);
         applyStyleProgressBar();
-        draw(styleItr->second);
+        draw();
     }
 }
 
-void ProgressBar::draw(const std::shared_ptr<Style>& l_style) {
+void ProgressBar::draw() {
     try {
         std::shared_ptr<SharedContext>sharedContext(_sharedContext);
         std::shared_ptr<Window>window(sharedContext->window);

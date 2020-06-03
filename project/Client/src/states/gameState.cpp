@@ -143,16 +143,6 @@ void GameState::Menu() {
     }
 }
 
-//void GameState::UpdateLeaderPosition(const std::unordered_map<
-//        std::string, Network::PlayerInfo>& l_players) {
-//
-//    std::vector<std::pair<std::string, size_t>> playersPositions;
-//    for (auto& [playerId, playerInfo]: l_players) {
-//        playersPositions.emplace_back(playerId, playerInfo.position);
-//    }
-//    refreshBar(leaderInfo, ElementName::LeaderBar);
-//}
-
 void GameState::UpdatePosition(const std::unordered_map<
         std::string, Network::PlayerInfo>& l_players) {
 
@@ -162,48 +152,46 @@ void GameState::UpdatePosition(const std::unordered_map<
     if (itr == l_players.end()) {
         //log
     }
-    std::vector<std::pair<std::string, size_t>> playersPositions;
-    std::vector<std::pair<std::string, size_t>> playersName;
+    std::vector<std::pair<std::string, Network::PlayerInfo>> playersPositions;
     for (auto& [playerId, playerInfo]: l_players) {
-        playersPositions.emplace_back(playerId, playerInfo.position);
-        playersName.emplace_back(playerInfo.name, playerInfo.position);
+        playersPositions.emplace_back(playerId, playerInfo);
     }
-    std::sort(playersPositions.begin(), playersPositions.end(),[](const auto& lhs, const auto& rhs) {
-        return lhs.second > rhs.second;
+    std::sort(playersPositions.begin(), playersPositions.end(),[](const std::pair<std::string, Network::PlayerInfo>& lhs, const std::pair<std::string, Network::PlayerInfo>& rhs) {
+        return lhs.second.position > rhs.second.position;
     });
 
     switch (playersPositions.size()) {
         case 1:
-            refreshBar(playersName[0], ElementName::ProgressBar1);
+            refreshBar(playersPositions[0], ElementName::ProgressBar1);
             break;
         case 2:
-            refreshBar(playersName[0], ElementName::ProgressBar1);
-            refreshBar(playersName[1], ElementName::ProgressBar2);
+            refreshBar(playersPositions[0], ElementName::ProgressBar1);
+            refreshBar(playersPositions[1], ElementName::ProgressBar2);
             break;
         case 3:
-            refreshBar(playersName[0], ElementName::ProgressBar1);
-            refreshBar(playersName[1], ElementName::ProgressBar2);
-            refreshBar(playersName[2], ElementName::ProgressBar3);
+            refreshBar(playersPositions[0], ElementName::ProgressBar1);
+            refreshBar(playersPositions[1], ElementName::ProgressBar2);
+            refreshBar(playersPositions[2], ElementName::ProgressBar3);
             break;
         case 4:
-            refreshBar(playersName[0], ElementName::ProgressBar1);
-            refreshBar(playersName[1], ElementName::ProgressBar2);
-            refreshBar(playersName[2], ElementName::ProgressBar3);
-            refreshBar(playersName[3], ElementName::ProgressBar4);
+            refreshBar(playersPositions[0], ElementName::ProgressBar1);
+            refreshBar(playersPositions[1], ElementName::ProgressBar2);
+            refreshBar(playersPositions[2], ElementName::ProgressBar3);
+            refreshBar(playersPositions[3], ElementName::ProgressBar4);
             break;
         case 5:
-            refreshBar(playersName[0], ElementName::ProgressBar1);
-            refreshBar(playersName[1], ElementName::ProgressBar2);
-            refreshBar(playersName[2], ElementName::ProgressBar3);
-            refreshBar(playersName[3], ElementName::ProgressBar4);
-            refreshBar(playersName[4], ElementName::ProgressBar5);
+            refreshBar(playersPositions[0], ElementName::ProgressBar1);
+            refreshBar(playersPositions[1], ElementName::ProgressBar2);
+            refreshBar(playersPositions[2], ElementName::ProgressBar3);
+            refreshBar(playersPositions[3], ElementName::ProgressBar4);
+            refreshBar(playersPositions[4], ElementName::ProgressBar5);
             break;
         default:
-            refreshBar(playersName[0], ElementName::ProgressBar1);
-            refreshBar(playersName[1], ElementName::ProgressBar2);
-            refreshBar(playersName[2], ElementName::ProgressBar3);
-            refreshBar(playersName[3], ElementName::ProgressBar4);
-            refreshBar(playersName[4], ElementName::ProgressBar5);
+            refreshBar(playersPositions[0], ElementName::ProgressBar1);
+            refreshBar(playersPositions[1], ElementName::ProgressBar2);
+            refreshBar(playersPositions[2], ElementName::ProgressBar3);
+            refreshBar(playersPositions[3], ElementName::ProgressBar4);
+            refreshBar(playersPositions[4], ElementName::ProgressBar5);
             break;
     }
 
@@ -221,7 +209,7 @@ void GameState::UpdatePosition(const std::unordered_map<
     }
 }
 
-void GameState::refreshBar(std::pair<std::string, size_t> l_player, ElementName l_elementName) {
+void GameState::refreshBar(std::pair<std::string, Network::PlayerInfo>& l_player, ElementName l_elementName) {
     try {
         auto context = GetSharedContext();
 
@@ -243,23 +231,23 @@ void GameState::refreshBar(std::pair<std::string, size_t> l_player, ElementName 
         } else {
             progBar->SetEnemyStyle();
         }
-        progBar->Update(static_cast<float>(l_player.second) /
+        progBar->Update(static_cast<float>(l_player.second.position) /
                 static_cast<float>(str->GetStringSize()));
 
         if (l_elementName == ElementName::ProgressBar1) {
-            progBar->SetText("#1 " + l_player.first);
+            progBar->SetText("#1 " + l_player.second.name);
         }
         if (l_elementName == ElementName::ProgressBar2) {
-            progBar->SetText("#2 " + l_player.first);
+            progBar->SetText("#2 " + l_player.second.name);
         }
         if (l_elementName == ElementName::ProgressBar3) {
-            progBar->SetText("#3 " + l_player.first);
+            progBar->SetText("#3 " + l_player.second.name);
         }
         if (l_elementName == ElementName::ProgressBar4) {
-            progBar->SetText("#4 " + l_player.first);
+            progBar->SetText("#4 " + l_player.second.name);
         }
         if (l_elementName == ElementName::ProgressBar5) {
-            progBar->SetText("#5 " + l_player.first);
+            progBar->SetText("#5 " + l_player.second.name);
         }
 
     } catch (std::bad_weak_ptr& e) {

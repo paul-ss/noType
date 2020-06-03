@@ -18,7 +18,7 @@ SpriteAnimation::SpriteAnimation(std::weak_ptr<SharedContext> l_sharedContext,
     _animatedSprite.setPosition(l_position);
     _animatedSprite.setLooped(true);
     _animatedSprite.play(_animation);
-    _animatedSprite.setScale(25,25);
+    _animatedSprite.setScale(20,20);
     _animatedSprite.setOrigin(_animatedSprite.getLocalBounds().width * 0.5, _animatedSprite.getLocalBounds().height * 0.5);
 }
 
